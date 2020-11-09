@@ -3,6 +3,23 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# PROS Gitignore. Ignores all your key files
+bin/
+.vscode/
+firmware/
+include/
+src/
+common.mk
+Makefile
+VisualStudio.gitignore
+compile_commands.json
+temp.log
+temp.errors
+project.pros
+*.ini
+.d/
+
+
 # User-specific files
 *.rsuser
 *.suo
