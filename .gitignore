@@ -9,6 +9,7 @@ bin/
 firmware/
 include/
 src/*
+BasicLibrary/
 !BasicLibrary/
 common.mk
 Makefile
