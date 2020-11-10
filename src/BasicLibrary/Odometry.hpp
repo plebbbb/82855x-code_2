@@ -40,8 +40,8 @@ namespace BasicLibrary{
     //Constructor if the encoder is plugged into an ADI Expander
     //The explicit keyword allows for the compiler to automatically convert data specified in incorrect data types
     //Explicit uses functions that take one data type, and return another data type to reach the final value
-    explicit DeadWheel(pros::ext_adi_port_tuple_t portA, bool direction, float Diameter):
-    Encoder(portA,direction)
+    explicit DeadWheel(pros::ext_adi_port_tuple_t portAB, bool direction, float Diameter):
+    Encoder(portAB,direction)
     {
       WheelRadius = Diameter/2;
     }
