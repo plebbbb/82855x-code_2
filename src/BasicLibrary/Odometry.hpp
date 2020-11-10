@@ -31,7 +31,7 @@ namespace BasicLibrary{
   public:
 
     //Constructor if the encoder is plugged directly into the V5 Brain ADI ports
-    DeadWheel(int portA, int portB, bool direction, float Diameter):
+    explicit DeadWheel(int portA, int portB, bool direction, float Diameter):
     Encoder(portA,portB,direction)
     {
       WheelRadius = Diameter/2;

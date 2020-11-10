@@ -8,7 +8,8 @@ bin/
 .vscode/
 firmware/
 include/
-src/
+src/*
+!BasicLibrary/
 common.mk
 Makefile
 VisualStudio.gitignore
