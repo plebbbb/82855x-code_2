@@ -12,7 +12,7 @@
 namespace BasicLibrary{
   class DeadWheel;
   struct OdometryWheels;
-  double DegreesToRadians(double Degrees);
+  extern double DegreesToRadians(double Degrees);
 
   //Ok Cho, I just made the encoder classes. How you want to interface with these is up to you.
   //unique_ptr.get() gives you the pointer for the array of values. Put everything below odometrywheels to be safe/
@@ -105,10 +105,5 @@ namespace BasicLibrary{
         };
     }
 
-  };
-
-  //Converts degrees into radians. Radius*radians = distance traveled
-  static double DegreesToRadians(double Degrees){
-    return Degrees*(180/M_PI);
   };
 }
