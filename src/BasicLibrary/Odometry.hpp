@@ -101,7 +101,7 @@ namespace BasicLibrary{
             case 1: return RIGHT.get_distance();
             case 'B':
             case 'b':
-            case 2: return LEFT.get_distance();
+            case 2: return BACK.get_distance();
         };
     }
 
