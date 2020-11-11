@@ -12,7 +12,7 @@
 namespace BasicLibrary{
   class DeadWheel;
   struct OdometryWheels;
-  extern double DegreesToRadians(double Degrees);
+  double DegreesToRadians(double Degrees);
 
   //Ok Cho, I just made the encoder classes. How you want to interface with these is up to you.
   //unique_ptr.get() gives you the pointer for the array of values. Put everything below odometrywheels to be safe/
