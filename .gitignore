@@ -8,9 +8,9 @@ bin/
 .vscode/
 firmware/
 include/
+!src/
 src/*
-BasicLibrary/
-!BasicLibrary/
+!src/BasicLibrary
 common.mk
 Makefile
 VisualStudio.gitignore
@@ -20,6 +20,7 @@ temp.errors
 project.pros
 *.ini
 .d/
+.idea/
 
 
 # User-specific files
