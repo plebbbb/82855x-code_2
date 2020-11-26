@@ -83,6 +83,7 @@ namespace STL_lib{
     //This struct is constructed with bracket notation.
     //For example, DeadWheel a = {LEFT, RIGHT, REAR};
     DeadWheel LEFT, RIGHT, BACK;
+//    OdometryWheels(DeadWheel L, DeadWheel R, DeadWheel B):LEFT(L),RIGHT(R),BACK(B){}
 
     //This approach only measures the encoder values once per cycle, ensuring synchronization of measurements
     std::unique_ptr<std::array<inches, 3>> get_distances(){
@@ -96,30 +97,29 @@ namespace STL_lib{
     }
 
     std::array<inches,3> get_distances_nonpointer(){
-      return std::array{
+      return std::array<inches, 3>{
         LEFT.get_distance_AUTORESET(),
         RIGHT.get_distance_AUTORESET(),
         BACK.get_distance_AUTORESET()
       };
     }
-
     /*This function basically takes control of the [] thing you see in arrays.
     This turns the object into a psudo-array thats basically an array.
     Usable values are index 0, 1 2. or 'ENCODER_POSITION_LEFT', right and center.
     FYI, this doesn't reset, so you will have to manual reset with the reset function.*/
     inches DistOf(ENCODER_POSITION index){
         switch(index){
-            case 0: return LEFT.get_distance();
-            case 1: return RIGHT.get_distance();
-            case 2: return BACK.get_distance();
+            case ENCODER_POSITION_LEFT: return LEFT.get_distance();
+            case ENCODER_POSITION_RIGHT: return RIGHT.get_distance();
+            case ENCODER_POSITION_BACK: return BACK.get_distance();
         };
     }
 
     DeadWheel operator[] (ENCODER_POSITION index){
       switch(index){
-          case 0: return LEFT;
-          case 1: return RIGHT;
-          case 2: return BACK;
+          case ENCODER_POSITION_LEFT: return LEFT;
+          case ENCODER_POSITION_RIGHT: return RIGHT;
+          case ENCODER_POSITION_BACK: return BACK;
       };
     }
 
