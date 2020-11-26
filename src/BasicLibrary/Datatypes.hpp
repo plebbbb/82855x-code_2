@@ -66,7 +66,7 @@ struct SMART_radians{
 
   /******************************************************************************/
   //Manipulation functions
-  void operator+=(double increment) {
+  void operator+=(SMART_radians increment) {
       value += increment;
       prune();
   }
@@ -113,7 +113,7 @@ struct radians {
 
     /******************************************************************************/
     //Manipulation functions
-    void operator+=(double increment) {
+    void operator+=(radians increment) {
         value += increment;
     //    prune();
     }
@@ -165,7 +165,7 @@ struct degrees {
 
     /******************************************************************************/
     //Manipulation functions
-    void operator+=(double increment) {
+    void operator+=(degrees increment) {
         value+=increment;
         //prune();
     }
@@ -208,11 +208,11 @@ struct inches{
 
   /******************************************************************************/
   //Manipulation functions
-  void operator+=(double increment){
+  void operator+=(inches increment){
     value += increment;
   }
 
-  void operator-=(double increment){
+  void operator-=(inches increment){
     value-= increment;
   }
 };
@@ -260,12 +260,18 @@ struct position{
   counterclockwise rotation, and are internally limited to a range of 0-2PI,
   though you could use negatives if you wanted to*/
   void self_transform(SMART_radians offset){
-    inches sum = x * y;
     angle = offset - angle; //Smart radians automatically deal with out of bound possiblities
-    x = sum*cos(angle);
-    y = sum*sin(angle);
+    x = x*sin(angle) + y*cos(angle);
+    y = y*sin(angle) + x*cos(angle);
   }
 
+  void self_transform_polar(SMART_radians offset){
+    SMART_radians polar_angle(atan2(y,x) + offset);
+    inches sum = sqrt(x*x+y*y);
+    x = sum*cos(polar_angle);
+    y = sum*sin(polar_angle);
+
+  }
 
   /******************************************************************************/
   //Conversion functions

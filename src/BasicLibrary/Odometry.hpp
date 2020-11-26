@@ -165,23 +165,26 @@ namespace STL_lib{
       //note: SMART_radians automatically corrects divison by zero errors to zero
       //So there is no need to worry about that situation here
 
-      position returncycle = std::tuple<inches,inches,SMART_radians>{
-        2.00*sin(rel_orientation_change/2)*
-        (divzerocomp(EncoderDistanceValues[1],rel_orientation_change)
-        +wheels[ENCODER_POSITION_RIGHT].Distance_CenterOfRotation),
+      position returncycle;
 
-        2.00*sin(rel_orientation_change/2)*
-        (divzerocomp(EncoderDistanceValues[1],rel_orientation_change)
-        +wheels[ENCODER_POSITION_RIGHT].Distance_CenterOfRotation),
+      SMART_radians avg_angle = precycle.angle + rel_orientation_change;
 
-        0.00 //remember the axises are relative to their starting position
-      };
+      if (rel_orientation_change == 0){
+        returncycle.x = EncoderDistanceValues[2];
+        returncycle.y = EncoderDistanceValues[1];
+      } else {
+        returncycle.y = 2*sin(rel_orientation_change/2) *
+        (EncoderDistanceValues[1]/rel_orientation_change +
+        wheels[ENCODER_POSITION_RIGHT].Distance_CenterOfRotation);
 
-      //Transform coordinate grid to global coordinate grid
-      returncycle.self_transform(precycle[ROTATION]);
+        returncycle.x = 2*sin(rel_orientation_change/2) *
+        (EncoderDistanceValues[2]/rel_orientation_change +
+        wheels[ENCODER_POSITION_BACK].Distance_CenterOfRotation);
+      }
 
-      //add to existing coordinate values
-      precycle+=returncycle;
+      returncycle.self_transform_polar(-avg_angle-M_PI/2);
+      returncycle.angle = rel_orientation_change;
+      precycle += returncycle;
       return precycle;
     }
   };
