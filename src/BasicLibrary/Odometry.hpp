@@ -6,6 +6,12 @@
 //but we have the header guard set up. This way, Odometry is only looped over once
 //#include "Datatypes.hpp"
 
+/*TBD: Changes are needed to the current class linking system
+  - OdometryWheels should be a child class of odometrycontroller
+    - What this allows is for us to make different odometry configurations
+      For example, an odometry variation that takes the IMU, X, and Y values
+*/
+
 #ifndef ODOMETRY_HPP
 #define ODOMETRY_HPP
 
@@ -32,17 +38,19 @@ namespace STL_lib{
     inches Distance_CenterOfRotation; //Distance to center of rotation
 
     //Constructor if the encoder is plugged directly into the V5 Brain ADI ports
-    DeadWheel(int portA, int portB, bool direction, double Diameter):
+    DeadWheel(int portA, int portB, bool direction, inches Diameter, inches Dist_to_ctr):
     Encoder(portA,portB,direction)
     {
       WheelRadius = Diameter/2;
+      Distance_CenterOfRotation = Dist_to_ctr;
     }
 
     //Constructor if the encoder is plugged into an ADI Expander
-    DeadWheel(pros::ext_adi_port_tuple_t portAB, bool direction, double Diameter):
+    DeadWheel(pros::ext_adi_port_tuple_t portAB, bool direction, inches Diameter, inches Dist_to_ctr):
     Encoder(portAB,direction)
     {
       WheelRadius = Diameter/2;
+      Distance_CenterOfRotation = Dist_to_ctr;
     }
 
     //Returns us the raw angle traversed by the encoder in radians
@@ -70,6 +78,7 @@ namespace STL_lib{
 
   //This is a struct meant to hold the DeadWheels in an convienent to move container
   //Treat it like an array that has built in functions. It can literally do the [] and the {}
+
   struct OdometryWheels{
     //This struct is constructed with bracket notation.
     //For example, DeadWheel a = {LEFT, RIGHT, REAR};
@@ -86,11 +95,19 @@ namespace STL_lib{
       );
     }
 
+    std::array<inches,3> get_distances_nonpointer(){
+      return std::array{
+        LEFT.get_distance_AUTORESET(),
+        RIGHT.get_distance_AUTORESET(),
+        BACK.get_distance_AUTORESET()
+      };
+    }
+
     /*This function basically takes control of the [] thing you see in arrays.
     This turns the object into a psudo-array thats basically an array.
     Usable values are index 0, 1 2. or 'ENCODER_POSITION_LEFT', right and center.
     FYI, this doesn't reset, so you will have to manual reset with the reset function.*/
-    double operator[] (ENCODER_POSITION index){
+    inches DistOf(ENCODER_POSITION index){
         switch(index){
             case 0: return LEFT.get_distance();
             case 1: return RIGHT.get_distance();
@@ -98,10 +115,74 @@ namespace STL_lib{
         };
     }
 
+    DeadWheel operator[] (ENCODER_POSITION index){
+      switch(index){
+          case 0: return LEFT;
+          case 1: return RIGHT;
+          case 2: return BACK;
+      };
+    }
+
     void reset(){
       LEFT.reset();
       RIGHT.reset();
       BACK.reset();
+    }
+  };
+
+  struct OdometryComputer{
+    OdometryWheels wheels;
+
+    /******************************************************************************/
+    //Constructors:
+    OdometryComputer(OdometryWheels wheelset):wheels(wheelset){}
+
+
+    /******************************************************************************/
+    //Utility functions
+    /*The edge case of a division by zero distance is only observed in odometry
+    Hence, we have this janky internal function to deal with these situations*/
+    double divzerocomp(double numerator, double denomator){
+      if (numerator == 0 || denomator == 0) return 0.0;
+      return numerator/denomator;
+    }
+
+
+
+    /******************************************************************************/
+    //Primary computation functions
+    position cycle(position precycle){
+      std::array EncoderDistanceValues = wheels.get_distances_nonpointer();
+      //its a 50/50 that get_distances_nonpointer works
+
+      //Assuming forwards is 0rad, CCW is positive we calculate the relative offset
+      //All coords are prior to move fyi.
+      SMART_radians rel_orientation_change =
+      (EncoderDistanceValues[1]-EncoderDistanceValues[0]) /
+      (wheels[ENCODER_POSITION_LEFT].Distance_CenterOfRotation +
+        wheels[ENCODER_POSITION_RIGHT].Distance_CenterOfRotation);
+
+      //note: SMART_radians automatically corrects divison by zero errors to zero
+      //So there is no need to worry about that situation here
+
+      position returncycle = std::tuple<inches,inches,SMART_radians>{
+        2.00*sin(rel_orientation_change/2)*
+        (divzerocomp(EncoderDistanceValues[1],rel_orientation_change)
+        +wheels[ENCODER_POSITION_RIGHT].Distance_CenterOfRotation),
+
+        2.00*sin(rel_orientation_change/2)*
+        (divzerocomp(EncoderDistanceValues[1],rel_orientation_change)
+        +wheels[ENCODER_POSITION_RIGHT].Distance_CenterOfRotation),
+
+        0.00 //remember the axises are relative to their starting position
+      };
+
+      //Transform coordinate grid to global coordinate grid
+      returncycle.self_transform(precycle[ROTATION]);
+
+      //add to existing coordinate values
+      precycle+=returncycle;
+      return precycle;
     }
   };
 

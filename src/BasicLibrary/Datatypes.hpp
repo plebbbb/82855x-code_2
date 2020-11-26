@@ -16,12 +16,67 @@ but they help with organization to an extent, and automatically deal out convers
 */
 
 /*Things to fix:
-    - This pattern is kinda bad. Doesn't allow for conversion from radian to degrees
+    - The radians, degrees, and SMART_radians pattern is kinda bad.
+      Doesn't allow for conversion from radian to degrees or smart radians to radians
 */
+
+
+/**************************************************************************************************/
+// ROTATIONAL UNITS
+
+/*A smart radian automatically prunes all values to be within the range of 0 - 2PI
+Its a radian, but smart*/
+struct SMART_radians{
+  double value; //This holds your angle value, in radians
+
+
+  /******************************************************************************/
+  //Constructors:
+  SMART_radians(){value = 0;} //default constructor, if you don't make it anything it's 0 by default
+
+  SMART_radians(double angle_in_radians) {
+      value = angle_in_radians;
+      prune();
+  }
+
+  SMART_radians operator=(double angle_in_radians) {
+      value = angle_in_radians;
+      prune();
+  }
+
+
+  /******************************************************************************/
+  //Utility functions
+  void prune() { //constrains the angle values into the range of 0 - 2PI
+
+      //Division by zero correction is to set angle to 0
+        if (isnanf(value) || isinff(value)) value = 0;
+
+      //Float modulus to correct angle values to the right inte
+        value = fmod(value, M_PI*2);
+    }
+
+  /******************************************************************************/
+  //Conversion functions
+  operator double() {
+      prune();
+      return value;
+  }
+
+
+  /******************************************************************************/
+  //Manipulation functions
+  void operator+=(double increment) {
+      value += increment;
+      prune();
+  }
+};
+
 
 //A radians datatype, which holds a radians value
 struct radians {
     double value; //This holds your angle value, in radians
+
 
     /******************************************************************************/
     //Constructors:
@@ -47,9 +102,12 @@ struct radians {
 
     /******************************************************************************/
     //Conversion functions
-
     operator double() {
         return value;
+    }
+
+    explicit operator SMART_radians(){
+      return SMART_radians(value);
     }
 
 
@@ -61,12 +119,13 @@ struct radians {
     }
 };
 
+
 //A degrees datatype, which holds a degree value
 struct degrees {
     double value; //This holds your angle value, in degrees
 
-    /******************************************************************************/
 
+    /******************************************************************************/
     //Constructors:
     degrees(){value = 0;} //default constructor, if you don't make it anything it's 0 by default
 
@@ -80,16 +139,15 @@ struct degrees {
         //prune();
     }
 
+
     /******************************************************************************/
-
-
     //Utility functions
     void prune(){ //constrains the angle values into the range of 0 - 360 degrees
         value = fmod(value, 360);
     }
 
-    /******************************************************************************/
 
+    /******************************************************************************/
     //Conversion functions
     operator double() {
         return value;
@@ -99,8 +157,13 @@ struct degrees {
         return radians(value * M_PI / 180);
     }
 
-    /******************************************************************************/
+    //you must explicitly state that you are converting to a smart radian before you do so
+    explicit operator SMART_radians(){
+      return SMART_radians(value * M_PI / 180);
+    }
 
+
+    /******************************************************************************/
     //Manipulation functions
     void operator+=(double increment) {
         value+=increment;
@@ -109,49 +172,10 @@ struct degrees {
 
 };
 
-//A smart radian automatically prunes all values to be within the range of 0 - 2PI
-struct SMART_radians{
-  double value; //This holds your angle value, in radians
-
-  /******************************************************************************/
-
-  //Constructors:
-  SMART_radians(double angle_in_radians) {
-      value = angle_in_radians;
-      prune();
-  }
-
-  SMART_radians operator=(double angle_in_radians) {
-      value = angle_in_radians;
-      prune();
-  }
-
-  /******************************************************************************/
-
-  //Utility functions
-  void prune() { //constrains the angle values into the range of 0 - 2PI
-          value = fmod(value, M_PI*2);
-    }
-
-  /******************************************************************************/
 
 
-  //Conversion functions
-
-  operator double() {
-      return value;
-  }
-
-
-  /******************************************************************************/
-
-
-  //Manipulation functions
-  void operator+=(double increment) {
-      value += increment;
-      prune();
-  }
-};
+/**************************************************************************************************/
+// LINEAR UNITS
 
 //inches, I'll implement cm later
 struct inches{
@@ -174,7 +198,13 @@ struct inches{
   operator double() {
     return value;
   }
-
+  //it has to be noted that I can't convert an inches to a radians, or a degrees, as that is two layers of implicit conversion
+  //you are allowed to do only a single layer of implicit conversion, everything after that must be explicitly stated.
+  /*for example,
+    *degrees variable* = (degrees)((double)*an inch variable*) is legal
+    *degrees variable* = (degrees)(*an inch variable*) is also legal, as you implicitly convert the inch into a double
+    *degrees variable* = *an inch variable* is not legal, as there are two conversions
+  */
 
   /******************************************************************************/
   //Manipulation functions
@@ -184,6 +214,83 @@ struct inches{
 
   void operator-=(double increment){
     value-= increment;
+  }
+};
+
+
+
+/**************************************************************************************************/
+// COMPOSITE UNITS
+
+enum AXIS_VALUES{
+  X_AXIS = 0,
+  Y_AXIS = 1,
+  ROTATION = 2
+};
+
+//standard coordinate datatype, holds an x, y, and an orientation
+struct position{
+  inches x; //x coordinate
+  inches y; //y coordinate
+  SMART_radians angle; //Smart radian to constrain to 0 - 2*PI
+
+
+  /******************************************************************************/
+  //Constructors:
+  /*The constructor for positons uses a std::tuple
+    How you format those is like so {x, y, angle}*/
+  position(std::tuple<inches, inches, SMART_radians> set):
+  x(std::get<0>(set)),
+  y(std::get<1>(set)),
+  angle(std::get<2>(set)){}
+
+
+  position operator= (std::tuple<inches, inches, SMART_radians> set){
+    x = std::get<0>(set);
+    y = std::get<1>(set);
+    angle = std::get<2>(set);
+  }
+
+  position() {x = 0; y = 0; angle = 0;} //default constructor assumes you are at origin facing pos x axis
+
+  /******************************************************************************/
+  //Utility functions
+  /*Rotates the coordinate system by converting to polar coordinates then back
+  The rotation system is done in standard format: A higher positive value means
+  counterclockwise rotation, and are internally limited to a range of 0-2PI,
+  though you could use negatives if you wanted to*/
+  void self_transform(SMART_radians offset){
+    inches sum = x * y;
+    angle = offset - angle; //Smart radians automatically deal with out of bound possiblities
+    x = sum*cos(angle);
+    y = sum*sin(angle);
+  }
+
+
+  /******************************************************************************/
+  //Conversion functions
+  operator std::tuple<inches,inches,SMART_radians>(){
+    return {x,y,angle};
+  }
+
+  /******************************************************************************/
+  //Manipulation functions
+  /*Remember that an conversion from tuples({x,y,angle}) to position can automatically happen
+  Using that instead of an actual position type is also perfectly legal*/
+  void operator+=(position change){
+    x += change.x;
+    y += change.y;
+    angle += change.angle; //Smart radians automatically deal with out of bound possiblities
+  }
+
+  /*REMEMBER TO CONVERT BACK AFTER!!,
+  Also, this is a dumb hack that violates the whole purpose of these datatypes*/
+  double operator[](AXIS_VALUES index){
+    switch (index){
+      case X_AXIS: return x;
+      case Y_AXIS: return y;
+      case ROTATION: return angle;
+    }
   }
 };
 
