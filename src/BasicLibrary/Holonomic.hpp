@@ -37,7 +37,7 @@
 
       /******************************************************************************/
       //Constructors:
-      holonomicbase operator= (std::vector<motorwheel> set){motors = set;}
+      holonomicbase operator= (std::vector<motorwheel> set){return holonomicbase(set);}
       holonomicbase(std::vector<motorwheel> set){motors = set;}
 
       /******************************************************************************/

@@ -40,8 +40,7 @@ struct SMART_radians{
   }
 
   SMART_radians operator=(double angle_in_radians) {
-      value = angle_in_radians;
-      prune();
+    return SMART_radians(angle_in_radians);
   }
 
 
@@ -88,7 +87,7 @@ struct radians {
     }
 
     radians operator=(double angle_in_radians) {
-        value = angle_in_radians;
+      return radians(angle_in_radians);
     //    prune();
     }
 
@@ -135,7 +134,7 @@ struct degrees {
     }
 
     degrees operator=(double angleindegrees) {
-        value = angleindegrees;
+        return degrees(angleindegrees);
         //prune();
     }
 
@@ -189,7 +188,7 @@ struct inches{
     value = distance;
   }
   inches operator=(double distance){
-    value = distance;
+    return inches(distance);
   }
 
 
@@ -232,8 +231,8 @@ struct percent{
   percent(double in){
     value = in;
   }
-  inches operator=(double in){
-    value = in;
+  percent operator=(double in){
+    return percent(in);
   }
 
 
