@@ -218,6 +218,49 @@ struct inches{
 };
 
 
+/**************************************************************************************************/
+// PROPORTIONAL UNITS
+
+//percent, features to be added when needed
+struct percent{
+  double value;
+
+  /******************************************************************************/
+  //Constructors:
+  percent(){value = 0;} //default constructor, if you don't make it anything it's 0 by default
+
+  percent(double in){
+    value = in;
+  }
+  inches operator=(double in){
+    value = in;
+  }
+
+
+  /******************************************************************************/
+  //Conversion functions:
+  operator double() {
+    return value;
+  }
+  //it has to be noted that I can't convert an inches to a radians, or a degrees, as that is two layers of implicit conversion
+  //you are allowed to do only a single layer of implicit conversion, everything after that must be explicitly stated.
+  /*for example,
+    *degrees variable* = (degrees)((double)*an inch variable*) is legal
+    *degrees variable* = (degrees)(*an inch variable*) is also legal, as you implicitly convert the inch into a double
+    *degrees variable* = *an inch variable* is not legal, as there are two conversions
+  */
+
+  /******************************************************************************/
+  //Manipulation functions
+  void operator+=(percent increment){
+    value += increment;
+  }
+
+  void operator-=(percent increment){
+    value-= increment;
+  }
+};
+
 
 /**************************************************************************************************/
 // COMPOSITE UNITS
@@ -228,7 +271,7 @@ enum AXIS_VALUES{
   ROTATION = 2
 };
 
-//standard coordinate datatype, holds an x, y, and an orientation
+//standard position datatype, holds an x, y, and an orientation
 struct position{
   inches x; //x coordinate
   inches y; //y coordinate
@@ -246,38 +289,25 @@ struct position{
 
 
   position operator= (std::tuple<inches, inches, SMART_radians> set){
-    x = std::get<0>(set);
-    y = std::get<1>(set);
-    angle = std::get<2>(set);
+    return position(set);
   }
+
+  position(std::pair<inches, inches> set):
+    x(std::get<0>(set)),
+    y(std::get<1>(set)){angle = 0;}
 
   position() {x = 0; y = 0; angle = 0;} //default constructor assumes you are at origin facing pos x axis
-
-  /******************************************************************************/
-  //Utility functions
-  /*Rotates the coordinate system by converting to polar coordinates then back
-  The rotation system is done in standard format: A higher positive value means
-  counterclockwise rotation, and are internally limited to a range of 0-2PI,
-  though you could use negatives if you wanted to*/
-  void self_transform(SMART_radians offset){
-    angle = offset - angle; //Smart radians automatically deal with out of bound possiblities
-    x = x*sin(angle) + y*cos(angle);
-    y = y*sin(angle) + x*cos(angle);
-  }
-
-  void self_transform_polar(SMART_radians offset){
-    SMART_radians polar_angle(atan2(y,x) + offset);
-    inches sum = sqrt(x*x+y*y);
-    x = sum*cos(polar_angle);
-    y = sum*sin(polar_angle);
-
-  }
 
   /******************************************************************************/
   //Conversion functions
   operator std::tuple<inches,inches,SMART_radians>(){
     return {x,y,angle};
   }
+
+  operator std::pair<inches,inches>(){
+    return {x,y};
+  }
+
 
   /******************************************************************************/
   //Manipulation functions
@@ -300,6 +330,59 @@ struct position{
   }
 };
 
+//Standard coordinate datatype, holds coordinates of arbritrary vector in R2
+struct coordinate{
+  inches x;
+  inches y;
+  inches length;
+  coordinate(std::pair<inches,inches> set):x(set.first),y(set.second) {get_length();}
+  coordinate operator=(std::pair<inches,inches> set){
+    return coordinate(set);
+  }
+  coordinate(){x = 0; y = 0;}
+
+  /******************************************************************************/
+  //Utility functions
+
+  //We convert our cartesian coordinates into relative
+  void self_transform_polar(SMART_radians offset){
+    get_length();
+    SMART_radians polar_angle(atan2(y,x) + offset);
+    x = length*cos(polar_angle);
+    y = length*sin(polar_angle);
+  }
+
+  //updates length of coordinate
+  inches get_length(){
+    length = sqrt(x*x+y*y);
+    return length;
+  }
+
+  /******************************************************************************/
+  //Conversion functions
+  operator position(){
+    return std::pair<inches,inches>{x,y};
+  }
+
+  /******************************************************************************/
+  //Manipulation functions
+  /*Remember that an conversion from pairs({x,y}) to coordinate can automatically happen
+  Using that instead of an actual coordinate type is also perfectly legal*/
+  void operator+=(position change){
+    x += change.x;
+    y += change.y;
+    get_length();
+  }
+
+  inches operator[](AXIS_VALUES index){
+    switch (index){
+      case X_AXIS: return x;
+      case Y_AXIS: return y;
+    }
+  }
+
+
+  };
 }
 
 #endif

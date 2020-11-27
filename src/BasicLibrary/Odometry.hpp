@@ -165,7 +165,7 @@ namespace STL_lib{
       //note: SMART_radians automatically corrects divison by zero errors to zero
       //So there is no need to worry about that situation here
 
-      position returncycle;
+      coordinate returncycle;
 
       SMART_radians avg_angle = precycle.angle + rel_orientation_change;
 
@@ -183,8 +183,8 @@ namespace STL_lib{
       }
 
       returncycle.self_transform_polar(-avg_angle-M_PI/2);
-      returncycle.angle = rel_orientation_change;
       precycle += returncycle;
+      precycle.angle+=rel_orientation_change;
       return precycle;
     }
   };
