@@ -46,7 +46,7 @@
         inches speedcap = unscaled.x + unscaled.y;
         if (speedcap == 0) return std::pair<inches,inches>{0,0};
         return std::pair<inches,inches>{unscaled.x/speedcap, unscaled.y/speedcap};
-      }
+      } //questionable function name
 
       /******************************************************************************/
       //Primary computation functions

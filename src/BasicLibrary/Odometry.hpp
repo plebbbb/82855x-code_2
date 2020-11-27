@@ -130,6 +130,8 @@ namespace STL_lib{
     }
   };
 
+
+  //Odometry class that actually does the calculations
   struct OdometryComputer{
     OdometryWheels wheels;
 
