@@ -152,7 +152,7 @@ namespace STL_lib{
 
 
     /******************************************************************************/
-    //Primary computation functions
+    //Primary functions
     position cycle(position precycle){
       std::array EncoderDistanceValues = wheels.get_distances_nonpointer();
       //its a 50/50 that get_distances_nonpointer works

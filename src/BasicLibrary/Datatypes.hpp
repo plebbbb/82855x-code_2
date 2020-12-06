@@ -1,9 +1,6 @@
 //A header guard
 #pragma once
 //#include "Library.hpp"
-struct radians;
-struct degrees;
-struct inches;
 
 #ifndef DATATYPES_HPP
 #define DATATYPES_HPP
