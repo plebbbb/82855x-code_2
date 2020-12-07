@@ -128,6 +128,49 @@ namespace STL_lib{
           }
       };
 
+    struct command{
+      std::tuple<int,double> intake_status; //current balls amount to be taken in and time before timeout
+      std::tuple<int,double> score_status;  //current balls amount to be scored and time before timeout
+      position target; //current target position
+      double completion; //current percentage of path completion, used to trigger commands
+    };
+
+
+//updates command each cycle based on new status
+  struct linearmotion{
+      position vector;
+      std::vector<actioniterator*> commands;
+
+      //Standard obvious constructor
+      linearmotion(position a, std::vector<actioniterator*> b):vector(a),commands(b){};
+
+      //Tuple constructor to be used implicitly, probably
+      linearmotion(std::tuple<position,std::vector<actioniterator*>> set):vector(std::get<0>(set)),commands(std::get<1>(set)){};
+
+      //returns command with updated request parameters for new movement percentage situation
+      command processcommand(command initial){
+          initial.target.x = vector.x;
+          initial.target.y = vector.y;
+          for (actioniterator* cmd : commands){
+              void* valptr  = cmd->iterate(initial.completion);
+              if(valptr) {
+                  switch (cmd->type) {
+                      case ROTATE_ACTION:
+                          initial.target.angle =* static_cast<double*>(valptr);
+                          break;
+                      case INTAKE_ACTION:
+                          initial.intake_status =* static_cast<std::tuple<int,double>*>(valptr);
+                          break;
+                      case SCORE_ACTION:
+                          initial.intake_status =* static_cast<std::tuple<int,double>*>(valptr);
+                  }
+              }
+          }
+          return initial;
+      }
+  };
+
+
 };
 
 #endif
