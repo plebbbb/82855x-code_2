@@ -53,7 +53,7 @@ namespace STL_lib{
           If the command does not need to be sent, returns nullptr. This does not tell you if a command has been sent or not.
           In order to determine the completion status of of the action, check the hasbeentriggered boolean.
        */
-      void* iterate(double perc){
+      void* iterate(percentage perc){
           if (perc >= config[0] && !hasbeentriggered){
               hasbeentriggered = true;
               return getval();
@@ -67,6 +67,11 @@ namespace STL_lib{
   };
 
 
+
+  /* rotation actioniterator
+     This is a derivived actioniterator meant for storing rotation control commands
+     Alongside the start and end interval, you must implement an angle target for the interval
+  */
   struct rotation: public actioniterator{
       /******************************************************************************/
       //Constructor(s)
@@ -77,9 +82,48 @@ namespace STL_lib{
       //Primary function(s)
       //Returns a smart radian with the target orientation, must be cast
       virtual void* getval(){
-          return &config[1];
+          return &SMART_radians(config[2]);
       }
   };
 
+
+  /* intake actioniterator
+     This is a derivived actioniterator meant for storing intake control commands
+     Alongside the start and end interval, you must append a ball count, as well as a time limit
+  */
+  struct intake: public actioniterator{
+      /******************************************************************************/
+      //Constructor(s)
+      rotation(std::vector<double> values):actioniterator(values,INTAKE_ACTION){}
+
+
+      /******************************************************************************/
+      //Primary function(s)
+      //Returns a std::tuple<double> with the ball count and time limit, must be cast later
+      virtual void* getval(){
+          return &std::tuple<double>{config[2],config[3]};
+      }
+  };
+
+
+
+
+    /* score actioniterator
+       This is a derivived actioniterator meant for storing score control commands
+       Alongside the start and end interval, you must append a ball count, as well as a time limit
+    */
+    struct score: public actioniterator{
+        /******************************************************************************/
+        //Constructor(s)
+        rotation(std::vector<double> values):actioniterator(values,SCORE_ACTION){}
+
+
+        /******************************************************************************/
+        //Primary function(s)
+        //Returns a std::tuple<double> with the ball count and time limit, must be cast later
+        virtual void* getval(){
+            return &std::tuple<double>{config[2],config[3]};
+        }
+    };
 
 };
