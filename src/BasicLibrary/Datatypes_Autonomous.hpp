@@ -55,15 +55,15 @@ namespace STL_lib{
             In order to determine the completion status of of the action, check the hasbeentriggered boolean.
          */
         void* iterate(percentage perc){
-            if (perc >= config[0] && !hasbeentriggered){
-                hasbeentriggered = true;
-                return getval();
-            }
-            if (perc >= config[1] && hasbeentriggered){
-                hasbeentriggered = false;
-                return getdefaultval();
-            }
-            return nullptr; //NULL is kinda jank as it's technically also 0, the int. Due to that we use nullptr
+          if (perc >= config[0] && !hasbeentriggered && perc <= config[1]){
+              hasbeentriggered = true;
+              return getval();
+          }
+          if (perc >= config[1] && hasbeentriggered){
+              hasbeentriggered = false;
+              return getdefaultval();
+          }
+          return nullptr; //NULL is kinda jank as it's technically also 0, the int. Due to that we use nullptr
         }
     };
 
@@ -100,10 +100,10 @@ namespace STL_lib{
 
         /******************************************************************************/
         //Primary function(s)
-        //Returns a std::vector<double> with the ball count and time limit, must be cast later
+        //Returns a std::tuple<int,double> with the ball count and time limit, must be cast later
         //NOTE THAT THIS MUST BE DELETED UPON OBTAINING THE VALUES
         virtual void* getval(){
-            return new std::vector<double>{config[2],config[3]};
+            return new std::tuple<int,double>{config[2],config[3]};
         }
     };
 
@@ -121,10 +121,10 @@ namespace STL_lib{
 
           /******************************************************************************/
           //Primary function(s)
-          //Returns a std::vector<double> with the ball count and time limit, must be cast later
+          //Returns a std::tuple<int,double> with the ball count and time limit, must be cast later
           //NOTE THAT THIS MUST BE DELETED UPON OBTAINING THE VALUES
           virtual void* getval(){
-              return new std::vector<double>{config[2],config[3]};
+              return new std::tuple<int,double>{config[2],config[3]};
           }
       };
 
