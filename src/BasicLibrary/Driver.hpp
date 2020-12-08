@@ -14,7 +14,7 @@ namespace STL_lib{
   struct controlscheme{
     std::vector<pros::controller_analog_e_t> AnalogSticks;
     std::vector<pros::controller_digital_e_t> Buttons;
-  }
+  };
 
 }
 

@@ -54,7 +54,7 @@ namespace STL_lib{
             If the command does not need to be sent, returns nullptr. This does not tell you if a command has been sent or not.
             In order to determine the completion status of of the action, check the hasbeentriggered boolean.
          */
-        void* iterate(percentage perc){
+        void* iterate(percent perc){
           if (perc >= config[0] && !hasbeentriggered && perc <= config[1]){
               hasbeentriggered = true;
               return getval();
@@ -128,12 +128,12 @@ namespace STL_lib{
           }
       };
 
-    struct command{
-      position target; //current target position
-      std::tuple<int,double> intake_status; //current balls amount to be taken in and time before timeout
-      std::tuple<int,double> score_status;  //current balls amount to be scored and time before timeout
-      double completion; //current percentage of path completion, used to trigger commands
-    };
+struct command{
+    position target; //current target position
+    std::tuple<int,double> intake_status; //current balls amount to be taken in and time before timeout
+    std::tuple<int,double> score_status;  //current balls amount to be scored and time before timeout
+    double completion; //current percentage of path completion, used to trigger commands
+};
 
 
 //updates command each cycle based on new status
@@ -158,13 +158,14 @@ namespace STL_lib{
                           break;
                       case INTAKE_ACTION:
                           initial.intake_status =* static_cast<std::tuple<int,double>*>(valptr);
+                          delete static_cast<std::tuple<int,double>*>(valptr);
                           break;
                       case SCORE_ACTION:
                           initial.intake_status =* static_cast<std::tuple<int,double>*>(valptr);
+                          delete static_cast<std::tuple<int,double>*>(valptr);
                           break;
                   }
               }
-              delete(valptr); //may be incorrect
           }
           initial.target.x = vector.x;
           initial.target.y = vector.y;

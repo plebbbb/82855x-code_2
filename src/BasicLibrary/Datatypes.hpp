@@ -374,6 +374,7 @@ struct coordinate{
     switch (index){
       case X_AXIS: return x;
       case Y_AXIS: return y;
+      case ROTATION: return 0;
     }
   }
 
