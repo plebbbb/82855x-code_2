@@ -129,9 +129,9 @@ namespace STL_lib{
       };
 
     struct command{
+      position target; //current target position
       std::tuple<int,double> intake_status; //current balls amount to be taken in and time before timeout
       std::tuple<int,double> score_status;  //current balls amount to be scored and time before timeout
-      position target; //current target position
       double completion; //current percentage of path completion, used to trigger commands
     };
 
@@ -149,23 +149,26 @@ namespace STL_lib{
 
       //returns command with updated request parameters for new movement percentage situation
       command processcommand(command initial){
-          initial.target.x = vector.x;
-          initial.target.y = vector.y;
           for (actioniterator* cmd : commands){
               void* valptr  = cmd->iterate(initial.completion);
               if(valptr) {
                   switch (cmd->type) {
                       case ROTATE_ACTION:
-                          initial.target.angle =* static_cast<double*>(valptr);
+                          vector.angle =* static_cast<double*>(valptr);
                           break;
                       case INTAKE_ACTION:
                           initial.intake_status =* static_cast<std::tuple<int,double>*>(valptr);
                           break;
                       case SCORE_ACTION:
                           initial.intake_status =* static_cast<std::tuple<int,double>*>(valptr);
+                          break;
                   }
               }
+              delete(valptr); //may be incorrect
           }
+          initial.target.x = vector.x;
+          initial.target.y = vector.y;
+          initial.target.angle = vector.angle;
           return initial;
       }
   };
