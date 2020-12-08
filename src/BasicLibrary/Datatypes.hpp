@@ -336,6 +336,11 @@ struct coordinate{
     return coordinate(set);
   }
   coordinate(){x = 0; y = 0;}
+  coordinate(position initial, position final){
+    x = final.x - initial.x;
+    y = final.y - initial.y;
+    get_length();
+  }
 
   /******************************************************************************/
   //Utility functions

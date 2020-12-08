@@ -70,6 +70,10 @@
         }
       }
 
+      //direct local axis control of bot
+      void move_perp_vector_xdrive(double FB, double LR, double R){
+
+      };
 
 
     };

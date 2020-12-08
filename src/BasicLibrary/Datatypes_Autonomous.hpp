@@ -130,9 +130,19 @@ namespace STL_lib{
 
 struct command{
     position target; //current target position
+    inches length;
     std::tuple<int,double> intake_status; //current balls amount to be taken in and time before timeout
     std::tuple<int,double> score_status;  //current balls amount to be scored and time before timeout
-    double completion; //current percentage of path completion, used to trigger commands
+    percent completion; //current percentage of path completion, used to trigger commands
+    command(position tgt, std::tuple<int,double> in, std::tuple<int,double> out):target(tgt),intake_status(in),score_status(out){}
+    void lengthcompute(position current){
+      coordinate temp(current, target);
+      length = temp.get_length();
+    }
+    void percentcompute(position current){
+      coordinate temp(current, target);
+      completion = 100*temp.get_length()/length;
+    }
 };
 
 
