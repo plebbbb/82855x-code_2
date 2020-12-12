@@ -171,7 +171,7 @@ struct command{
                           delete static_cast<std::tuple<int,double>*>(valptr);
                           break;
                       case SCORE_ACTION:
-                          initial.intake_status =* static_cast<std::tuple<int,double>*>(valptr);
+                          initial.score_status =* static_cast<std::tuple<int,double>*>(valptr);
                           delete static_cast<std::tuple<int,double>*>(valptr);
                           break;
                   }
