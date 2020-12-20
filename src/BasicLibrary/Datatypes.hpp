@@ -37,17 +37,17 @@ namespace STL_lib {
 		}
 
 		// When given two smart radians a and b, returns the difference b - a expressed as a radians diff in the range [-PI, PI)
-		radians findDiff(SMART_radians a, SMART_radians b) {
-			radians diff(b);
-			diff.value -= a.value;
-			
-			if (diff.value >= M_PI) {
-				diff.value -= M_PI * 2;
+		double findDiff(SMART_radians a, SMART_radians b) {
+			double diff(b);
+			diff -= a;
+
+			if (diff >= M_PI) {
+				diff -= M_PI * 2;
 			}
-			if (diff.value < M_PI * (-1)) {
-				diff.value += M_PI * 2;
+			if (diff < M_PI * (-1)) {
+				diff += M_PI * 2;
 			}
-			
+
 			return diff;
 		}
 
