@@ -366,6 +366,7 @@ namespace STL_lib {
 			return coordinate(set);
 		}
 		coordinate() { x = 0; y = 0; }
+		//relatice coordinate calculation from two position
 		coordinate(position initial, position final) {
 			x = final.x - initial.x;
 			y = final.y - initial.y;

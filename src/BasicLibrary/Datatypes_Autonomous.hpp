@@ -123,6 +123,7 @@ namespace STL_lib{
        Alongside the start and end interval, you must append a ball count, as well as a time limit
     */
     struct score: public actioniterator{
+          std::tuple<int,double> targets;
           /******************************************************************************/
           //Constructor(s)
           score(std::vector<double> values):actioniterator(values,SCORE_ACTION){}
@@ -133,7 +134,7 @@ namespace STL_lib{
           //Returns a std::tuple<int,double> with the ball count and time limit, must be cast later
           //NOTE THAT THIS MUST BE DELETED UPON OBTAINING THE VALUES
           virtual void* getval(){
-              return new std::tuple<int,double>{config[2],config[3]};
+              return new std::tuple<int,double>(targets);
           }
 
           //returns targets of zero if outside threshold
@@ -208,8 +209,8 @@ namespace STL_lib{
                             delete static_cast<std::tuple<int,double>*>(valptr); //delete because this is dynamically allocated as a new object in the cmd->iterate
                             break;
                         case POS_ROTATE_ACTION:
-                            coordinate tmp =* static_cast<coordinate*>(valptr);
-                            vector.angle = SMART_radians(atan2(tmp.y-current.y, tmp.x-current.x)); 
+                            coordinate tmp =* static_cast<coordinate*>(valptr); //should be pointer and not copy construct, fix later
+                            vector.angle = SMART_radians(atan2(tmp.y-current.y, tmp.x-current.x)); //atan2 returns interval -pi to pi, cast to SMART_radians adjusts that
                     }
                 }
             }
