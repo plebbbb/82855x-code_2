@@ -48,7 +48,6 @@ namespace STL_lib{
       }
   };
 
-
   struct Derivitive: public controlelement{
       double past = 0;
       double maxcap;

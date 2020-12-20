@@ -43,7 +43,7 @@
       /******************************************************************************/
       //Utility functions
       coordinate tare(coordinate unscaled){
-        inches speedcap = unscaled.x + unscaled.y;
+        inches speedcap = (unscaled.x > unscaled.y) ? unscaled.x : unscaled.y;
         if (speedcap == 0) return std::pair<inches,inches>{0,0};
         return std::pair<inches,inches>{unscaled.x/speedcap, unscaled.y/speedcap};
       } //questionable function name
@@ -61,6 +61,7 @@
         }
       }
 
+      //automatic rotation weighting and conversion
       void move_vector_RAW(coordinate heading, double rotationRAW, percent speed){
         heading = tare(heading);
         rotationRAW/=(sqrt(heading.x*heading.x+heading.y*heading.y) + fabs(rotationRAW));
@@ -70,9 +71,13 @@
         }
       }
 
-      //direct local axis control of bot
+      //direct local axis control of bot. Rotate 45 degrees CCW from standard heading
       void move_perp_vector_xdrive(double FB, double LR, double R){
-
+        R/=(sqrt(FB*FB + LR*LR) + fabs(R));
+        for(motorwheel temp : motors){
+          temp.move_velocity(200*((FB * cos(temp.heading+M_PI/4)+ LR*sin(temp.heading+M_PI/4))*(1-R) + R));
+          //multiply by 2 at very end due to move_velocity having a default interval of -200 to 200
+        }
       };
 
 
