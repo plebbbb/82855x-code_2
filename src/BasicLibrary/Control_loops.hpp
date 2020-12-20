@@ -11,82 +11,80 @@ namespace STL_lib{
       double factor;
       controlelement(double fac):factor(fac){}
       virtual double compute(double target, double current) = 0;
-    };
+  };
 
-    struct Proportional: public controlelement{
+  struct Proportional: public controlelement{
       double maxcap;
       double mincap;
       Proportional(double fac, std::pair<int,int> caps):controlelement(fac){
-        factor = fac;
-        maxcap = std::get<0>(caps);
-        mincap = std::get<1>(caps);
+          maxcap = std::get<0>(caps);
+          mincap = std::get<1>(caps);
       }
 
       //standard offset format: target-current. This class assumes the offset is in the correct direction already
       double compute(double target, double current){
-        double rawval = (target-current);
-        double returnval = factor*rawval
-        return (returnval <= maxcap) ? ((returnval >= mincap) ? returnval : mincap) : maxcap;
+          double rawval = (target-current);
+          double returnval = factor*rawval;
+          return (returnval <= maxcap) ? ((returnval >= mincap) ? returnval : mincap) : maxcap;
       }
-    };
+  };
 
-  class Integral: public controlelement{
-    double last = 0;
-    double maxcap;
-    double mincap;
-    Integral(double fac, std::pair<int,int> caps):controlelement(fac){
-      factor = fac;
-      maxcap = std::get<0>(caps);
-      mincap = std::get<1>(caps);
-    }
+  struct Integral: public controlelement{
+      double last = 0;
+      double maxcap;
+      double mincap;
+      Integral(double fac, std::pair<int,int> caps):controlelement(fac){
+          maxcap = std::get<0>(caps);
+          mincap = std::get<1>(caps);
+      }
 
-    //standard offset format: target-current. This class assumes the offset is in the correct direction already
-    double compute(double target, double current){
-      double rawval = (target-current);
-      last += rawval;
-      double returnval = last*factor
-      return (returnval <= maxcap) ? ((returnval >= mincap) ? returnval : mincap) : maxcap;
-    }
+      //standard offset format: target-current. This class assumes the offset is in the correct direction already
+      double compute(double target, double current){
+          if((int)target == (int)current) last = 0;
+          double rawval = (target-current);
+          last += rawval;
+          double returnval = last*factor;
+          return (returnval <= maxcap) ? ((returnval >= mincap) ? returnval : mincap) : maxcap;
+      }
   };
 
 
-  class Derivitive: public controlelement{
-    double past = 0;
-    double maxcap;
-    double mincap;
-    Proportional(double fac, std::pair<int,int> caps):controlelement(fac){
-      factor = fac;
-      maxcap = std::get<0>(caps);
-      mincap = std::get<1>(caps);
-    }
+  struct Derivitive: public controlelement{
+      double past = 0;
+      double maxcap;
+      double mincap;
+      Derivitive(double fac, std::pair<int,int> caps):controlelement(fac){
+          maxcap = std::get<0>(caps);
+          mincap = std::get<1>(caps);
+      }
 
-    //standard offset format: target-current. This class assumes the offset is in the correct direction already
-    double compute(double target, double current){
-      double rawval = target-current;
-      double returnval = factor * (current - past);
-      past = current;
-      return (returnval <= maxcap) ? ((returnval >= mincap) ? returnval : mincap) : maxcap;
-    }
+      //standard offset format: target-current. This class assumes the offset is in the correct direction already
+      double compute(double target, double current){
+          double rawval = target-current;
+          double returnval = factor * (rawval-past);
+          past = rawval;
+          return (returnval <= maxcap) ? ((returnval >= mincap) ? returnval : mincap) : maxcap;
+      }
   };
 
   //Modular control loop, computes values for a set of control elements
   struct control_loop{
-    std::vector<controlelement> elementset;
-    double maxcap;
-    double mincap;
-    //if you dont like caps just set them really high, like +-INT_MAX or something
-    control_loop(std::vector<controlelement> val, std::pair<int,int> caps):elementset(val){
-      maxcap = std::get<0>(caps);
-      mincap = std::get<1>(caps);
-    }
-    double update(double target, double current){
-      double returnval = 0;
-      //no enhanced for to minimize risk of sketchy copying issues
-      for (int i = 0; i < elementset.size(); i++){
-        returnval += elementset[i].compute(target,current);
+      std::vector<controlelement*> elementset;
+      double maxcap;
+      double mincap;
+      //if you dont like caps just set them really high, like +-INT_MAX or something
+      control_loop(std::vector<controlelement*> val, std::pair<int,int> caps):elementset(val){
+          maxcap = std::get<0>(caps);
+          mincap = std::get<1>(caps);
       }
-      return (returnval <= maxcap) ? ((returnval >= mincap) ? returnval : mincap) : maxcap;
-    }
+      double update(double target, double current){
+          double returnval = 0;
+          //no enhanced for to minimize risk of sketchy copying issues
+          for (int i = 0; i < elementset.size(); i++){
+              returnval += elementset[i]->compute(target,current);
+          }
+          return (returnval <= maxcap) ? ((returnval >= mincap) ? returnval : mincap) : maxcap;
+      }
   };
 };
 
