@@ -36,6 +36,21 @@ namespace STL_lib {
 			prune();
 		}
 
+		// When given two smart radians a and b, returns the difference b - a expressed as a radians diff in the range [-PI, PI)
+		radians findDiff(SMART_radians a, SMART_radians b) {
+			radians diff(b);
+			diff.value -= a.value;
+			
+			if (diff.value >= M_PI) {
+				diff.value -= M_PI * 2;
+			}
+			if (diff.value < M_PI * (-1)) {
+				diff.value += M_PI * 2;
+			}
+			
+			return diff;
+		}
+
 		SMART_radians operator=(double angle_in_radians) {
 			return SMART_radians(angle_in_radians);
 		}
@@ -63,9 +78,10 @@ namespace STL_lib {
 		/******************************************************************************/
 		//Manipulation functions
 		void operator+=(SMART_radians increment) {
-			value += increment;
+			value += (double)increment;
 			prune();
 		}
+
 	};
 
 
@@ -80,21 +96,11 @@ namespace STL_lib {
 
 		radians(double angle_in_radians) {
 			value = angle_in_radians;
-			//prune();
 		}
 
 		radians operator=(double angle_in_radians) {
 			return radians(angle_in_radians);
-			//    prune();
 		}
-
-
-		/******************************************************************************/
-		//Utility functions
-		void prune() { //constrains the angle values into the range of 0 - 2PI
-			value = fmod(value, M_PI * 2);
-		}
-
 
 		/******************************************************************************/
 		//Conversion functions
