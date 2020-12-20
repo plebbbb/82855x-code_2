@@ -21,6 +21,37 @@ namespace STL_lib {
 	/**************************************************************************************************/
 	// ROTATIONAL UNITS
 
+	//A radians datatype, which holds a radians value
+	struct radians {
+		double value; //This holds your angle value, in radians
+
+
+		/******************************************************************************/
+		//Constructors:
+		radians() { value = 0; } //default constructor, if you don't make it anything it's 0 by default
+
+		radians(double angle_in_radians) {
+			value = angle_in_radians;
+		}
+
+		radians operator=(double angle_in_radians) {
+			return radians(angle_in_radians);
+		}
+
+		/******************************************************************************/
+		//Conversion functions
+		operator double() {
+			return value;
+		}
+
+		/******************************************************************************/
+		//Manipulation functions
+		void operator+=(radians increment) {
+			value += increment;
+			//    prune();
+		}
+	};
+
 	/*A smart radian automatically prunes all values to be within the range of 0 - 2PI
 	Its a radian, but smart*/
 	struct SMART_radians {
@@ -37,15 +68,15 @@ namespace STL_lib {
 		}
 
 		// When given two smart radians a and b, returns the difference b - a expressed as a radians diff in the range [-PI, PI)
-		double findDiff(SMART_radians a, SMART_radians b) {
-			double diff(b);
-			diff -= a;
+		radians findDiff(SMART_radians a, SMART_radians b) {
+			radians diff(b.value);
+			diff.value -= a.value;
 
-			if (diff >= M_PI) {
-				diff -= M_PI * 2;
+			if (diff.value >= M_PI) {
+				diff.value -= M_PI * 2;
 			}
-			if (diff < M_PI * (-1)) {
-				diff += M_PI * 2;
+			if (diff.value < M_PI * (-1)) {
+				diff.value += M_PI * 2;
 			}
 
 			return diff;
@@ -82,43 +113,6 @@ namespace STL_lib {
 			prune();
 		}
 
-	};
-
-
-	//A radians datatype, which holds a radians value
-	struct radians {
-		double value; //This holds your angle value, in radians
-
-
-		/******************************************************************************/
-		//Constructors:
-		radians() { value = 0; } //default constructor, if you don't make it anything it's 0 by default
-
-		radians(double angle_in_radians) {
-			value = angle_in_radians;
-		}
-
-		radians operator=(double angle_in_radians) {
-			return radians(angle_in_radians);
-		}
-
-		/******************************************************************************/
-		//Conversion functions
-		operator double() {
-			return value;
-		}
-
-		explicit operator SMART_radians() {
-			return SMART_radians(value);
-		}
-
-
-		/******************************************************************************/
-		//Manipulation functions
-		void operator+=(radians increment) {
-			value += increment;
-			//    prune();
-		}
 	};
 
 
