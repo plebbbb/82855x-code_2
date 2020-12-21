@@ -17,18 +17,32 @@ namespace STL_lib{
       if (input.length <= 2){
         globalrelative.self_transform_polar(SMART_radians(current.angle-M_PI/4));
         //rotate into direct motor axis, which is CCW 45 degrees from the standard orientation, smart radians automatically constrains to right intervals
-        double XA = x.update(globalrelative.x,0);
-        double YA = y.update(globalrelative.y,0);
-        double RA = rot.update(input.target.angle,current.angle);
-        base.move_perp_vector_xdrive(XA,YA,RA);
-        //as each PID controller controls specific motors, there is no need to set a speed, the PID loops are to do that
+        double XA = x.update(globalrelative.x,0); //correct interval 100 to -100
+        double YA = y.update(globalrelative.y,0); //correct interval 100 to -100
+        double RA = rot.update(input.target.angle,current.angle); //correct interval 100 to -100
+        base.move_perp_vector_xdrive(XA,YA,RA); //this is a hack function that needs to be made into the same format as printf, where we can have indefinite terms in the odd case that we have an non x drive
+        //as each PID controller controls specific motors, there is no need to set a speed, the PID loops do that themselves
       }
       //Base movement mode 2: Combined local axis heading
       else {
+        globalrelative.self_transform_polar(SMART_radians(current.angle-M_PI/2));
 
+        base.move_vector_RF()
 
       }
     }
+  };
+
+  struct intakecontroller{
+
+  };
+
+  struct scorecontroller{
+
+  };
+
+  struct unifiedliftcontroller{
+
   };
 };
 

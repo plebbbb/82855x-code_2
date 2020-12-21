@@ -169,22 +169,22 @@ namespace STL_lib{
 
       coordinate returncycle;
 
-      SMART_radians avg_angle = precycle.angle + rel_orientation_change;
+      SMART_radians avg_angle = rel_orientation_change/2;
 
       if (rel_orientation_change == 0){
         returncycle.x = EncoderDistanceValues[2];
         returncycle.y = EncoderDistanceValues[1];
       } else {
-        returncycle.y = 2*sin(rel_orientation_change/2) *
+        returncycle.y = 2*sin(avg_angle) *
         (EncoderDistanceValues[1]/rel_orientation_change +
         wheels[ENCODER_POSITION_RIGHT].Distance_CenterOfRotation);
 
-        returncycle.x = 2*sin(rel_orientation_change/2) *
+        returncycle.x = 2*sin(avg_angle) *
         (EncoderDistanceValues[2]/rel_orientation_change +
         wheels[ENCODER_POSITION_BACK].Distance_CenterOfRotation);
       }
 
-      returncycle.self_transform_polar(-avg_angle-M_PI/2);
+      returncycle.self_transform_polar(-precycle.angle-avg_angle-M_PI/2);
       precycle += returncycle;
       precycle.angle+=rel_orientation_change;
       return precycle;
