@@ -9,26 +9,17 @@
     struct holonomicbase;
     struct motorwheel;
 
-    struct motorwheel{
+    struct motorwheel : public pros::Motor{
       inches diameter;
       SMART_radians heading;
       double SINE, COSINE;
-      pros::Motor motor;
       /*WARNING: if you want to use degrees, cast your value to degrees
       e.g: (degrees)45 would be a proper degrees value, while 45 would be 45 radians
 
       ALL YOUR MOTORS SHOULD HAVE THEIR POSITIVE DIRECTION ROTATE THE BOT CCW
       IN DETERMINE THEIR HEADINGS BASED ON THE FACT THAT 0 RAD is DIRECTLY RIGHT*/
-      motorwheel(pros::Motor mot, inches d, SMART_radians direction):motor(mot){
+      motorwheel(pros::Motor mot, inches d, SMART_radians direction):Motor(mot){
         diameter = d; heading = direction; SINE = sin(heading); COSINE = cos(heading);
-      }
-
-      void operator= (double voltage){
-        motor = voltage;
-      }
-
-      void move_velocity(double velocity){
-        motor.move_velocity(velocity);
       }
     };
 
@@ -75,8 +66,9 @@
       //power output interval of 0-100 for both rotation and translation
       void move_perp_vector_xdrive(percent FB, percent LR, percent R){
         for(motorwheel temp : motors){
-          temp.move_velocity(double(FB * cos(temp.heading+M_PI/4)+ LR*sin(temp.heading+M_PI/4)) + double(R));
-          //multiply by 2 at very end due to move_velocity having a default interval of -200 to 200
+          temp.move_voltage((double(FB * cos(temp.heading+M_PI/4)+ LR*sin(temp.heading+M_PI/4)) + double(R))*(12000/200));
+          //Move_velocity actually has its own internal PID loop. Using it at close range makes everything super noisy.
+          //Therefore, we are going to be directly taking percent inputs, which should have their own PIDs.
         }
       };
 
