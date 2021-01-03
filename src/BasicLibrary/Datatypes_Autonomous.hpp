@@ -176,7 +176,7 @@ namespace STL_lib{
       percent accelscalefactor; //effective percentage of velocity profile which is dedicated to accelleration and decelleration
       inches accelerationdistance; //distance to accellerate
       velocityprofile(inches aL, percent aCS):accelerationdistance(aL),accelscalefactor(aCS){};
-      virtual percent determinepoweroutput(percent in);
+      virtual percent determinepoweroutput(percent in) = 0;
     };
     //S curve is probably not happening due to conversion from V-T to V-D being a total pain for something this high degree
 
@@ -190,9 +190,11 @@ namespace STL_lib{
         accelcoeff = (10000-(initvel*initvel))/(2*accelscalefactor);
         decelcoeff = (10000-(endvel*endvel))/(2*accelscalefactor);
       };
+      Trapezoidprofile():velocityprofile(0,0){}; //jank default constructor. Shouldn't be ever used
       percent determinepoweroutput(percent in){
         percent accelcurve = sqrt(2*accelcoeff*in+(initvel*initvel));
         percent decelcurve = sqrt(-2*decelcoeff*(in-100)+(endvel*endvel));
+        //NOTE: INFINITE/UNDEFINED FROM ACCELSCALEFAC 0 SHOULD BE RESOLVED VIA THE MIN CHECKS, EVEN THEN WE SHOULD BE USING LOCAL PID WHEN WE ARE THIS CLOSE
         return (percent)std::min<double>(std::min<double>(accelcurve,decelcurve),100.0); //I cant get the tuple version to compile in test environment so we are doing this instead
         //instead of doing the whole check which one should compute now stuff, its easier just to calculate all curves and check which one is the lowest
         //this also prevents edge cases like super short profiles from screwing up. those cases will naturally become triangle profiles.
@@ -202,17 +204,22 @@ namespace STL_lib{
     struct command{
         position target; //current target position
         inches length;
+        std::tuple<inches,percent,percent> motionprofile_config; //ideal velocity profile constraints, indexes: accel dist, start power, end power
         std::tuple<int,double> intake_status; //current balls amount to be taken in and time before timeout
         std::tuple<int,double> score_status;  //current balls amount to be scored and time before timeout
         percent completion; //current percentage of path completion, used to trigger commands
-        command(position tgt, std::tuple<int,double> in, std::tuple<int,double> out):target(tgt),intake_status(in),score_status(out){}
+        command(position tgt, std::tuple<inches,percent,percent> trapconfig, std::tuple<int,double> in, std::tuple<int,double> out):
+        target(tgt),
+        intake_status(in),
+        score_status(out),
+        motionprofile_config(trapconfig){}
         void lengthcompute(position current){
           coordinate temp(current, target);
-          length = temp.get_length();
+          length = temp.get_length(); //not a source of div by zero
         }
         void percentcompute(position current){
           coordinate temp(current, target);
-          completion = 100*temp.get_length()/length;
+          completion = percent(100-(100*temp.get_length()/length)); //percent is from 0(incomplete) to 100(complete)
         }
 };
 
@@ -246,7 +253,7 @@ namespace STL_lib{
                             break;
                         case POS_ROTATE_ACTION:
                             coordinate tmp =* static_cast<coordinate*>(valptr); //should be pointer and not copy construct, fix later
-                            vector.angle = SMART_radians(atan2(tmp.y-current.y, tmp.x-current.x)); //atan2 returns interval -pi to pi, cast to SMART_radians adjusts that
+                            vector.angle = SMART_radians(atan2(tmp.y-current.y, tmp.x-current.x)); //atan2 returns interval -pi to pi, conversion to SMART_radians adjusts that
                     }
                 }
             }

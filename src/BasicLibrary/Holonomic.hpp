@@ -35,7 +35,7 @@
       //Utility functions
       coordinate tare(coordinate unscaled){
         inches speedcap = (unscaled.x > unscaled.y) ? unscaled.x : unscaled.y;
-        if (speedcap == 0) return std::pair<inches,inches>{0,0};
+        if (speedcap == 0) return std::pair<inches,inches>{0,0}; //div by zero bypass
         return std::pair<inches,inches>{unscaled.x/speedcap, unscaled.y/speedcap};
       } //questionable function name
 
@@ -43,7 +43,7 @@
       //Primary computation functions
       /*Heading is coordinates used to describe a local vector relatice to the bot, whereby right is 0rad
       rotationfactor is a scaling value with an interval from -1 to 1 to determine distribution of power
-      to rotation with sign for direction*/
+      to rotation with sign for direction. Heading coordinate values are automatically constrained*/
       void move_vector_RF(coordinate heading, double rotationfactor, percent speed){
         heading = tare(heading);
         for(motorwheel temp : motors){ //holy shit this exists in c++

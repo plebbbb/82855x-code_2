@@ -316,6 +316,12 @@ namespace STL_lib {
 	private:
 		//constrains value of percent to 0-100 and updates value and decValue
 		void update(double perc) {
+			//if div by zero error, automatically turn it to 100%
+			if (isnanf(perc) || isinff(perc)) {
+				value = 100;
+				decValue = 1;
+				return;
+			};
 			if (perc > 100) {
 				perc = 100;
 			}
