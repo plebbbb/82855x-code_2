@@ -163,6 +163,42 @@ namespace STL_lib{
       }
   };
 
+  //velocity profile system
+  /*
+    There are a few restrictions implemented for the sake of practicallity:
+       1. The start and end interval weightings are the same - I have no idea when you wouldn't want this so not implemented
+       2. S curve profiles will evenly distribute it's three jerk commands during an accelleration - again, why would you not want this behavior
+       3. Everything is profiled on a velocity-distance basis, so it won't look like the V-T graphs you would see otherwise
+       4. We are taking in distance values. This is due to the fact that timing everything can easly lead to compounding errors from delays in the motors
+          Tying everything to physical locations is better as our odometry system is theoretically perfectly accurate
+  */
+    struct velocityprofile{
+      percent accelscalefactor; //effective percentage of velocity profile which is dedicated to accelleration and decelleration
+      inches accelerationdistance; //distance to accellerate
+      velocityprofile(inches aL, percent aCS):accelerationdistance(aL),accelscalefactor(aCS){};
+      virtual percent determinepoweroutput(percent in);
+    };
+    //S curve is probably not happening due to conversion from V-T to V-D being a total pain for something this high degree
+
+    //https://www.desmos.com/calculator/muqm8zpo3g. everything is hard constrained to 0-100 as we take percentage inputs
+    struct Trapezoidprofile : public velocityprofile{
+      double accelcoeff; //coefficient a1 in desmos graph, controls rate of acceleration when speeding up at start
+      double decelcoeff; //coefficient a2 in desmos graph, controls rate ot acceleration when slowing down at end of movement
+      percent initvel; //parameter v0 in desmos graph, controls initial velocity
+      percent endvel; //parameter v1 in desmos graph, controls final velocity. This exists as we go to direct PID close up so we don't actually need the profile to stop us
+      Trapezoidprofile(inches l, inches aL, percent init, percent final):velocityprofile(aL,100*(aL/l)),initvel(init),endvel(final){
+        accelcoeff = (10000-(initvel*initvel))/(2*accelscalefactor);
+        decelcoeff = (10000-(endvel*endvel))/(2*accelscalefactor);
+      };
+      percent determinepoweroutput(percent in){
+        percent accelcurve = sqrt(2*accelcoeff*in+(initvel*initvel));
+        percent decelcurve = sqrt(-2*decelcoeff*(in-100)+(endvel*endvel));
+        return (percent)std::min<double>(std::min<double>(accelcurve,decelcurve),100.0); //I cant get the tuple version to compile in test environment so we are doing this instead
+        //instead of doing the whole check which one should compute now stuff, its easier just to calculate all curves and check which one is the lowest
+        //this also prevents edge cases like super short profiles from screwing up. those cases will naturally become triangle profiles.
+      }
+    };
+
     struct command{
         position target; //current target position
         inches length;

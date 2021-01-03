@@ -188,11 +188,53 @@ namespace STL_lib {
 			return inches(distance);
 		}
 
+		/******************************************************************************/
+		//Conversion functions:
+		operator double() {
+			return value;
+		}
+		//it has to be noted that I can't convert an inches to a radians, or a degrees, as that is two layers of implicit conversion
+		//you are allowed to do only a single layer of implicit conversion, everything after that must be explicitly stated.
+		/*for example,
+		  *degrees variable* = (degrees)((double)*an inch variable*) is legal
+		  *degrees variable* = (degrees)(*an inch variable*) is also legal, as you implicitly convert the inch into a double
+		  *degrees variable* = *an inch variable* is not legal, as there are two conversions
+		*/
+
+		/******************************************************************************/
+		//Manipulation functions
+		void operator+=(inches increment) {
+			value += increment;
+		}
+
+		void operator-=(inches increment) {
+			value -= increment;
+		}
+	};
+
+	//inches, I'll implement cm later
+	struct millimeter {
+		double value;
+
+		/******************************************************************************/
+		//Constructors:
+		millimeter() { value = 0; } //default constructor, if you don't make it anything it's 0 by default
+
+		millimeter(double distance) {
+			value = distance;
+		}
+		millimeter operator=(double distance) {
+			return millimeter(distance);
+		}
 
 		/******************************************************************************/
 		//Conversion functions:
 		operator double() {
 			return value;
+		}
+
+		operator inches(){
+			return inches(value/25.4);
 		}
 		//it has to be noted that I can't convert an inches to a radians, or a degrees, as that is two layers of implicit conversion
 		//you are allowed to do only a single layer of implicit conversion, everything after that must be explicitly stated.
