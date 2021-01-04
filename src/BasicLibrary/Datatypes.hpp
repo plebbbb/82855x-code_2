@@ -410,11 +410,14 @@ namespace STL_lib {
 		inches y;
 		inches length;
 		coordinate(std::pair<inches, inches> set) :x(set.first), y(set.second) { get_length(); }
+
+		//copy constructor
 		coordinate operator=(std::pair<inches, inches> set) {
 			return coordinate(set);
 		}
 		coordinate() { x = 0; y = 0; }
-		//relatice coordinate calculation from two position
+
+		//relative coordinate calculation from two position
 		coordinate(position initial, position final) {
 			x = final.x - initial.x;
 			y = final.y - initial.y;
@@ -442,6 +445,10 @@ namespace STL_lib {
 		//Conversion functions
 		operator position() {
 			return std::pair<inches, inches>{x, y};
+		}
+
+	 	operator std::pair<inches, inches>() {
+	 		return { x,y };
 		}
 
 		/******************************************************************************/

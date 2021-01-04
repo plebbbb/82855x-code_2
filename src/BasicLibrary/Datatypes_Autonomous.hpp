@@ -225,8 +225,8 @@ namespace STL_lib{
 
     struct command{
         position target; //current target position
-        inches length;
-        inches disttotgt;
+        inches length; //length of current processed path
+        inches disttotgt; //distance to target
         bool allow_ejection = false; //ball eject toggle;
         std::tuple<inches,percent,percent> motionprofile_config; //ideal velocity profile constraints, indexes: accel dist, start power, end power
         std::tuple<unsigned short,double> intake_status; //current balls amount to be taken in and time before timeout
@@ -249,7 +249,7 @@ namespace STL_lib{
         //checks if the lift is idle: returns true if idle, false if active
         bool isidle(){
           return !(bool)(std::get<0>(intake_status) + std::get<0>(score_status));
-          //while there exists the edge case that one is positive and the other negative, that cant happen as we are using unsigneds,
+          //while there exists the edge case that one is positive and the other negative which causes a false positive, that cant happen as we are using unsigneds,
           //as well as the fact that there exists no case for negative balls in intake and score status
         }
 };

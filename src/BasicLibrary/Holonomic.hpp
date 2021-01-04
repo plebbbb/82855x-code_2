@@ -62,6 +62,16 @@
         }
       }
 
+      //automatic rotation weighting and conversion, voltage edition
+      void move_vector_RAW_V(coordinate heading, double rotationRAW, percent speed){
+        heading = tare(heading);
+        rotationRAW/=(sqrt(heading.x*heading.x+heading.y*heading.y) + fabs(rotationRAW));
+        for(motorwheel temp : motors){ //holy shit this exists in c++
+          temp.move_voltage(120*speed*((heading.x*temp.COSINE + heading.y*temp.SINE)*(1-rotationRAW) + rotationRAW));
+          //multiply by 120 at very end due to move_voltage having a default interval of -12000 to 12000
+        }
+      }
+
       //direct local axis control of bot. Rotate 45 degrees CCW from standard heading
       //power output interval of 0-100 for both rotation and translation
       void move_perp_vector_xdrive(percent FB, percent LR, percent R){
