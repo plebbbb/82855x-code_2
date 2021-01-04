@@ -17,6 +17,7 @@ namespace STL_lib{
         INTAKE_ACTION = 1,          //a intake actioniterator
         SCORE_ACTION = 2,           //a score actioniterator
         POS_ROTATE_ACTION = 3,      //a point targeting actioniterator
+        EJECT_ACTION = 4            //a ball ejection actioniterator
     };
 
     /* WARNING: THIS THING NEEDS TO BE DECLARED IN RUNTIME AGAIN. PLS USE TEMP VARIABLES OBTAINED FROM THE SOURCE
@@ -143,7 +144,7 @@ namespace STL_lib{
           }
       };
 
-    /* positonaltarget actioniterator
+    /* coordinatetarget actioniterator
        This is a derivived actioniterator meant for storing score control commands
        Alongside the start and end interval, you must append an x and y targ
     */
@@ -160,6 +161,27 @@ namespace STL_lib{
       //Returns a coordinate with the target orientation, must be cast to coordinate, and then the relative angle must be determined
       virtual void* getval(){
           return &target; //processing must be done externally as we don't have access to the current position in here, thus we just return our target
+      }
+  };
+    /* ejectionenable  actioniterator
+       This is a derivived actioniterator meant for toggling on the ball ejector
+       once past the threshold, it will disable the ejector
+    */
+    struct ejectionenable: public actioniterator{
+      /******************************************************************************/
+      //Constructor(s)
+      ejectionenable(std::vector<double> values):actioniterator(values,EJECT_ACTION){}
+
+
+      /******************************************************************************/
+      //Primary function(s)
+      //Returns a coordinate with the target orientation, must be cast to coordinate, and then the relative angle must be determined
+      virtual void* getval(){
+          return new bool(true); //ejectionenable allows pooping for a certain range of positions
+      }
+
+      virtual void* getdefaultval(){
+          return new bool(false); //disables pooping once outside of interval
       }
   };
 
@@ -204,22 +226,31 @@ namespace STL_lib{
     struct command{
         position target; //current target position
         inches length;
+        inches disttotgt;
+        bool allow_ejection = false; //ball eject toggle;
         std::tuple<inches,percent,percent> motionprofile_config; //ideal velocity profile constraints, indexes: accel dist, start power, end power
-        std::tuple<int,double> intake_status; //current balls amount to be taken in and time before timeout
-        std::tuple<int,double> score_status;  //current balls amount to be scored and time before timeout
+        std::tuple<unsigned short,double> intake_status; //current balls amount to be taken in and time before timeout
+        std::tuple<unsigned short,double> score_status;  //current balls amount to be scored and time before timeout
         percent completion; //current percentage of path completion, used to trigger commands
         command(position tgt, std::tuple<inches,percent,percent> trapconfig, std::tuple<int,double> in, std::tuple<int,double> out):
         target(tgt),
         intake_status(in),
         score_status(out),
-        motionprofile_config(trapconfig){}
+        motionprofile_config(trapconfig){};
         void lengthcompute(position current){
           coordinate temp(current, target);
           length = temp.get_length(); //not a source of div by zero
         }
         void percentcompute(position current){
           coordinate temp(current, target);
-          completion = percent(100-(100*temp.get_length()/length)); //percent is from 0(incomplete) to 100(complete)
+          disttotgt = temp.get_length();
+          completion = percent(100-(100*disttotgt/length)); //percent is from 0(incomplete) to 100(complete)
+        }
+        //checks if the lift is idle: returns true if idle, false if active
+        bool isidle(){
+          return !(bool)(std::get<0>(intake_status) + std::get<0>(score_status));
+          //while there exists the edge case that one is positive and the other negative, that cant happen as we are using unsigneds,
+          //as well as the fact that there exists no case for negative balls in intake and score status
         }
 };
 
@@ -240,20 +271,30 @@ namespace STL_lib{
                 void* valptr  = cmd->iterate(initial.completion);
                 if(valptr) {
                     switch (cmd->type) {
-                        case ROTATE_ACTION:
+                        case ROTATE_ACTION:{
                             vector.angle =* static_cast<double*>(valptr); //no delete as this directly points to the array in the command
                             break;
-                        case INTAKE_ACTION:
+                          }
+                        case INTAKE_ACTION:{
                             initial.intake_status =* static_cast<std::tuple<int,double>*>(valptr);
-                            delete static_cast<std::tuple<int,double>*>(valptr); //delete because this is dynamically allocated as a new object in the cmd->iterate
+                            delete static_cast<std::tuple<int,double>*>(valptr); //delete because this is dynamically allocated as a new object in cmd->iterate
                             break;
-                        case SCORE_ACTION:
+                          }
+                        case SCORE_ACTION:{
                             initial.score_status =* static_cast<std::tuple<int,double>*>(valptr);
-                            delete static_cast<std::tuple<int,double>*>(valptr); //delete because this is dynamically allocated as a new object in the cmd->iterate
+                            delete static_cast<std::tuple<int,double>*>(valptr); //delete because this is dynamically allocated as a new object in cmd->iterate
                             break;
-                        case POS_ROTATE_ACTION:
+                          }
+                        case POS_ROTATE_ACTION:{
                             coordinate tmp =* static_cast<coordinate*>(valptr); //should be pointer and not copy construct, fix later
                             vector.angle = SMART_radians(atan2(tmp.y-current.y, tmp.x-current.x)); //atan2 returns interval -pi to pi, conversion to SMART_radians adjusts that
+                            break;
+                          }
+                        case EJECT_ACTION:{
+                            initial.allow_ejection =* static_cast<bool*>(valptr);
+                            delete static_cast<bool*>(valptr);
+                            break;
+                          }
                     }
                 }
             }

@@ -1,5 +1,5 @@
 #include "main.h"
-#include "BasicLibrary/Library.hpp"
+#include "Library.hpp"
 using namespace STL_lib;
 OdometryWheels odowheel{DeadWheel(1,2,true,2.75,14), DeadWheel(1,2,true,2.75,14), DeadWheel(1,2,true,2.75,14)};
 OdometryComputer odocomp(odowheel);
@@ -17,15 +17,17 @@ command currentcommand(current,{0,0,0},{0,0},{0,0});
 std::vector<linearmotion> cmdset = {
   {position({0,0,M_PI}),{}}
 };
-
-int i = 0;
+std::uint32_t now = pros::millis();
 void autonomous() {
-  currentcommand.lengthcompute(current);
   for(int i = 0; i < cmdset.size(); i++){
-    while(true){
-	    odocomp.cycle(current);
-      cmdset[i].processcommand(currentcommand,current);
-      basecontrol.updatebase(currentcommand,current);
+    currentcommand.lengthcompute(current);
+    //checks if within distance tollerance threshold, as well as if the lift is currently idle during that duration
+    while(!(currentcommand.disttotgt <= 2 && currentcommand.isidle())){
+	    odocomp.cycle(current);                             //update coordinates
+      currentcommand.percentcompute(current);             //determine percentage completion
+      cmdset[i].processcommand(currentcommand,current);   //process new commands for completion level
+      basecontrol.updatebase(currentcommand,current);     //update base motor power outputs for current position
+      pros::Task::delay_until(&now, 10);
     }
   }
 }
