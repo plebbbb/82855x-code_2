@@ -382,6 +382,9 @@ namespace STL_lib {
 			return { x,y };
 		}
 
+		string debug() {
+			return "Position: " + this + "\tx=" + std::to_string(x.value) + "\ty=" + std::to_string(y.value) + "\n";
+		}
 
 		/******************************************************************************/
 		//Manipulation functions
@@ -449,6 +452,11 @@ namespace STL_lib {
 
 	 	operator std::pair<inches, inches>() {
 	 		return { x,y };
+		}
+
+		string debug() {
+			return "Coordinate: " + this + "\tx=" + std::to_string(x.value) +
+								"\ty=" + std::to_string(y.value) + "\tlength=" + std::to_string(length.value) + "\n";
 		}
 
 		/******************************************************************************/
