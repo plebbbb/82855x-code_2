@@ -453,11 +453,15 @@ namespace STL_lib {
 	 	operator std::pair<inches, inches>() {
 	 		return { x,y };
 		}
-
+/*
 		std::string debug() {
-
+			const void * tmp = static_cast<const void*>(this);
+			std::stringstream ss;
+			ss << tmp;
+			return "Coordinate: " + ss.str() + "\tx=" + std::to_string(x.value) +
+								"\ty=" + std::to_string(y.value) + "\tlength=" + std::to_string(length.value) + "\n";
 		}
-
+*/
 		/******************************************************************************/
 		//Manipulation functions
 		/*Remember that an conversion from pairs({x,y}) to coordinate can automatically happen

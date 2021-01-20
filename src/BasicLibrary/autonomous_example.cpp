@@ -1,9 +1,9 @@
 #include "main.h"
 #include "Library.hpp"
 using namespace STL_lib;
-OdometryWheels odowheel{DeadWheel(1,2,true,2.75,14), DeadWheel(1,2,true,2.75,14), DeadWheel(1,2,true,2.75,14)};
-OdometryComputer odocomp(odowheel);
-holonomicbase base(
+//OdometryWheels odowheel{DeadWheel(1,2,true,2.75,14), DeadWheel(1,2,true,2.75,14), DeadWheel(1,2,true,2.75,14)};
+//OdometryComputer odocomp(odowheel);
+/*holonomicbase base(
 	{motorwheel(pros::Motor(17),15,15)}
 );
 basecontroller_auton basecontrol(
@@ -33,3 +33,4 @@ void autonomous() {
     }
   }
 }
+*/

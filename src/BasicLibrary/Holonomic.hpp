@@ -34,10 +34,17 @@
       /******************************************************************************/
       //Utility functions
       coordinate tare(coordinate unscaled){
-        inches speedcap = (unscaled.x > unscaled.y) ? unscaled.x : unscaled.y;
+        inches speedcap = (fabs(unscaled.x) > fabs(unscaled.y)) ? fabs(unscaled.x) : fabs(unscaled.y);
         if (speedcap == 0) return std::pair<inches,inches>{0,0}; //div by zero bypass
         return std::pair<inches,inches>{unscaled.x/speedcap, unscaled.y/speedcap};
       } //questionable function name
+
+      coordinate tare_SUM(coordinate unscaled){
+        inches speedcap = fabs(unscaled.x) + fabs(unscaled.y);
+        if (speedcap == 0) return std::pair<inches,inches>{0,0}; //div by zero bypass
+        return std::pair<inches,inches>{unscaled.x/speedcap, unscaled.y/speedcap};
+      } //questionable function name
+
 
       /******************************************************************************/
       //Primary computation functions
@@ -58,17 +65,21 @@
         rotationRAW/=(sqrt(heading.x*heading.x+heading.y*heading.y) + fabs(rotationRAW));
         for(motorwheel temp : motors){ //holy shit this exists in c++
           temp.move_velocity(2*speed*((heading.x*temp.COSINE + heading.y*temp.SINE)*(1-rotationRAW) + rotationRAW));
+          printf("%f\n",2*speed*((heading.x*temp.COSINE + heading.y*temp.SINE)*(1-rotationRAW) + rotationRAW));
           //multiply by 2 at very end due to move_velocity having a default interval of -200 to 200
         }
       }
 
       //automatic rotation weighting, conversion, and speed
       void move_vector_RAW_AS(coordinate heading, double rotationRAW){
-        heading = tare(heading);
-        rotationRAW/=(sqrt(heading.x*heading.x+heading.y*heading.y) + fabs(rotationRAW));
-        percent speed = std::min<double>(sqrt((heading.x*heading.x+heading.y*heading.y) + fabs(rotationRAW))/127*100, 100);
+        percent speed = std::max(sqrt(heading.x*heading.x+heading.y*heading.y),fabs(rotationRAW))*100.0/127.0;
+        coordinate Lheading = tare_SUM(heading);
+        rotationRAW/= (sqrt(heading.x*heading.x+heading.y*heading.y) + fabs(rotationRAW));
+        if (isnanf(rotationRAW)) rotationRAW = 0; //prevent div by zero from sending nan to motor command
+      //  printf("%f %f\n", Lheading.x, Lheading.y);
         for(motorwheel temp : motors){ //holy shit this exists in c++
-          temp.move_velocity(2*speed*((heading.x*temp.COSINE + heading.y*temp.SINE)*(1-rotationRAW) + rotationRAW));
+          temp.move_velocity(2*speed*((Lheading.x*temp.COSINE + Lheading.y*temp.SINE)*(1-fabs(rotationRAW))*(1.414) + rotationRAW));
+          printf("%d\n",temp.get_target_velocity());
           //multiply by 2 at very end due to move_velocity having a default interval of -200 to 200
         }
       }
