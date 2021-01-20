@@ -144,6 +144,7 @@ namespace STL_lib{
           }
       };
 
+
     /* coordinatetarget actioniterator
        This is a derivived actioniterator meant for storing score control commands
        Alongside the start and end interval, you must append an x and y targ
@@ -163,6 +164,8 @@ namespace STL_lib{
           return &target; //processing must be done externally as we don't have access to the current position in here, thus we just return our target
       }
   };
+
+
     /* ejectionenable  actioniterator
        This is a derivived actioniterator meant for toggling on the ball ejector
        once past the threshold, it will disable the ejector
@@ -185,6 +188,8 @@ namespace STL_lib{
       }
   };
 
+
+
   //velocity profile system
   /*
     There are a few restrictions implemented for the sake of practicallity:
@@ -192,7 +197,7 @@ namespace STL_lib{
        2. S curve profiles will evenly distribute it's three jerk commands during an accelleration - again, why would you not want this behavior
        3. Everything is profiled on a velocity-distance basis, so it won't look like the V-T graphs you would see otherwise
        4. We are taking in distance values. This is due to the fact that timing everything can easly lead to compounding errors from delays in the motors
-          Tying everything to physical locations is better as our odometry system is theoretically perfectly accurate
+          Tying everything to physical locations is better as our odometry system means we can error correct in case something messed up
   */
     struct velocityprofile{
       percent accelscalefactor; //effective percentage of velocity profile which is dedicated to accelleration and decelleration

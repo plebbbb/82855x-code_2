@@ -20,14 +20,16 @@ std::vector<linearmotion> cmdset = {
 std::uint32_t now = pros::millis();
 void autonomous() {
   for(int i = 0; i < cmdset.size(); i++){
-    currentcommand.lengthcompute(current);
+    currentcommand = cmdset[i].processcommand(currentcommand,current);     //update command state machine to new movement
+    currentcommand.lengthcompute(current);              								   //internal distance system reset for new movement, % reset in while loop
+
     //checks if within distance tollerance threshold, as well as if the lift is currently idle during that duration
     while(!(currentcommand.disttotgt <= 2 && currentcommand.isidle())){
-	    odocomp.cycle(current);                             //update coordinates
-      currentcommand.percentcompute(current);             //determine percentage completion
-      cmdset[i].processcommand(currentcommand,current);   //process new commands for completion level
-      basecontrol.updatebase(currentcommand,current);     //update base motor power outputs for current position
-      pros::Task::delay_until(&now, 10);
+	    current = odocomp.cycle(current);                    								 //update coordinates
+      currentcommand.percentcompute(current);            									 //determine percentage completion
+      currentcommand = cmdset[i].processcommand(currentcommand,current);   //process new commands for completion level
+      basecontrol.updatebase(currentcommand,current);                      //update base motor power outputs for current position
+      pros::Task::delay_until(&now, 10);                                   //function is frozen until 10ms after beginning of last cycle
     }
   }
 }

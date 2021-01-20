@@ -62,6 +62,18 @@
         }
       }
 
+      //automatic rotation weighting, conversion, and speed
+      void move_vector_RAW_AS(coordinate heading, double rotationRAW){
+        heading = tare(heading);
+        rotationRAW/=(sqrt(heading.x*heading.x+heading.y*heading.y) + fabs(rotationRAW));
+        percent speed = std::min<double>(sqrt((heading.x*heading.x+heading.y*heading.y) + fabs(rotationRAW))/127*100, 100);
+        for(motorwheel temp : motors){ //holy shit this exists in c++
+          temp.move_velocity(2*speed*((heading.x*temp.COSINE + heading.y*temp.SINE)*(1-rotationRAW) + rotationRAW));
+          //multiply by 2 at very end due to move_velocity having a default interval of -200 to 200
+        }
+      }
+
+
       //automatic rotation weighting and conversion, voltage edition
       void move_vector_RAW_V(coordinate heading, double rotationRAW, percent speed){
         heading = tare(heading);

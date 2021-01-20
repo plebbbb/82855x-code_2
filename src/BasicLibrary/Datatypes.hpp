@@ -382,8 +382,8 @@ namespace STL_lib {
 			return { x,y };
 		}
 
-		string debug() {
-			return "Position: " + this + "\tx=" + std::to_string(x.value) + "\ty=" + std::to_string(y.value) + "\n";
+		std::string debug() {
+			return "Position: " + std::to_string((int)this) + "\tx=" + std::to_string(x.value) + "\ty=" + std::to_string(y.value) + "\n";
 		}
 
 		/******************************************************************************/
@@ -455,8 +455,7 @@ namespace STL_lib {
 		}
 
 		std::string debug() {
-			return "Coordinate: " + std::to_string((int)this) + "\tx=" + std::to_string(x.value) +
-								"\ty=" + std::to_string(y.value) + "\tlength=" + std::to_string(length.value) + "\n";
+
 		}
 
 		/******************************************************************************/

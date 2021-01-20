@@ -12,7 +12,7 @@ namespace STL_lib{
     control_loop rot;
     Trapezoidprofile velocityprofile;
     basecontroller_auton(holonomicbase set, control_loop FB, control_loop LR, control_loop CWCCW):base(set),x(FB),y(LR),rot(CWCCW){}
-    command updatebase(command input, position current){
+    void updatebase(command input, position current){
       if (input.completion == 0){
         velocityprofile = Trapezoidprofile(input.length,std::get<0>(input.motionprofile_config),std::get<1>(input.motionprofile_config),std::get<2>(input.motionprofile_config));
       };
@@ -48,7 +48,12 @@ namespace STL_lib{
   };
 
   struct unifiedliftcontroller{
+    bool ballpositions[5] = 
+    {0,0,0,0,0};
+    //intake, bottom roller, pooper slot, hold slot
+    void identifyballstatus(){
 
+    }
   };
 };
 
