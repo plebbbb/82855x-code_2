@@ -11,7 +11,7 @@
 
 extern pros::Controller master;
 
-extern STL_lib::SMART_radians globalangle;
+extern STL_lib::position locationC;
 
 
 //**************************************************************************//

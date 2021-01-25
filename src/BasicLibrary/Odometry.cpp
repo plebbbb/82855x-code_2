@@ -3,7 +3,7 @@
 using namespace pros;
 using namespace STL_lib;
 //below functions should be done in order, from topmost to bottommost
-
+/*
 //tracking wheel radius auto tuning, forwards/backwards wheels only
 void O_wheelradius_autotune_FB(Distance left, Distance right, holonomicbase val, OdometryWheels wheel){
   control_loop XL({new Proportional(1,{100,-100})},{100,-100});  //X control loop
@@ -53,3 +53,4 @@ void O_wheelradius_autotune_FB(Distance left, Distance right, holonomicbase val,
     }
   }
 };
+*/

@@ -41,7 +41,7 @@ namespace STL_lib{
     DeadWheel(int portA, int portB, bool direction, inches Diameter, inches Dist_to_ctr):
     Encoder(portA,portB,direction)
     {
-      WheelRadius = Diameter/2;
+      WheelRadius = inches((double)Diameter/2.00);
       Distance_CenterOfRotation = Dist_to_ctr;
     }
 
@@ -49,23 +49,23 @@ namespace STL_lib{
     DeadWheel(pros::ext_adi_port_tuple_t portAB, bool direction, inches Diameter, inches Dist_to_ctr):
     Encoder(portAB,direction)
     {
-      WheelRadius = Diameter/2;
+      WheelRadius = inches((double)Diameter/2.00);
       Distance_CenterOfRotation = Dist_to_ctr;
     }
 
     //Returns us the raw angle traversed by the encoder in radians
     radians get_radian(){
-      return degrees(Encoder.get_value());
+      return radians(degrees(Encoder.get_value()));
     }
 
     //Returns us the effective distance traveled by the attached wheel
     inches get_distance(){
-      return WheelRadius*get_radian();
+      return inches((double)WheelRadius*(double)get_radian());
     }
 
     //get_distance. Note that this resets the encoder as well. Do not call this multiple times per cycle
     inches get_distance_AUTORESET(){
-      double val = get_distance();
+      inches val = get_distance();
       reset();
       return val;
     }
@@ -82,7 +82,9 @@ namespace STL_lib{
   struct OdometryWheels{
     //This struct is constructed with bracket notation.
     //For example, DeadWheel a = {LEFT, RIGHT, REAR};
-    DeadWheel LEFT, RIGHT, BACK;
+    DeadWheel LEFT;
+    DeadWheel RIGHT;
+    DeadWheel BACK;
 //    OdometryWheels(DeadWheel L, DeadWheel R, DeadWheel B):LEFT(L),RIGHT(R),BACK(B){}
 
     //This approach only measures the encoder values once per cycle, ensuring synchronization of measurements
@@ -157,12 +159,16 @@ namespace STL_lib{
       std::array EncoderDistanceValues = wheels.get_distances_nonpointer();
       //its a 50/50 that get_distances_nonpointer works
 
+      pros::lcd::print(6,"BACK:%f",EncoderDistanceValues[2]);
+
       //Assuming forwards is 0rad, CCW is positive we calculate the relative offset
       //All coords are prior to move fyi.
       SMART_radians rel_orientation_change =
       (EncoderDistanceValues[1]-EncoderDistanceValues[0]) /
       (wheels[ENCODER_POSITION_LEFT].Distance_CenterOfRotation +
         wheels[ENCODER_POSITION_RIGHT].Distance_CenterOfRotation);
+
+      pros::lcd::print(7,"RELO: %f", rel_orientation_change);
 
       //note: SMART_radians automatically corrects divison by zero errors to zero
       //So there is no need to worry about that situation here
@@ -171,9 +177,10 @@ namespace STL_lib{
 
       SMART_radians avg_angle = rel_orientation_change/2;
 
-      if (rel_orientation_change == 0){
+      if (rel_orientation_change == 0.00){
         returncycle.x = EncoderDistanceValues[2];
         returncycle.y = EncoderDistanceValues[1];
+        printf("TEST\n");
       } else {
         returncycle.y = 2*sin(avg_angle) *
         (EncoderDistanceValues[1]/rel_orientation_change +
@@ -184,7 +191,11 @@ namespace STL_lib{
         wheels[ENCODER_POSITION_BACK].Distance_CenterOfRotation);
       }
 
-      returncycle.self_transform_polar(-precycle.angle-avg_angle-M_PI/2);
+      returncycle.self_transform_polar(precycle.angle+avg_angle-M_PI/2);
+
+      pros::lcd::print(4,"x2: %f",returncycle.x);
+      pros::lcd::print(5,"y2: %f",returncycle.y);
+
       precycle += returncycle;
       precycle.angle+=rel_orientation_change;
       return precycle;

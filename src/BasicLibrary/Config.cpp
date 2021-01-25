@@ -5,9 +5,9 @@ using namespace pros;
 
 //GENERAL IMPORTANT THINGS **************************************************/
 
-pros::Controller master(pros::E_CONTROLLER_MASTER);
+Controller master(pros::E_CONTROLLER_MASTER);
 
-SMART_radians globalangle = 0;
+position locationE({0,0,M_PI/2});
 
 
 //**************************************************************************//
@@ -30,11 +30,15 @@ holonomicbase base(
 
 //ODOM THINGS ***************************************************************/
 
-pros::Imu im(16);
+Imu im(16);
 
-OdometryWheels Owheels{DeadWheel(1,2,true,2.75,14), DeadWheel(1,2,true,2.75,14), DeadWheel(1,2,true,2.75,14)};
+OdometryWheels Owheels{
+  DeadWheel({3,'A','B'},false,inches(2.75),14.00),
+  DeadWheel({3,'G','H'},true,inches(2.75),14.00),
+  DeadWheel({3,'C','D'},true,inches(2.75),14.00)
+};
 
-OdometryComputer Odom(Owheels);
+OdometryComputer Odom = OdometryComputer(Owheels);
 
 
 
