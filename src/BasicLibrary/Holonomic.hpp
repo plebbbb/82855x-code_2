@@ -52,7 +52,7 @@
       rotationfactor is a scaling value with an interval from -1 to 1 to determine distribution of power
       to rotation with sign for direction. Heading coordinate values are automatically constrained*/
       void move_vector_RF(coordinate heading, double rotationfactor, percent speed){
-        heading = tare(heading);
+        heading = tare_SUM(heading);
         for(motorwheel temp : motors){ //holy shit this exists in c++
           temp.move_velocity(2*speed*((heading.x*temp.COSINE + heading.y*temp.SINE)*(1-rotationfactor) + rotationfactor));
           //multiply by 2 at very end due to move_velocity having a default interval of -200 to 200
@@ -61,11 +61,11 @@
 
       //automatic rotation weighting and conversion
       void move_vector_RAW(coordinate heading, double rotationRAW, percent speed){
-        heading = tare(heading);
         rotationRAW/=(sqrt(heading.x*heading.x+heading.y*heading.y) + fabs(rotationRAW));
+        heading = tare_SUM(heading);
         for(motorwheel temp : motors){ //holy shit this exists in c++
           temp.move_velocity(2*speed*((heading.x*temp.COSINE + heading.y*temp.SINE)*(1-rotationRAW) + rotationRAW));
-          printf("%f\n",2*speed*((heading.x*temp.COSINE + heading.y*temp.SINE)*(1-rotationRAW) + rotationRAW));
+      //    printf("%f\n",2*speed*((heading.x*temp.COSINE + heading.y*temp.SINE)*(1-rotationRAW) + rotationRAW));
           //multiply by 2 at very end due to move_velocity having a default interval of -200 to 200
         }
       }
@@ -79,7 +79,7 @@
       //  printf("%f %f\n", Lheading.x, Lheading.y);
         for(motorwheel temp : motors){ //holy shit this exists in c++
           temp.move_velocity(2*speed*((Lheading.x*temp.COSINE + Lheading.y*temp.SINE)*(1-fabs(rotationRAW))*(1.414) + rotationRAW));
-          printf("%d\n",temp.get_target_velocity());
+      //    printf("%d\n",temp.get_target_velocity());
           //multiply by 2 at very end due to move_velocity having a default interval of -200 to 200
         }
       }
@@ -87,8 +87,8 @@
 
       //automatic rotation weighting and conversion, voltage edition
       void move_vector_RAW_V(coordinate heading, double rotationRAW, percent speed){
-        heading = tare(heading);
         rotationRAW/=(sqrt(heading.x*heading.x+heading.y*heading.y) + fabs(rotationRAW));
+        heading = tare_SUM(heading);
         for(motorwheel temp : motors){ //holy shit this exists in c++
           temp.move_voltage(120*speed*((heading.x*temp.COSINE + heading.y*temp.SINE)*(1-rotationRAW) + rotationRAW));
           //multiply by 120 at very end due to move_voltage having a default interval of -12000 to 12000

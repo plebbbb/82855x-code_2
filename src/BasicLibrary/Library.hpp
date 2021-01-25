@@ -7,3 +7,4 @@
 #include "Datatypes_Autonomous.hpp" //Header for autonomous datatypes
 #include "Driver.hpp" //Header for driver controls
 #include "MotionAlg_Autonomous.hpp" //Header for autonomous movement algorithms
+#include "Config.hpp" //Header for forward declerations (sketchy)

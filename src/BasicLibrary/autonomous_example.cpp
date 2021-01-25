@@ -1,11 +1,10 @@
 #include "main.h"
 #include "Library.hpp"
 using namespace STL_lib;
+/*
 //OdometryWheels odowheel{DeadWheel(1,2,true,2.75,14), DeadWheel(1,2,true,2.75,14), DeadWheel(1,2,true,2.75,14)};
 //OdometryComputer odocomp(odowheel);
-/*holonomicbase base(
-	{motorwheel(pros::Motor(17),15,15)}
-);
+holonomicbase base;
 basecontroller_auton basecontrol(
   base,
   control_loop({new Proportional(1,{100,-100})},{100,-100}),  //X control loop

@@ -434,13 +434,13 @@ namespace STL_lib {
 		void self_transform_polar(SMART_radians offset) {
 			get_length();
 			SMART_radians polar_angle(atan2(y, x) + offset);
-			x = length * cos(polar_angle);
-			y = length * sin(polar_angle);
+			x = inches(length * cos(double(polar_angle)));
+			y = inches(length * sin(double(polar_angle)));
 		}
 
 		//updates length of coordinate
 		inches get_length() {
-			length = sqrt(x * x + y * y);
+			length = inches(sqrt(x * x + y * y));
 			return length;
 		}
 
@@ -481,6 +481,19 @@ namespace STL_lib {
 		}
 
 
+	};
+
+
+	//standard form n degree polynomial
+	class polynomial{
+		std::vector<double> expopwr; //lists coefficients starting from x^0 to x^n
+		public:
+			polynomial(std::vector<double> expo):expopwr(expo){};
+			double compute(double x){
+				double returnval = 0;
+				for (int i = 0; i < expopwr.size(); i++)	returnval += expopwr[i]*pow(x,i);
+				return returnval;
+			}
 	};
 }
 
