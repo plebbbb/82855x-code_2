@@ -7,7 +7,7 @@ using namespace pros;
 
 Controller master(pros::E_CONTROLLER_MASTER);
 
-position locationE({0,0,M_PI/2});
+position locationC({0,0,M_PI/2});
 
 
 //**************************************************************************//
@@ -33,9 +33,9 @@ holonomicbase base(
 Imu im(16);
 
 OdometryWheels Owheels{
-  DeadWheel({3,'A','B'},false,inches(2.75),14.00),
-  DeadWheel({3,'G','H'},true,inches(2.75),14.00),
-  DeadWheel({3,'C','D'},true,inches(2.75),14.00)
+  DeadWheel({3,'A','B'},false,inches(2.7881),5.8046),
+  DeadWheel({3,'G','H'},true,inches(2.7535),5.7565),
+  DeadWheel({3,'C','D'},true,inches(2.8093),5.9819)
 };
 
 OdometryComputer Odom = OdometryComputer(Owheels);

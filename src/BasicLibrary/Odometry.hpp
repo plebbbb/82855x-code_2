@@ -41,7 +41,7 @@ namespace STL_lib{
     DeadWheel(int portA, int portB, bool direction, inches Diameter, inches Dist_to_ctr):
     Encoder(portA,portB,direction)
     {
-      WheelRadius = inches((double)Diameter/2.00);
+      WheelRadius = inches((double)Diameter/2.000000);
       Distance_CenterOfRotation = Dist_to_ctr;
     }
 
@@ -49,7 +49,7 @@ namespace STL_lib{
     DeadWheel(pros::ext_adi_port_tuple_t portAB, bool direction, inches Diameter, inches Dist_to_ctr):
     Encoder(portAB,direction)
     {
-      WheelRadius = inches((double)Diameter/2.00);
+      WheelRadius = inches((double)Diameter/2.000000);
       Distance_CenterOfRotation = Dist_to_ctr;
     }
 
@@ -159,16 +159,12 @@ namespace STL_lib{
       std::array EncoderDistanceValues = wheels.get_distances_nonpointer();
       //its a 50/50 that get_distances_nonpointer works
 
-      pros::lcd::print(6,"BACK:%f",EncoderDistanceValues[2]);
-
       //Assuming forwards is 0rad, CCW is positive we calculate the relative offset
       //All coords are prior to move fyi.
       SMART_radians rel_orientation_change =
       (EncoderDistanceValues[1]-EncoderDistanceValues[0]) /
       (wheels[ENCODER_POSITION_LEFT].Distance_CenterOfRotation +
         wheels[ENCODER_POSITION_RIGHT].Distance_CenterOfRotation);
-
-      pros::lcd::print(7,"RELO: %f", rel_orientation_change);
 
       //note: SMART_radians automatically corrects divison by zero errors to zero
       //So there is no need to worry about that situation here
@@ -180,7 +176,6 @@ namespace STL_lib{
       if (rel_orientation_change == 0.00){
         returncycle.x = EncoderDistanceValues[2];
         returncycle.y = EncoderDistanceValues[1];
-        printf("TEST\n");
       } else {
         returncycle.y = 2*sin(avg_angle) *
         (EncoderDistanceValues[1]/rel_orientation_change +
@@ -197,7 +192,9 @@ namespace STL_lib{
       pros::lcd::print(5,"y2: %f",returncycle.y);
 
       precycle += returncycle;
-      precycle.angle+=rel_orientation_change;
+      precycle.angle += rel_orientation_change;
+      pros::lcd::print(6,"ANG: %f",precycle.angle);
+
       return precycle;
     }
   };

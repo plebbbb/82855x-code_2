@@ -1,6 +1,5 @@
 //A header guard
 #pragma once
-//#include "Library.hpp"
 
 #ifndef DATATYPES_HPP
 #define DATATYPES_HPP
@@ -89,13 +88,16 @@ namespace STL_lib {
 
 		/******************************************************************************/
 		//Utility functions
+
 		void prune() { //constrains the angle values into the range of 0 - 2PI
 
 			//Division by zero correction is to set angle to 0
 			if (isnanf(value) || isinff(value)) value = 0;
 
-			//Float modulus to correct angle values to the right inte
-			value = fmod(value, M_PI * 2);
+			//C++ fmod is actually just a remainder function, we have to do this
+			//to conform to normal modulus rules, where there cannot be negative values
+			value = fmod(fmod(value,2*M_PI)+2*M_PI,2*M_PI);
+		//	value = fmod(value,2*M_PI);
 		}
 
 		/******************************************************************************/
@@ -150,12 +152,12 @@ namespace STL_lib {
 		}
 
 		operator radians() {
-			return radians(value * M_PI / 180);
+			return radians(value * M_PI / 180.0);
 		}
 
 		//you must explicitly state that you are converting to a smart radian before you do so
 		explicit operator SMART_radians() {
-			return SMART_radians(value * M_PI / 180);
+			return SMART_radians(value * M_PI / 180.0);
 		}
 
 
@@ -393,7 +395,7 @@ namespace STL_lib {
 		void operator+=(position change) {
 			x += change.x;
 			y += change.y;
-			angle += change.angle; //Smart radians automatically deal with out of bound possiblities
+		//	angle += change.angle; //Smart radians automatically deal with out of bound possiblities
 		}
 
 		/*REMEMBER TO CONVERT BACK AFTER!!,
