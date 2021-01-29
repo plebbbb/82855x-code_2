@@ -14,12 +14,12 @@ namespace STL_lib{
     basecontroller_auton(holonomicbase set, control_loop FB, control_loop LR, control_loop CWCCW):base(set),x(FB),y(LR),rot(CWCCW){}
     void updatebase(command input, position current){
       if (input.completion == 0){
-      //  velocityprofile = Trapezoidprofile(input.length,std::get<0>(input.motionprofile_config),std::get<1>(input.motionprofile_config),std::get<2>(input.motionprofile_config));
+        velocityprofile = Trapezoidprofile(input.length,std::get<0>(input.motionprofile_config),std::get<1>(input.motionprofile_config),std::get<2>(input.motionprofile_config));
       };
       coordinate globalrelative(current,input.target); //returns distance from current to target, which is the correct input type for PID
       //Base movement mode 1: Direct axle movement
-      if (input.disttotgt <= 2){
-        globalrelative.self_transform_polar(SMART_radians(current.angle-M_PI/4));
+      if (input.disttotgt <= 5){
+        globalrelative = globalrelative.transform_matrix(SMART_radians((current.angle-3*M_PI/4)));
         //rotate into direct motor axis, which is CCW 45 degrees from the standard orientation, smart radians automatically constrains to right intervals
         double XA = x.update(globalrelative.x,0); //correct interval 100 to -100
         double YA = y.update(globalrelative.y,0); //correct interval 100 to -100
@@ -33,8 +33,10 @@ namespace STL_lib{
       }
       //Base movement mode 2: Combined local axis vector + rotation on a Trapezoid speed profile
       else {
-        globalrelative.self_transform_polar(SMART_radians(current.angle-M_PI/2));
+        globalrelative = globalrelative.transform_matrix(SMART_radians((current.angle-M_PI/2)));
         percent speed = velocityprofile.determinepoweroutput(input.completion);
+        pros::lcd::print(1,"SPD: %f",speed);
+
         double rotationfactor = 0.005*rot.update(input.target.angle,current.angle); //interval scaled down to 0.5 to -0.5. May need seperate PID from local axis
         //move_vector_RF automatically scales down globalrelative, so no need to process that here
         base.move_vector_RF(globalrelative, rotationfactor, speed);

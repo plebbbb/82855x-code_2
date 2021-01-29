@@ -37,14 +37,32 @@ void intake_control(){
 
 
 SMART_radians globalangle = 0;
-
+/*
+std::vector<linearmotion> cmdset = {
+  {position({0,26,M_PI*5/4}),{}},
+	{position({-20,6,M_PI*5/4}),{}},
+	{position({-4,22,M_PI*5/4}),{}},
+	{position({-4, 63, M_PI}),{}},
+	{position({-13,63,M_PI}),{}},
+	{position({-4,63,M_PI}),{}},
+	{position({-4,112,M_PI*3/4}),{}},
+	{position({-11,119,M_PI*3/4}),{}}
+};
+*/
+std::vector<linearmotion> cmdset = {
+  {position({39,38,M_PI/2}),{}},
+	{position({39,49,M_PI/2}),{}},
+};
 void opcontrol() {
 //	while(im.is_calibrating()){pros::delay(10);}
-	currentcommand.lengthcompute(locationC);
+/*	currentcommand.lengthcompute(locationC);
+	currentcommand.percentcompute(locationC);
+	autonbase.updatebase(currentcommand, locationC);
 while(true){
   locationC = Odom.cycle(locationC);
 	currentcommand.percentcompute(locationC);
-	lcd::print(0,"Len %f", currentcommand.disttotgt);
+	lcd::print(4,"Len %f", currentcommand.disttotgt);
+	lcd::print(0,"CMPL %f", currentcommand.completion);
 	lcd::print(5,"X: %f",locationC.x);
 	lcd::print(6,"Y: %f",locationC.y);
 	lcd::print(7,"R: %f",locationC.angle);//*/
@@ -56,8 +74,27 @@ while(true){
 	currentcontrol.self_transform_polar(-globalangle);
 	base.move_vector_RAW_AS(currentcontrol,-master.get_analog(ANALOG_RIGHT_X));
 	intake_control();
-*/
-	autonbase.updatebase(currentcommand, locationC);
+//*/
+/*	autonbase.updatebase(currentcommand, locationC);
 	pros::delay(10);
+	}
+*/
+Lintake.move_velocity(200);
+Rintake.move_velocity(200);
+Ejector.move_velocity(-200);
+
+	for(int i = 0; i < cmdset.size(); i++){
+		currentcommand = cmdset[i].processcommand(currentcommand,locationC);     //update command state machine to new movement
+		currentcommand.lengthcompute(locationC);
+		currentcommand.percentcompute(locationC);
+		autonbase.updatebase(currentcommand, locationC);             								   //internal distance system reset for new movement, % reset in while loop
+
+		//checks if within distance tollerance threshold, as well as if the lift is currently idle during that duration
+		while(!(currentcommand.disttotgt <= 2 && currentcommand.isidle())){
+			locationC = Odom.cycle(locationC);
+			currentcommand.percentcompute(locationC);
+			autonbase.updatebase(currentcommand, locationC);//update base motor power outputs for current position
+			delay(10);
+		}
 	}
 }

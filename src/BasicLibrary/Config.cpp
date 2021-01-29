@@ -9,7 +9,7 @@ Controller master(pros::E_CONTROLLER_MASTER);
 
 position locationC({0,0,M_PI/2});
 
-command currentcommand(position({1,0,M_PI/2}),{0,0,0},{0,0},{0,0});
+command currentcommand(position({15,15,M_PI}),{5,10,10},{0,0},{0,0});
 
 
 //**************************************************************************//
@@ -27,9 +27,9 @@ holonomicbase base(
 
 basecontroller_auton autonbase(
   base,
-  control_loop({new Proportional(100,{600,-100})},{100,-100}),  //X control loop
-  control_loop({new Proportional(100,{600,-100})},{100,-100}),  //Y control loop
-  control_loop({new Proportional(100,{1200,-100})},{100,-100})   //Rotation control loop
+  control_loop({new Proportional(70,{100,-100})},{100,-100}),  //X control loop
+  control_loop({new Proportional(70,{100,-100})},{100,-100}),  //Y control loop
+  control_loop({new Proportional(150,{100,-100})},{100,-100})   //Rotation control loop
 );
 
 //**************************************************************************//
