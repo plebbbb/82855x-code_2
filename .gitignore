@@ -8,8 +8,8 @@ bin/
 .vscode/
 firmware/
 include/
-!src/
-src/*
+##!src/
+##src/*
 !src/BasicLibrary
 common.mk
 Makefile

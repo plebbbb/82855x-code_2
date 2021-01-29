@@ -423,9 +423,7 @@ namespace STL_lib {
 		coordinate() { x = 0; y = 0; }
 
 		//relative coordinate calculation from two position
-		coordinate(position initial, position final) {
-			x = final.x - initial.x;
-			y = final.y - initial.y;
+		coordinate(position initial, position final):x(final.x - initial.x),y(final.y - initial.y){
 			get_length();
 		}
 

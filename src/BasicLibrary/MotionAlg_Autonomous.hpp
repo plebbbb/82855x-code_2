@@ -14,16 +14,20 @@ namespace STL_lib{
     basecontroller_auton(holonomicbase set, control_loop FB, control_loop LR, control_loop CWCCW):base(set),x(FB),y(LR),rot(CWCCW){}
     void updatebase(command input, position current){
       if (input.completion == 0){
-        velocityprofile = Trapezoidprofile(input.length,std::get<0>(input.motionprofile_config),std::get<1>(input.motionprofile_config),std::get<2>(input.motionprofile_config));
+      //  velocityprofile = Trapezoidprofile(input.length,std::get<0>(input.motionprofile_config),std::get<1>(input.motionprofile_config),std::get<2>(input.motionprofile_config));
       };
       coordinate globalrelative(current,input.target); //returns distance from current to target, which is the correct input type for PID
       //Base movement mode 1: Direct axle movement
-      if (input.length <= 2){
+      if (input.disttotgt <= 2){
         globalrelative.self_transform_polar(SMART_radians(current.angle-M_PI/4));
         //rotate into direct motor axis, which is CCW 45 degrees from the standard orientation, smart radians automatically constrains to right intervals
         double XA = x.update(globalrelative.x,0); //correct interval 100 to -100
         double YA = y.update(globalrelative.y,0); //correct interval 100 to -100
         double RA = rot.update(input.target.angle,current.angle); //correct interval 100 to -100
+        pros::lcd::print(1,"XA: %f",XA);
+        pros::lcd::print(2,"YA: %f",YA);
+        pros::lcd::print(3,"RA: %f",RA);
+
         base.move_perp_vector_xdrive(XA,YA,RA); //this is a hack function that needs to be made into the same format as printf, where we can have indefinite terms in the odd case that we have an non x drive
         //as each PID controller controls specific motors, there is no need to set a speed, the PID loops do that themselves
       }
@@ -48,7 +52,7 @@ namespace STL_lib{
   };
 
   struct unifiedliftcontroller{
-    bool ballpositions[5] = 
+    bool ballpositions[5] =
     {0,0,0,0,0};
     //intake, bottom roller, pooper slot, hold slot
     void identifyballstatus(){

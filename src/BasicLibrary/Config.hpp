@@ -13,6 +13,7 @@ extern pros::Controller master;
 
 extern STL_lib::position locationC;
 
+extern STL_lib::command currentcommand;
 
 //**************************************************************************//
 

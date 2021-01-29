@@ -185,17 +185,10 @@ namespace STL_lib{
         wheels[ENCODER_POSITION_BACK].Distance_CenterOfRotation));
       }
 
-      printf("x: %f y:%f\n", returncycle.x, returncycle.y);
-
-      pros::lcd::print(4,"%f",returncycle.x);
-      pros::lcd::print(5,"%f",returncycle.y);
-
-
       returncycle = returncycle.transform_matrix(-(precycle.angle+avg_angle-(M_PI/2)));
 
       precycle += returncycle;
       precycle.angle.value -= rel_orientation_change;
-      pros::lcd::print(6,"ANG: %f",precycle.angle);
 
       return precycle;
     }

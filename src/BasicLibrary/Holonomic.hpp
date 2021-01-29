@@ -108,7 +108,7 @@
 
       //direct local axis control of bot. Rotate 45 degrees CCW from standard heading
       //power output interval of 0-100 for both rotation and translation
-      void move_perp_vector_xdrive(percent FB, percent LR, percent R){
+      void move_perp_vector_xdrive(double FB, double LR, double R){
         for(motorwheel temp : motors){
           temp.move_voltage((double(FB * cos(temp.heading+M_PI/4)+ LR*sin(temp.heading+M_PI/4)) + double(R))*(12000/200));
           //Move_velocity actually has its own internal PID loop. Using it at close range makes everything super noisy.
