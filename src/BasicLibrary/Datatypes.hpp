@@ -440,6 +440,17 @@ namespace STL_lib {
 			y = inches(length * sin(double(polar_angle)));
 		}
 
+		void self_transform_matrix(SMART_radians offset){
+			x = cos(offset)*x + sin(offset)*x;
+			y = - sin(offset)*y + cos(offset)*y;
+		}
+
+		coordinate transform_matrix(SMART_radians offset){
+			inches xe = inches(cos((double)offset)*(double)x + sin((double)offset)*(double)y);
+			inches ye = inches(cos((double)offset)*(double)y - sin((double)offset)*(double)x);
+			return coordinate(std::pair<inches,inches>{xe,ye});
+		}
+
 		//updates length of coordinate
 		inches get_length() {
 			length = inches(sqrt(x * x + y * y));

@@ -161,38 +161,40 @@ namespace STL_lib{
 
       //Assuming forwards is 0rad, CCW is positive we calculate the relative offset
       //All coords are prior to move fyi.
-      SMART_radians rel_orientation_change =
-      (EncoderDistanceValues[1]-EncoderDistanceValues[0]) /
+      radians rel_orientation_change =
+      (EncoderDistanceValues[0]-EncoderDistanceValues[1]) /
       (wheels[ENCODER_POSITION_LEFT].Distance_CenterOfRotation +
         wheels[ENCODER_POSITION_RIGHT].Distance_CenterOfRotation);
 
-      //note: SMART_radians automatically corrects divison by zero errors to zero
-      //So there is no need to worry about that situation here
+      //SMART_radians' built in interval restriction isn't needed here. We need negative intervals.
 
-      coordinate returncycle;
+      coordinate returncycle(std::pair<inches,inches>{0,0});
 
-      SMART_radians avg_angle = rel_orientation_change/2;
+      radians avg_angle = rel_orientation_change/2.0;
 
-      if (rel_orientation_change == 0.00){
+      if (rel_orientation_change == 0){
         returncycle.x = EncoderDistanceValues[2];
         returncycle.y = EncoderDistanceValues[1];
       } else {
-        returncycle.y = 2*sin(avg_angle) *
-        (EncoderDistanceValues[1]/rel_orientation_change +
-        wheels[ENCODER_POSITION_RIGHT].Distance_CenterOfRotation);
+        returncycle.y = inches(2.0*sin(avg_angle) *
+        ((EncoderDistanceValues[1]/rel_orientation_change) +
+        wheels[ENCODER_POSITION_RIGHT].Distance_CenterOfRotation));
 
-        returncycle.x = 2*sin(avg_angle) *
-        (EncoderDistanceValues[2]/rel_orientation_change +
-        wheels[ENCODER_POSITION_BACK].Distance_CenterOfRotation);
+        returncycle.x = inches(2.0*sin(avg_angle) *
+        ((EncoderDistanceValues[2]/rel_orientation_change) +
+        wheels[ENCODER_POSITION_BACK].Distance_CenterOfRotation));
       }
 
-      returncycle.self_transform_polar(precycle.angle+avg_angle-M_PI/2);
+      printf("x: %f y:%f\n", returncycle.x, returncycle.y);
 
-      pros::lcd::print(4,"x2: %f",returncycle.x);
-      pros::lcd::print(5,"y2: %f",returncycle.y);
+      pros::lcd::print(4,"%f",returncycle.x);
+      pros::lcd::print(5,"%f",returncycle.y);
+
+
+      returncycle = returncycle.transform_matrix(-(precycle.angle+avg_angle-(M_PI/2)));
 
       precycle += returncycle;
-      precycle.angle += rel_orientation_change;
+      precycle.angle.value -= rel_orientation_change;
       pros::lcd::print(6,"ANG: %f",precycle.angle);
 
       return precycle;
