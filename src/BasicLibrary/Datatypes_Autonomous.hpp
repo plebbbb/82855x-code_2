@@ -277,7 +277,9 @@ namespace STL_lib{
                 if(valptr) {
                     switch (cmd->type) {
                         case ROTATE_ACTION:{
-                            vector.angle =* static_cast<double*>(valptr); //no delete as this directly points to the array in the command
+                            double old = vector.angle;
+                            vector.angle = *static_cast<SMART_radians*>(valptr); //no delete as this directly points to the array in the command
+                            pros::lcd::print(4,"%f, %f",old, vector.angle);
                             break;
                           }
                         case INTAKE_ACTION:{

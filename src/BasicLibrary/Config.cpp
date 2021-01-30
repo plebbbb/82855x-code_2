@@ -9,7 +9,7 @@ Controller master(pros::E_CONTROLLER_MASTER);
 
 position locationC({0,0,M_PI/2});
 
-command currentcommand(position({15,15,M_PI}),{5,10,10},{0,0},{0,0});
+command currentcommand(position({15,15,M_PI}),{5,20,10},{0,0},{0,0});
 
 
 //**************************************************************************//

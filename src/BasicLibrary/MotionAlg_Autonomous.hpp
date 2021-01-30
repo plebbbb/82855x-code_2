@@ -37,7 +37,7 @@ namespace STL_lib{
         percent speed = velocityprofile.determinepoweroutput(input.completion);
         pros::lcd::print(1,"SPD: %f",speed);
 
-        double rotationfactor = 0.005*rot.update(input.target.angle,current.angle); //interval scaled down to 0.5 to -0.5. May need seperate PID from local axis
+        double rotationfactor = 0.010*rot.update(input.target.angle,current.angle); //interval scaled down to 0.5 to -0.5. May need seperate PID from local axis
         //move_vector_RF automatically scales down globalrelative, so no need to process that here
         base.move_vector_RF(globalrelative, rotationfactor, speed);
         //there may be issues with rotation not getting sufficient power. A potential solution is to apply some kinda weighting function on top of the PID output for rotation weight
