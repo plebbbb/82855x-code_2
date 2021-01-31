@@ -84,6 +84,21 @@
         }
       }
 
+      //automatic rotation weighting, conversion, polynomial speed curve
+      void move_vector_RAW_AS_M(coordinate heading, double rotationRAW, polynomial val){
+        percent speed = val.compute(std::max(sqrt(heading.x*heading.x+heading.y*heading.y),fabs(rotationRAW)));
+        coordinate Lheading = tare_SUM(heading);
+        rotationRAW/= (sqrt(heading.x*heading.x+heading.y*heading.y) + fabs(rotationRAW));
+        if (isnanf(rotationRAW)) rotationRAW = 0; //prevent div by zero from sending nan to motor command
+      //  printf("%f %f\n", Lheading.x, Lheading.y);
+        for(motorwheel temp : motors){ //holy shit this exists in c++
+          temp.move_velocity(2*speed*((Lheading.x*temp.COSINE + Lheading.y*temp.SINE)*(1-fabs(rotationRAW))*(1.414) + rotationRAW));
+      //    printf("%d\n",temp.get_target_velocity());
+          //multiply by 2 at very end due to move_velocity having a default interval of -200 to 200
+        }
+      }
+
+
 
       //automatic rotation weighting and conversion, voltage edition
       void move_vector_RAW_V(coordinate heading, double rotationRAW, percent speed){

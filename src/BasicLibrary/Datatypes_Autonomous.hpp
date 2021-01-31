@@ -30,10 +30,11 @@ namespace STL_lib{
         std::vector<double> config; //index 0: start percentage of movement, other indexes vary.
         actiontype type; //variable used to determine data type
         bool hasbeentriggered = false; //automated procdures will act on the last given command; no need to keep spamming it
+        bool iscnstupdatetype;
 
         /******************************************************************************/
         //Constructor(s)
-        actioniterator(std::vector<double> val, actiontype typ):config(val),type(typ){};
+        actioniterator(std::vector<double> val, actiontype typ, bool refreshininterval):config(val),type(typ),iscnstupdatetype(refreshininterval){};
 
         /******************************************************************************/
         //Main Functions
@@ -59,13 +60,19 @@ namespace STL_lib{
             In order to determine the completion status of of the action, check the hasbeentriggered boolean.
          */
         void* iterate(percent perc){
-          if (perc >= config[0] && !hasbeentriggered && perc <= config[1]){
-              hasbeentriggered = true;
-              return getval();
-          }
-          if (perc >= config[1] && hasbeentriggered){
-              hasbeentriggered = false;
-              return getdefaultval();
+          if (!iscnstupdatetype){
+            if (perc >= config[0] && !hasbeentriggered && perc <= config[1]){
+                hasbeentriggered = true;
+                return getval();
+            }
+            if (perc >= config[1] && hasbeentriggered){
+                hasbeentriggered = false;
+                return getdefaultval();
+            }
+          } else {
+            if (perc >= config[0] && perc <= config[1]){
+                return getval();
+            }
           }
           return nullptr; //NULL is kinda jank as it's technically also 0, the int. Due to that we use nullptr
         }
@@ -80,7 +87,7 @@ namespace STL_lib{
         SMART_radians angle;
         /******************************************************************************/
         //Constructor(s)
-        rotation(std::vector<double> values):actioniterator(values,ROTATE_ACTION),angle(values[2]){}
+        rotation(std::vector<double> values):actioniterator(values,ROTATE_ACTION,false),angle(values[2]){}
 
 
         /******************************************************************************/
@@ -100,7 +107,7 @@ namespace STL_lib{
         std::tuple<int,double> targets;
         /******************************************************************************/
         //Constructor(s)
-        intake(std::vector<double> values, std::tuple<int,double> tmp):actioniterator(values,INTAKE_ACTION),targets(tmp){}
+        intake(std::vector<double> values, std::tuple<int,double> tmp):actioniterator(values,INTAKE_ACTION,false),targets(tmp){}
 
 
         /******************************************************************************/
@@ -127,7 +134,7 @@ namespace STL_lib{
           std::tuple<int,double> targets;
           /******************************************************************************/
           //Constructor(s)
-          score(std::vector<double> values):actioniterator(values,SCORE_ACTION){}
+          score(std::vector<double> values):actioniterator(values,SCORE_ACTION,false){}
 
 
           /******************************************************************************/
@@ -150,18 +157,18 @@ namespace STL_lib{
        Alongside the start and end interval, you must append an x and y targ
     */
     struct coordinatetarget: public actioniterator{
-      coordinate target;
+      std::pair<inches,inches> set;
 
       /******************************************************************************/
       //Constructor(s)
-      coordinatetarget(std::vector<double> values):actioniterator(values,ROTATE_ACTION),target({values[2],values[3]}){}
+      coordinatetarget(std::vector<double> values):actioniterator(values,ROTATE_ACTION,true),set(values[2],values[3]){}
 
 
       /******************************************************************************/
       //Primary function(s)
       //Returns a coordinate with the target orientation, must be cast to coordinate, and then the relative angle must be determined
       virtual void* getval(){
-          return &target; //processing must be done externally as we don't have access to the current position in here, thus we just return our target
+          return &set; //processing must be done externally as we don't have access to the current position in here, thus we just return our target
       }
   };
 
@@ -173,7 +180,7 @@ namespace STL_lib{
     struct ejectionenable: public actioniterator{
       /******************************************************************************/
       //Constructor(s)
-      ejectionenable(std::vector<double> values):actioniterator(values,EJECT_ACTION){}
+      ejectionenable(std::vector<double> values):actioniterator(values,EJECT_ACTION,false){}
 
 
       /******************************************************************************/
@@ -277,9 +284,7 @@ namespace STL_lib{
                 if(valptr) {
                     switch (cmd->type) {
                         case ROTATE_ACTION:{
-                            double old = vector.angle;
                             vector.angle = *static_cast<SMART_radians*>(valptr); //no delete as this directly points to the array in the command
-                            pros::lcd::print(4,"%f, %f",old, vector.angle);
                             break;
                           }
                         case INTAKE_ACTION:{
@@ -293,8 +298,9 @@ namespace STL_lib{
                             break;
                           }
                         case POS_ROTATE_ACTION:{
-                            coordinate tmp =* static_cast<coordinate*>(valptr); //should be pointer and not copy construct, fix later
-                            vector.angle = SMART_radians(atan2(tmp.y-current.y, tmp.x-current.x)); //atan2 returns interval -pi to pi, conversion to SMART_radians adjusts that
+                            std::pair<inches,inches> tmp =* static_cast<std::pair<inches,inches>*>(valptr); //should be pointer and not copy construct, fix later
+                            vector.angle = SMART_radians(atan2(tmp.second - current.y, tmp.first - current.x)); //atan2 returns interval -pi to pi, conversion to SMART_radians adjusts that
+                          //  pros::lcd::print(4,"%f, %f, %f", tmp.second-current.y, tmp.first-current.x, vector.angle);
                             break;
                           }
                         case EJECT_ACTION:{
@@ -309,6 +315,14 @@ namespace STL_lib{
             initial.target.y = vector.y;
             initial.target.angle = vector.angle;
             return initial;
+        }
+
+        //special function for newly swapped linearmotions
+        command updatecommand(command initial, position current){
+          initial.target.x = vector.x;
+          initial.target.y = vector.y;
+          initial.target.angle = vector.angle;
+          return initial;
         }
     };
 

@@ -46,7 +46,11 @@ namespace STL_lib{
   };
 
   struct intakecontroller{
+    command refresh(command input){
 
+return input;
+
+    }
   };
 
   struct scorecontroller{
