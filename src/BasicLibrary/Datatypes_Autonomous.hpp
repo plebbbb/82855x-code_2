@@ -134,7 +134,7 @@ namespace STL_lib{
           std::tuple<int,double> targets;
           /******************************************************************************/
           //Constructor(s)
-          score(std::vector<double> values):actioniterator(values,SCORE_ACTION,false){}
+          score(std::vector<double> values, std::tuple<int,double> tg):actioniterator(values,SCORE_ACTION,false),targets(tg){}
 
 
           /******************************************************************************/

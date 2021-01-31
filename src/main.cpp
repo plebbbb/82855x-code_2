@@ -50,11 +50,13 @@ std::vector<linearmotion> cmdset = {
 	{position({-11,119,M_PI*3/4}),{}}
 };
 */
-/*std::vector<linearmotion> cmdset = {
-  {position({10,0,M_PI/2}),{new coordinatetarget({0,100,5,10})}},
+std::vector<linearmotion> cmdset = {
+  {position({10,0,M_PI/2}),{new intake({10,50},{3,1000})}},
 	{position({0,0,M_PI/2}),{}},
-};*/
+};
+//control_loop rotcontrol({new Proportional(70,{100,-100})},{100,-100});
 void opcontrol() {
+/*
 	while(im.is_calibrating()){pros::delay(10);}
 	currentcommand.lengthcompute(locationC);
 		currentcommand.percentcompute(locationC);
@@ -75,6 +77,7 @@ void opcontrol() {
 	currentcontrol.self_transform_polar(-globalangle);
 	base.move_vector_RAW_AS_M(currentcontrol,-master.get_analog(ANALOG_RIGHT_X),test);
 	intake_control();
+	pros::delay(10);
 }
 //*/
 /*	autonbase.updatebase(currentcommand, locationC);
@@ -84,7 +87,7 @@ void opcontrol() {
 //Lintake.move_velocity(200);
 //Rintake.move_velocity(200);
 //Ejector.move_velocity(-200);
-/*
+///*
 delay(100);
 	locationC = {0,0,M_PI/2};
 	for(int i = 0; i < cmdset.size(); i++){
@@ -103,9 +106,11 @@ delay(100);
 			lcd::print(6,"Y: %f",locationC.y);
 			lcd::print(7,"RT: %f",currentcommand.target.angle);
 			autonbase.updatebase(currentcommand, locationC);//update base motor power outputs for current position
+			currentcommand = scra.refresh(currentcommand);
+			currentcommand = inta.refresh(currentcommand);
 			delay(10);
 		}
 	}
 	autonbase.base.move_vector_RAW(std::pair<inches,inches>{0,0},0,0);
-	*/
+	//*/
 }

@@ -54,3 +54,6 @@ Motor Lintake(8);
 Motor Rintake(9,true);
 Motor Shooter(6);
 Motor Ejector(10,true);
+
+intakecontroller inta(Lintake,Rintake,Ejector);
+scorecontroller scra(Ejector,Shooter);

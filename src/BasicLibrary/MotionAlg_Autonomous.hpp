@@ -46,15 +46,43 @@ namespace STL_lib{
   };
 
   struct intakecontroller{
+    pros::Motor L;
+    pros::Motor R;
+    pros::Motor S;
+    intakecontroller(pros::Motor LI, pros::Motor RI, pros::Motor SI):L(LI),R(RI),S(SI){}
     command refresh(command input){
-
-return input;
+      if (std::get<1>(input.intake_status) > 0){
+        L.move_velocity(200);
+        R.move_velocity(200);
+        S.move_velocity(200);
+        std::get<1>(input.intake_status) -= 10;
+      }
+      else {
+        L.move_velocity(0);
+        R.move_velocity(0);
+        S.move_velocity(0);
+      }
+      return input;
 
     }
   };
 
   struct scorecontroller{
+    pros::Motor SS;
+    pros::Motor S;
+    scorecontroller (pros::Motor SI, pros::Motor SSI):S(SI),SS(SSI){}
+    command refresh(command input){
+      if (std::get<1>(input.score_status) > 0){
+        SS.move_velocity(200);
+        S.move_velocity(200);
+        std::get<1>(input.score_status) -= 10;
+      }
+      else {
+        SS.move_velocity(0);
+      }
+      return input;
 
+    }
   };
 
   struct unifiedliftcontroller{
