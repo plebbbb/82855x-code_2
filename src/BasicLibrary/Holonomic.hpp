@@ -52,9 +52,9 @@
       rotationfactor is a scaling value with an interval from -1 to 1 to determine distribution of power
       to rotation with sign for direction. Heading coordinate values are automatically constrained*/
       void move_vector_RF(coordinate heading, double rotationfactor, percent speed){
-        heading = tare_SUM(heading);
+        coordinate Lheading = tare_SUM(heading);
         for(motorwheel temp : motors){ //holy shit this exists in c++
-          temp.move_velocity(2*speed*((heading.x*temp.COSINE + heading.y*temp.SINE)*(1-rotationfactor) + rotationfactor));
+          temp.move_velocity(1*speed*((heading.x*temp.COSINE + heading.y*temp.SINE)*(1-fabs(rotationfactor)) + rotationfactor));
           //multiply by 2 at very end due to move_velocity having a default interval of -200 to 200
         }
       }

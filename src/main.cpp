@@ -17,47 +17,61 @@ void inertialreset(){
 void intake_control(){
 	Lintake.move_velocity(0);
 	Rintake.move_velocity(0);
-	Shooter.move_velocity(0);
-	Ejector.move_velocity(0);
+//	Shooter.move_velocity(0);
+//	Ejector.move_velocity(0);
 	if (master.get_digital(DIGITAL_L1)){
 		Lintake.move_velocity(200);
 		Rintake.move_velocity(200);
 	}
 	if (master.get_digital(DIGITAL_R1)){
 		Shooter.move_velocity(200);
-		Ejector.move_velocity(200);
+	//	Ejector.move_velocity(200);
 	}
 	if (master.get_digital(DIGITAL_R2)){
 		Ejector.move_velocity(-200);
 	}
 	if (master.get_digital(DIGITAL_UP)){
-		Shooter.move_velocity(-100);
+		Shooter.move_velocity(-25);
 	}
 }
 
 polynomial test({0,0,0.00620001});
 
 SMART_radians globalangle = 0;
-/*
+
 std::vector<linearmotion> cmdset = {
-  {position({0,26,M_PI*5/4}),{}},
-	{position({-20,6,M_PI*5/4}),{}},
-	{position({-4,22,M_PI*5/4}),{}},
-	{position({-4, 63, M_PI}),{}},
-	{position({-13,63,M_PI}),{}},
-	{position({-4,63,M_PI}),{}},
-	{position({-4,112,M_PI*3/4}),{}},
-	{position({-11,119,M_PI*3/4}),{}}
-};
-*/
-std::vector<linearmotion> cmdset = {
-  {position({0,20,M_PI/2}),{new intake({40,100},{1,5000})}},
-	{position({0,0,M_PI}),{new score({40,100},{1,8000})}},
+  {position({0,26,M_PI/2}),{
+		new rotation({40,100,M_PI*5/4}),
+		new intake({10,40},{1,1000})
+	}},
+	{position({-19,7,M_PI*5/4}),{
+		new score({70,100},{1,550})
+	}},
+	{position({26,4,M_PI*5/4}),{
+		new rotation({10,80,5.7}),
+		new score({90,100},{1,600})
+	}},
+	{position({6.5,17,5.7}),{}},
+	{position({25.4, 45.4,5.7}),{}},
+	{
+		position({73.4,13.4,5.7}),{
+		new intake({0,30},{1,2000}),
+		new intake({65,100},{1,2000})
+	}},
+	{
+		position({91.7, 0.2, M_PI*7/4}), {
+			new score({90, 100}, {1, 600})
+		}},{
+		position({86, 9.5, M_PI*1/4}), {
+		}},
+
 };
 
-linetracker bottom(ADIAnalogIn({3,'E'}),2000);
-linetracker top(ADIAnalogIn('A'),2750);
-linetracker middle(ADIAnalogIn('H'),2750);
+// std::vector<linearmotion> cmdset = {
+//   {position({0,20,M_PI/2}),{new intake({40,100},{1,5000})}},
+// 	{position({0,0,M_PI}),{new score({40,100},{1,8000})}},
+// };
+
 bool balltransferstate = false;
 
 void ballindexcontroller(){
@@ -77,6 +91,8 @@ void ballindexcontroller(){
 
 
 void ADVballindexcontroller(){
+	Ejector.move_velocity(0);
+//	Shooter.move_velocity(0);
 
 	//enable move if top is clear for new ball
 	if (bottom.returnval() && !top.returnval() && !balltransferstate){
@@ -115,11 +131,9 @@ void opcontrol() {
 	while(true){
 	  locationC = Odom.cycle(locationC);
 		currentcommand.percentcompute(locationC);
-		lcd::print(4,"Len %f", currentcommand.disttotgt);
-		lcd::print(0,"CMPL %f", currentcommand.completion);
-		lcd::print(5,"X: %f",locationC.x);
-		lcd::print(6,"Y: %f",locationC.y);
-		lcd::print(7,"R: %f",locationC.angle);
+		lcd::print(1,"X: %f",locationC.x);
+		lcd::print(2,"Y: %f",locationC.y);
+		lcd::print(3,"R: %f",locationC.angle);
 	if(master.get_digital_new_press(DIGITAL_B)) {inertialreset();}
 	if(master.get_digital_new_press(DIGITAL_X)) toggleglobaldrive = !toggleglobaldrive;
 	coordinate currentcontrol = coordinate(std::pair<inches,inches>{inches(master.get_analog(ANALOG_LEFT_X)),inches(master.get_analog(ANALOG_LEFT_Y))});
@@ -127,6 +141,7 @@ void opcontrol() {
 	if(toggleglobaldrive == false) {globalangle = SMART_radians(0.00);}
 	currentcontrol.self_transform_polar(-globalangle);
 	base.move_vector_RAW_AS_M(currentcontrol,-master.get_analog(ANALOG_RIGHT_X),test);
+	ADVballindexcontroller();
 	intake_control();
 	pros::delay(10);
 }
@@ -143,7 +158,7 @@ delay(100);
 		currentcommand.percentcompute(locationC);
 		autonbase.profileupdate(currentcommand,locationC);
 		//checks if within distance tollerance threshold, as well as if the lift is currently idle during that duration
-		while(!(currentcommand.disttotgt <= 0.75 && currentcommand.isidle())){
+		while(!(currentcommand.disttotgt <= 0.75 && fabs(currentcommand.target.angle.findDiff(currentcommand.target.angle, locationC.angle)) <= 0.0872665 && currentcommand.isidle())){
 			locationC = Odom.cycle(locationC);
 			currentcommand.percentcompute(locationC);
 			currentcommand = cmdset[i].processcommand(currentcommand,locationC);     //update command state machine to new movement
@@ -154,7 +169,7 @@ delay(100);
 			autonbase.updatebase(currentcommand, locationC);//update base motor power outputs for current position
 		//	autonbase.base.move_vector_RAW(std::pair<inches,inches>{0,0},0,0); //uncomment to disable movement
 			currentcommand = inta.refresh(currentcommand);
-			ballindexcontroller();
+			ADVballindexcontroller();
 			currentcommand = scra.refresh(currentcommand);
 			delay(10);
 		}

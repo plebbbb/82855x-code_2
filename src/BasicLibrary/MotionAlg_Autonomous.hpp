@@ -76,14 +76,29 @@ namespace STL_lib{
   struct scorecontroller{
     pros::Motor SS;
     pros::Motor S;
-    scorecontroller (pros::Motor SI, pros::Motor SSI):S(SI),SS(SSI){}
+    bool completion = false;
+    bool lst = false;
+    linetracker toop;
+    scorecontroller (pros::Motor SI, pros::Motor SSI, linetracker tope):S(SI),SS(SSI),toop(tope){}
     command refresh(command input){
       if (std::get<1>(input.score_status) > 0){
         SS.move_velocity(200);
         //S.move_velocity(200);
         std::get<1>(input.score_status) -= 10;
+        if (toop.returnval() != lst){
+          if(lst == false) std::get<0>(input.score_status) -= 1;
+          lst = !lst;
+        }
+        if (std::get<0>(input.score_status) <= 0 && !toop.returnval()){
+          completion = true;
+        }
+        if (completion == true && toop.returnval()){
+          SS.move_velocity(0);
+        }
       }
       else {
+        lst = false;
+        completion = false;
         std::get<0>(input.score_status) = 0;
         SS.move_velocity(0);
       }

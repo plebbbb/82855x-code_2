@@ -9,7 +9,7 @@ Controller master(pros::E_CONTROLLER_MASTER);
 
 position locationC({0,0,M_PI/2});
 
-command currentcommand(position({15,15,M_PI}),{6,25,50},{0,0},{0,0});
+command currentcommand(position({15,15,M_PI}),{10,15,10},{0,0},{0,0});
 
 
 //**************************************************************************//
@@ -27,9 +27,9 @@ holonomicbase base(
 
 basecontroller_auton autonbase(
   base,
-  control_loop({new Proportional(70,{100,-100})},{100,-100}),  //X control loop
-  control_loop({new Proportional(70,{100,-100})},{100,-100}),  //Y control loop
-  control_loop({new Proportional(150,{100,-100})},{100,-100}),   //Rotation control loop
+  control_loop({new Proportional(40,{100,-100}),new Derivitive(30,{70,-70})},{100,-100}),  //X control loop
+  control_loop({new Proportional(40,{100,-100}),new Derivitive(30,{70,-70})},{100,-100}),  //Y control loop
+  control_loop({new Proportional(150,{100,-100}),new Derivitive(60,{20,-20})},{100,-100}),   //Rotation control loop
 	control_loop({new Proportional(1,{0.9,-0.9}),new Derivitive(0.6,{0.5,-0.5})},{0.9,-0.9})   //Rotation control loop
 );
 //, new Derivitive(1,{0.5,-0.5})},{1,-1}
@@ -48,7 +48,9 @@ OdometryWheels Owheels{
 OdometryComputer Odom = OdometryComputer(Owheels);
 
 
-
+linetracker bottom(ADIAnalogIn({3,'E'}),2500);
+linetracker top(ADIAnalogIn('A'),2750);
+linetracker middle(ADIAnalogIn('H'),2800);
 
 bool toggleglobaldrive = true;
 Motor Lintake(8);
@@ -57,4 +59,4 @@ Motor Shooter(6);
 Motor Ejector(10,true);
 
 intakecontroller inta(Lintake,Rintake,Ejector);
-scorecontroller scra(Ejector,Shooter);
+scorecontroller scra(Ejector,Shooter,linetracker(ADIAnalogIn('A'),2750));

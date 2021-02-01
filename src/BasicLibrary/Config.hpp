@@ -46,8 +46,14 @@ extern pros::Motor Rintake;
 extern pros::Motor Shooter;
 extern pros::Motor Ejector;
 
+extern STL_lib::linetracker bottom;
+extern STL_lib::linetracker top;
+extern STL_lib::linetracker middle;
+
+
 extern STL_lib::intakecontroller inta;
 extern STL_lib::scorecontroller scra;
+
 
 
 #endif
