@@ -16,7 +16,7 @@ namespace STL_lib{
   struct Proportional: public controlelement{
       double maxcap;
       double mincap;
-      Proportional(double fac, std::pair<int,int> caps):controlelement(fac){
+      Proportional(double fac, std::pair<double,double> caps):controlelement(fac){
           maxcap = std::get<0>(caps);
           mincap = std::get<1>(caps);
       }
@@ -33,7 +33,7 @@ namespace STL_lib{
       double last = 0;
       double maxcap;
       double mincap;
-      Integral(double fac, std::pair<int,int> caps):controlelement(fac){
+      Integral(double fac, std::pair<double,double> caps):controlelement(fac){
           maxcap = std::get<0>(caps);
           mincap = std::get<1>(caps);
       }
@@ -52,7 +52,7 @@ namespace STL_lib{
       double past = 0;
       double maxcap;
       double mincap;
-      Derivitive(double fac, std::pair<int,int> caps):controlelement(fac){
+      Derivitive(double fac, std::pair<double,double> caps):controlelement(fac){
           maxcap = std::get<0>(caps);
           mincap = std::get<1>(caps);
       }
@@ -72,7 +72,7 @@ namespace STL_lib{
       double maxcap;
       double mincap;
       //if you dont like caps just set them really high, like +-INT_MAX or something
-      control_loop(std::vector<controlelement*> val, std::pair<int,int> caps):elementset(val){
+      control_loop(std::vector<controlelement*> val, std::pair<double,double> caps):elementset(val){
           maxcap = std::get<0>(caps);
           mincap = std::get<1>(caps);
       }

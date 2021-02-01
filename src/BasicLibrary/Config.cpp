@@ -9,7 +9,7 @@ Controller master(pros::E_CONTROLLER_MASTER);
 
 position locationC({0,0,M_PI/2});
 
-command currentcommand(position({15,15,M_PI}),{5,20,10},{0,0},{0,0});
+command currentcommand(position({15,15,M_PI}),{6,25,50},{0,0},{0,0});
 
 
 //**************************************************************************//
@@ -29,9 +29,10 @@ basecontroller_auton autonbase(
   base,
   control_loop({new Proportional(70,{100,-100})},{100,-100}),  //X control loop
   control_loop({new Proportional(70,{100,-100})},{100,-100}),  //Y control loop
-  control_loop({new Proportional(150,{100,-100})},{100,-100})   //Rotation control loop
+  control_loop({new Proportional(150,{100,-100})},{100,-100}),   //Rotation control loop
+	control_loop({new Proportional(1,{0.9,-0.9}),new Derivitive(0.6,{0.5,-0.5})},{0.9,-0.9})   //Rotation control loop
 );
-
+//, new Derivitive(1,{0.5,-0.5})},{1,-1}
 //**************************************************************************//
 
 //ODOM THINGS ***************************************************************/

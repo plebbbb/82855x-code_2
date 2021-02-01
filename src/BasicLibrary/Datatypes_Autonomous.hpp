@@ -161,7 +161,7 @@ namespace STL_lib{
 
       /******************************************************************************/
       //Constructor(s)
-      coordinatetarget(std::vector<double> values):actioniterator(values,ROTATE_ACTION,true),set(values[2],values[3]){}
+      coordinatetarget(std::vector<double> values):actioniterator(values,POS_ROTATE_ACTION,true),set(values[2],values[3]){}
 
 
       /******************************************************************************/
@@ -324,6 +324,17 @@ namespace STL_lib{
           initial.target.angle = vector.angle;
           return initial;
         }
+    };
+
+    struct linetracker{
+      pros::ADIAnalogIn port;
+      int threshold;
+      linetracker(pros::ADIAnalogIn p, int tr):port(p),threshold(tr){};
+      //return true if under threshold
+      bool returnval(){
+        if (port.get_value() <= threshold) return true;
+        return false;
+      }
     };
 
 

@@ -51,9 +51,60 @@ std::vector<linearmotion> cmdset = {
 };
 */
 std::vector<linearmotion> cmdset = {
-  {position({10,0,M_PI/2}),{new intake({10,50},{3,1000})}},
-	{position({0,0,M_PI/2}),{}},
+  {position({0,20,M_PI/2}),{new intake({40,100},{1,5000})}},
+	{position({0,0,M_PI}),{new score({40,100},{1,8000})}},
 };
+
+linetracker bottom(ADIAnalogIn({3,'E'}),2000);
+linetracker top(ADIAnalogIn('A'),2750);
+linetracker middle(ADIAnalogIn('H'),2750);
+bool balltransferstate = false;
+
+void ballindexcontroller(){
+	if (bottom.returnval() && !top.returnval() && !balltransferstate){
+		balltransferstate = true;
+	}
+	if (balltransferstate) {
+		Ejector.move_velocity(200);
+		Shooter.move_velocity(100);
+	}
+	if (balltransferstate && top.returnval()){
+		balltransferstate = false;
+		Ejector.move_velocity(0);
+		Shooter.move_velocity(0);
+	}
+}
+
+
+void ADVballindexcontroller(){
+
+	//enable move if top is clear for new ball
+	if (bottom.returnval() && !top.returnval() && !balltransferstate){
+		balltransferstate = true;
+	}
+
+	//ball movement
+	if (balltransferstate) {
+		Ejector.move_velocity(200);
+		Shooter.move_velocity(100);
+	}
+
+	//cancelation case 1: ball is at top
+	if (balltransferstate && top.returnval()){
+		balltransferstate = false;
+		Ejector.move_velocity(0);
+		Shooter.move_velocity(0);
+	}
+
+	//cancelation case 2: ball present in middle(going to top will cause bottom ball to get stuck in middle)
+	if (balltransferstate && middle.returnval() && bottom.returnval()){
+		balltransferstate = false;
+		Ejector.move_velocity(0);
+		Shooter.move_velocity(0);
+	}
+}
+
+
 //control_loop rotcontrol({new Proportional(70,{100,-100})},{100,-100});
 void opcontrol() {
 /*
@@ -84,30 +135,27 @@ void opcontrol() {
 	pros::delay(10);
 	}
 */
-//Lintake.move_velocity(200);
-//Rintake.move_velocity(200);
-//Ejector.move_velocity(-200);
 ///*
 delay(100);
-	locationC = {0,0,M_PI/2};
 	for(int i = 0; i < cmdset.size(); i++){
 		currentcommand = cmdset[i].updatecommand(currentcommand,locationC);     //update command state machine to new movement
 		currentcommand.lengthcompute(locationC);
 		currentcommand.percentcompute(locationC);
+		autonbase.profileupdate(currentcommand,locationC);
 		//checks if within distance tollerance threshold, as well as if the lift is currently idle during that duration
 		while(!(currentcommand.disttotgt <= 0.75 && currentcommand.isidle())){
-			lcd::clear();
 			locationC = Odom.cycle(locationC);
 			currentcommand.percentcompute(locationC);
 			currentcommand = cmdset[i].processcommand(currentcommand,locationC);     //update command state machine to new movement
-		//	lcd::print(4,"Len %f", currentcommand.disttotgt);
+			lcd::print(4,"Len %f", currentcommand.disttotgt);
 			lcd::print(0,"CMPL %f", currentcommand.completion);
 			lcd::print(5,"X: %f",locationC.x);
 			lcd::print(6,"Y: %f",locationC.y);
-			lcd::print(7,"RT: %f",currentcommand.target.angle);
 			autonbase.updatebase(currentcommand, locationC);//update base motor power outputs for current position
-			currentcommand = scra.refresh(currentcommand);
+		//	autonbase.base.move_vector_RAW(std::pair<inches,inches>{0,0},0,0); //uncomment to disable movement
 			currentcommand = inta.refresh(currentcommand);
+			ballindexcontroller();
+			currentcommand = scra.refresh(currentcommand);
 			delay(10);
 		}
 	}
