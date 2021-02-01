@@ -39,6 +39,7 @@ polynomial test({0,0,0.00620001});
 
 SMART_radians globalangle = 0;
 
+/*
 std::vector<linearmotion> cmdset = {
   {position({0,26,M_PI/2}),{
 		new rotation({40,100,M_PI*5/4}),
@@ -47,12 +48,12 @@ std::vector<linearmotion> cmdset = {
 	{position({-19,7,M_PI*5/4}),{
 		new score({70,100},{1,550})
 	}},
-	{position({26,4,M_PI*5/4}),{
+	{position({24.5,5,M_PI*5/4}),{
 		new rotation({10,80,5.7}),
 		new score({90,100},{1,600})
 	}},
-	{position({6.5,17,5.7}),{}},
-	{position({25.4, 45.4,5.7}),{}},
+	{position({-3.5,23,5.7}),{}},
+	{position({16.4, 51.4,5.7}),{}},
 	{
 		position({73.4,13.4,5.7}),{
 		new intake({0,30},{1,2000}),
@@ -66,6 +67,32 @@ std::vector<linearmotion> cmdset = {
 		}},
 
 };
+*/
+std::vector<linearmotion> cmdset = {
+  {position({0,26,M_PI/2}),{
+		new rotation({40,100,M_PI*5/4}),
+		new intake({10,40},{1,1000})
+	}},
+	{position({-19,7,M_PI*5/4}),{
+		new score({70,100},{1,550})
+	}},
+	{position({24.5,5,M_PI*5/4}),{
+		new rotation({10,80,5.7}),
+		new score({90,100},{1,600})
+	}},
+	{position({-3.5,23,5.7}),{}},
+	{position({16.4, 51.4,5.7}),{}},
+	{
+		position({73.4,13.4,5.7}),{
+		new intake({0,30},{1,2000}),
+		new intake({65,100},{1,2000})
+	}},
+	{
+		position({91.7, 0.2, M_PI*7/4}), {
+			new score({90, 100}, {1, 600})
+		}},{
+		position({86, 9.5, M_PI*1/4}), {
+		}},
 
 // std::vector<linearmotion> cmdset = {
 //   {position({0,20,M_PI/2}),{new intake({40,100},{1,5000})}},
