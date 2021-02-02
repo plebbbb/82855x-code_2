@@ -41,58 +41,117 @@ SMART_radians globalangle = 0;
 
 ///*
 std::vector<linearmotion> cmdset = {
-  {position({0,26,M_PI/2}),{
-		new rotation({40,100,M_PI*5/4}),
-		new intake({10,40},{1,1000})
-	}},
-	{position({-19,7,M_PI*5/4}),{
-		new score({70,100},{1,550})
-	}},
-	{position({24.5,5,M_PI*5/4}),{
-		new rotation({10,80,5.7}),
-		new score({90,100},{1,600})
-	}},
-	{position({18.62,46.36,5.7}),{}},
-	{position({21.8, 48.35,5.7}),{}},
-	{position({73.4,13.4,5.7}),{
-		new intake({0,30},{1,2000}),
-		new intake({65,100},{1,2000})
-	}},
-	{position({91,4.5,M_PI*7/4}),{ //FAIL: too close, corrected but not tested yet
-		new score({90,100},{1,600})
-	}},
-	{position({88.2,54.4,M_PI*7/4}),{ //OK
-		new rotation({10,20,M_PI/2}),
-		new intake({60,100},{1,1000})
-	}},
-	{position({93.6,59.7,0}),{ //OK
-		new score({60,100},{1,1000})
-	}},
-	{position({77.6,85.7,0}),{ //OK
-		new rotation({20,50,M_PI/2})
-	}},
-	{position({77.6,101,M_PI/2}),{ //OK
-		new intake({50,100},{1,1000})
-	}},
-	{position({99,115,M_PI*1/4}),{ //FAIL
-		new score({90,100},{1,1000})
-	}},
-	{position({42.65,84,M_PI*1/4}),{ //OK?? MAYBE
-		new rotation({15,40,3.61}),
-		new intake({85,100},{1,1000})
-	}},
-	{position({43,115,M_PI/2}),{ //FAIL
-		new score({85,100},{1,1000})
-	}},
-	{position({43,107,M_PI/2}),{ //FAIL
-		new rotation({50,100,M_PI})
-	}},
-	{position({3.33,112,M_PI/2}),{ //FAIL
-		new intake({50,100},{1,1000})
-	}},
-	{position({-12.62,121,M_PI*3/4}),{ //FAIL
-		new score({90,100},{1,1000})
-	}},
+	std::vector<linearmotion> cmdset = {
+	  {
+	        position({0, 26, M_PI/2}), {
+	            new rotation({40, 100, M_PI5/4}),
+	            new intake({10, 40}, {1, 1000})
+	        }
+	    },
+	    {
+	        position({-19, 7, M_PI5/4}),    {
+	            new score({70, 100}, {1, 550})    // goal 1 (bottom left)
+	        }
+	    },
+
+	    {
+	        position({24.5, 5, M_PI5/4}),    {
+	            new rotation({10, 80, 5.7}),
+	            new score({90, 100}, {1, 600})    // goal 2 (bottom middle)
+	        }
+	    },
+
+	    {position({-3.5, 23, 5.7}), {}},
+	    {position({16.4, 51.4, 5.7}), {}},
+	    {
+	        position({73.4, 13.4, 5.7}),    {
+	            new intake({0, 30}, {1, 2000}),
+	            new intake({65, 100}, {1, 2000})
+	        }
+	    },
+	    {
+	        position({91.7, 0.2, M_PI7/4}), {
+	            new score({90, 100}, {1, 600})    // goal 3 (bottom right)
+	        }
+	    },
+
+	    {position({80, 12, M_PI7/4}), {}},
+	    {position({80, 12, M_PI1/2}), {}},
+	    {
+	        position({80, 60, M_PI*1/2}), {
+	            new intake({70, 100}, {1, 200})
+	        }
+	    },
+	    {position({80, 60, 0}), {}},
+	    {
+	        position({92, 60, 0}), {
+	            new score({90, 100}, {1, 600})    // goal 4 (right middle)
+	        }
+	    },
+
+	    {position({72, 60, 0}), {}},
+	    {position({72, 60, M_PI/2}), {}},
+	    {position({72, 108, M_PI/2}), {
+	            new intake({70, 100}, {1, 200})    // intaking this before to avoid sketcch movements
+	        }
+	    },
+	    {position({80, 108, M_PI/2}), {}},
+	    {position({80, 108, M_PI/4}), {}},
+	    {
+	        position({92, 120, M_PI/4}), {
+	            new score({90, 100}, {1, 600})    // goal 5 (top right)
+	        }
+	    },
+
+	{
+		position({32, 108, M_PI/4}), {
+			new rotation({20, 100, M_PI/2})	// simutaniously move and turn a bit
+		}
+	},
+// safer alternative to the above move/turn
+	// {position({80, 108, M_PI/4}), {}},
+	// {position({80, 108, M_PI/2}), {}},
+	// {position({32, 108, M_PI/2}), {}},
+	{
+		position({32, 120, M_PI/2}), {
+			new score({90, 100}, {1, 600})	// goal 6 (top middle)
+		}
+	},
+
+	{position({32, 108, M_PI/2}), {}},
+	{position({32, 108, M_PI}), {}},
+	{
+		position({-16, 108, M_PI}), {
+			new intake({70, 100}, {1, 200})
+		}
+	},
+	{position({-16, 108, M_PI*3/4}), {}},
+	{
+		position({-28, 120, M_PI*3/4}), {
+			new score({90, 100}, {1, 600})	// goal 7 (top left)
+		}
+	},
+	{position({-16, 108, M_PI*3/4}), {}},
+	{position({-16, 108, M_PI*3/2}), {}},
+	{
+		position({-16, 60, M_PI*3/2}), {
+			new intake({70, 100}, {1, 200})
+		}
+	},
+	{position({-16, 60, M_PI}), {}},
+	{
+		position({-28, 60, M_PI}), {
+			new score({90, 100}, {1, 600})	// goal 8 (left middle)
+		}
+	},
+	{position({-16, 60, M_PI}), {}},
+	{position({-16, 60, 0}), {}},
+	{
+		position({24, 60, 0}), {
+			new intake({10, 100}, {1, 1000}),
+			new score ({90, 100}, {1, 600})	// middle goal, score could be delayed
+		}
+	},
 };
 //*/
 /*
