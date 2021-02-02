@@ -28,7 +28,7 @@ basecontroller_auton autonbase(
   control_loop({new Proportional(40,{100,-100}),new Derivitive(30,{70,-70})},{100,-100}),  //X control loop
   control_loop({new Proportional(40,{100,-100}),new Derivitive(30,{70,-70})},{100,-100}),  //Y control loop
   control_loop({new Proportional(150,{100,-100}),new Derivitive(60,{20,-20})},{100,-100}),   //Rotation control loop
-	control_loop({new Proportional(1,{0.9,-0.9}),new Derivitive(0.6,{0.5,-0.5})},{0.9,-0.9})   //Rotation control loop, vector mode
+	control_loop({new Proportional(1,{0.5,-0.5}),new Derivitive(0.4,{0.25,-0.25})},{0.5,-0.5})   //Rotation control loop, vector mode
 );
 //, new Derivitive(1,{0.5,-0.5})},{1,-1}
 //**************************************************************************//
