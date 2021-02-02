@@ -41,21 +41,20 @@ SMART_radians globalangle = 0;
 
 ///*
 std::vector<linearmotion> cmdset = {
-	std::vector<linearmotion> cmdset = {
-	  {
+	  	{
 	        position({0, 26, M_PI/2}), {
-	            new rotation({40, 100, M_PI5/4}),
+	            new rotation({40, 100, M_PI*5/4}),
 	            new intake({10, 40}, {1, 1000})
 	        }
 	    },
 	    {
-	        position({-19, 7, M_PI5/4}),    {
+	        position({-19, 7, M_PI*5/4}),    {
 	            new score({70, 100}, {1, 550})    // goal 1 (bottom left)
 	        }
 	    },
 
 	    {
-	        position({24.5, 5, M_PI5/4}),    {
+	        position({24.5, 5, M_PI*5/4}),    {
 	            new rotation({10, 80, 5.7}),
 	            new score({90, 100}, {1, 600})    // goal 2 (bottom middle)
 	        }
@@ -70,13 +69,13 @@ std::vector<linearmotion> cmdset = {
 	        }
 	    },
 	    {
-	        position({91.7, 0.2, M_PI7/4}), {
+	        position({91.7, 0.2, M_PI*7/4}), {
 	            new score({90, 100}, {1, 600})    // goal 3 (bottom right)
 	        }
 	    },
 
-	    {position({80, 12, M_PI7/4}), {}},
-	    {position({80, 12, M_PI1/2}), {}},
+	    {position({80, 12, M_PI*7/4}), {}},
+	    {position({80, 12, M_PI*1/2}), {}},
 	    {
 	        position({80, 60, M_PI*1/2}), {
 	            new intake({70, 100}, {1, 200})
