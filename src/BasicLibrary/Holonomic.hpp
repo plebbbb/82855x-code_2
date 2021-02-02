@@ -54,7 +54,7 @@
       void move_vector_RF(coordinate heading, double rotationfactor, percent speed){
         coordinate Lheading = tare_SUM(heading);
         for(motorwheel temp : motors){ //holy shit this exists in c++
-          temp.move_velocity(1*speed*((heading.x*temp.COSINE + heading.y*temp.SINE)*(1-fabs(rotationfactor)) + rotationfactor));
+          temp.move_velocity(2*speed*((Lheading.x*temp.COSINE + Lheading.y*temp.SINE)*(1-fabs(rotationfactor)) + rotationfactor));
           //multiply by 2 at very end due to move_velocity having a default interval of -200 to 200
         }
       }

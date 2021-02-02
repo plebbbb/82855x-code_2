@@ -236,6 +236,7 @@ namespace STL_lib{
     };
 
     struct command{
+        position intentedstartvector = std::tuple<inches,inches,SMART_radians>{0,0,M_PI/2};
         position target; //current target position
         inches length; //length of current processed path
         inches disttotgt; //distance to target
@@ -319,6 +320,7 @@ namespace STL_lib{
 
         //special function for newly swapped linearmotions
         command updatecommand(command initial, position current){
+          initial.intentedstartvector = initial.target;
           initial.target.x = vector.x;
           initial.target.y = vector.y;
           initial.target.angle = vector.angle;

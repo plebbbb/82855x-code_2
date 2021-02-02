@@ -11,8 +11,24 @@ namespace STL_lib{
     control_loop y;
     control_loop rot;
     control_loop rot_vectorM;
+  //  control_loop transl_horz;
     Trapezoidprofile velocityprofile;
-    basecontroller_auton(holonomicbase set, control_loop FB, control_loop LR, control_loop CWCCW, control_loop ROTVM):base(set),x(FB),y(LR),rot(CWCCW),rot_vectorM(ROTVM){}
+    basecontroller_auton(holonomicbase set, control_loop FB, control_loop LR, control_loop CWCCW, control_loop ROTVM):
+    base(set),
+    x(FB),
+    y(LR),
+    rot(CWCCW),
+    rot_vectorM(ROTVM){}
+  //  transl_horz(RTA){}
+/*
+    //cheese strat to also determine which side we transform our coords to.
+    double line_closestpt(position point, position p1, position p2){
+      coordinate intendedln(p1,p2);
+      coordinate tnsf(point);
+      tnsf = tnsf.transform_matrix(SMART_radians(-atan2(intendedln.y,intendedln.x))); //rotate so that the intended line is the x axis
+      return tnsf.y; //y value gives us magnitude of current pos distance to intended line, as well as direction(pos left, neg right)
+    }
+*/
     void updatebase(command input, position current){
       coordinate globalrelative(current,input.target); //returns distance from current to target, which is the correct input type for PID
       double RVU = input.target.angle.findDiff(current.angle,input.target.angle);
@@ -30,13 +46,14 @@ namespace STL_lib{
       }
       //Base movement mode 2: Combined local axis vector + rotation on a Trapezoid speed profile
       else {
+
         globalrelative = globalrelative.transform_matrix(SMART_radians((current.angle-M_PI/2)));
+        //below: heading PID
+      //  double translfac = transl_horz.update(line_closestpt(current, input.intentedstartvector, input.target),0);
+    //    globalrelative = globalrelative.transform_matrix(SMART_radians(translfac));
         double rotationfactor = rot_vectorM.update(RVU,0); //interval scaled down to 0.5 to -0.5. May need seperate PID from local axis
         percent speed = velocityprofile.determinepoweroutput(input.completion)*(1+fabs(rotationfactor));
-        pros::lcd::print(1,"TA: %f",input.target.angle);
-        pros::lcd::print(2,"CA: %f",current.angle);
-        pros::lcd::print(3,"RF: %f",rotationfactor);
-        pros::lcd::print(7,"SPE: %f",speed);
+    //    pros::lcd::print(1,"TLAV: %f",atan2(globalrelative.y,globalrelative.x));
 
         //move_vector_RF automatically scales down globalrelative, so no need to process that here
         base.move_vector_RF(globalrelative, rotationfactor, speed);
