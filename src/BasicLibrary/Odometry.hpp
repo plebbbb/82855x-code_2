@@ -187,7 +187,7 @@ namespace STL_lib{
         (wheels[ENCODER_POSITION_LEFT].Distance_CenterOfRotation +
         wheels[ENCODER_POSITION_RIGHT].Distance_CenterOfRotation);
 
-      radians rel_orientation_change = precycle.angle() -
+      radians rel_orientation_change = precycle.angle -
         (EncoderDistanceTotalValues[0]-EncoderDistanceTotalValues[1]) /
         (wheels[ENCODER_POSITION_LEFT].Distance_CenterOfRotation +
         wheels[ENCODER_POSITION_RIGHT].Distance_CenterOfRotation);
