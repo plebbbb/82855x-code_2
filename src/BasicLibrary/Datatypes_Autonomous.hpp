@@ -17,7 +17,8 @@ namespace STL_lib{
         INTAKE_ACTION = 1,          //a intake actioniterator
         SCORE_ACTION = 2,           //a score actioniterator
         POS_ROTATE_ACTION = 3,      //a point targeting actioniterator
-        EJECT_ACTION = 4            //a ball ejection actioniterator
+        EJECT_ACTION = 4,           //a ball ejection actioniterator
+        ODOM_RESET_ACTION = 5,      //a coordinate reset actioniterator
     };
 
     /* WARNING: THIS THING NEEDS TO BE DECLARED IN RUNTIME AGAIN. PLS USE TEMP VARIABLES OBTAINED FROM THE SOURCE
@@ -195,6 +196,14 @@ namespace STL_lib{
       }
   };
 
+  struct odomreset: public actioniterator{
+    position hardset;
+    odomreset(std::vector<double> values, position newtpos):actioniterator(values,ODOM_RESET_ACTION,false),hardset(newtpos){}
+    virtual void* getval(){
+      return &hardset;
+    }
+  };
+
 
 
   //velocity profile system
@@ -309,6 +318,10 @@ namespace STL_lib{
                             delete static_cast<bool*>(valptr);
                             break;
                           }
+                        case ODOM_RESET_ACTION:{
+                            current = *static_cast<position*>(valptr);
+                            break;
+                        }
                     }
                 }
             }
