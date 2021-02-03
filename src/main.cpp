@@ -60,50 +60,49 @@ std::vector<linearmotion> cmdset = {
 	        }
 	    },
 
-	    {position({-3.5, 23, 5.7}), {}},
-	    {position({16.4, 51.4, 5.7}), {}},
+	    {position({18.62, 46.36, 5.7}), {}},
+	    {position({21.8, 48.35, 5.7}), {}},
 	    {
 	        position({73.4, 13.4, 5.7}),    {
 	            new intake({0, 30}, {1, 2000}),
-	            new intake({65, 100}, {1, 2000})
+	            new intake({50, 100}, {1, 1000})
 	        }
 	    },
 	    {
-	        position({91.7, 0.2, M_PI*7/4}), {
+	        position({91.15, 1.4, M_PI*7/4}), {
 	            new score({90, 100}, {1, 600})    // goal 3 (bottom right)
 	        }
 	    },
 
-	    {position({80, 12, M_PI*7/4}), {}},
-	    {position({80, 12, M_PI*1/2}), {}},
+	    {position({87, 58, M_PI*7/4}), {
+				new rotation({10,100,M_PI/2}),
+	      new intake({60, 85}, {1, 1000}),
+				new rotation({80,100,-0.174533})
+	       }
+	    },
 	    {
-	        position({80, 60, M_PI*1/2}), {
-	            new intake({70, 100}, {1, 200})
+	        position({92.5, 58, -0.174533}), {
+	            new score({60, 100}, {1, 600})    // goal 4 (right middle)
 	        }
 	    },
-	    {position({80, 60, 0}), {}},
-	    {
-	        position({92, 60, 0}), {
-	            new score({90, 100}, {1, 600})    // goal 4 (right middle)
-	        }
-	    },
+			{position({79.6, 58, -0.174533}), {
+				new rotation({50,100,M_PI/2}),
+			}
+			},
 
-	    {position({72, 60, 0}), {}},
-	    {position({72, 60, M_PI/2}), {}},
-	    {position({72, 108, M_PI/2}), {
-	            new intake({70, 100}, {1, 200})    // intaking this before to avoid sketcch movements
+	    {position({79.6, 101, M_PI/2}), {
+	            new intake({85, 100}, {1, 1000})    // intaking this before to avoid sketcch movements
 	        }
 	    },
-	    {position({80, 108, M_PI/2}), {}},
-	    {position({80, 108, M_PI/4}), {}},
-	    {
-	        position({92, 120, M_PI/4}), {
-	            new score({90, 100}, {1, 600})    // goal 5 (top right)
-	        }
-	    },
+	    {position({99.20, 112.60, 0.713280}), {	// goal 5 (top right)
+				new score({85,100},{1,1000})
+			}},
+	    {position({80, 108, M_PI/4}), {
+				new odomreset({0,10},std::tuple<inches,inches,SMART_radians>{93.8,117.8,M_PI/4},0.07211816339)
+			}},
 
 	{
-		position({32, 108, M_PI/4}), {
+		position({40, 108, M_PI/4}), {
 			new rotation({20, 100, M_PI/2})	// simutaniously move and turn a bit
 		}
 	},
@@ -112,8 +111,8 @@ std::vector<linearmotion> cmdset = {
 	// {position({80, 108, M_PI/2}), {}},
 	// {position({32, 108, M_PI/2}), {}},
 	{
-		position({32, 120, M_PI/2}), {
-			new score({90, 100}, {1, 600})	// goal 6 (top middle)
+		position({40, 114, M_PI/2}), {
+			new score({60, 100}, {1, 600})	// goal 6 (top middle)
 		}
 	},
 
@@ -276,8 +275,11 @@ delay(100);
 			lcd::print(6,"Y: %f",locationC.y);
 			lcd::print(7,"R: %f",locationC.angle);
 			autonbase.base.move_vector_RAW(std::pair<inches,inches>{0,0},0,0); //uncomment to disable movement
+			lcd::print(4,"MODE: PAUSED_ODOMENABLE");
 			delay(10);
 		}
+		lcd::print(4,"MODE: MOVE");
+
 	//	delay(100);
 		currentcommand = cmdset[i].updatecommand(currentcommand,locationC);     //update command state machine to new movement
 		currentcommand.lengthcompute(locationC);

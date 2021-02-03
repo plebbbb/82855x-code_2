@@ -198,9 +198,11 @@ namespace STL_lib{
 
   struct odomreset: public actioniterator{
     position hardset;
-    odomreset(std::vector<double> values, position newtpos):actioniterator(values,ODOM_RESET_ACTION,false),hardset(newtpos){}
+    radians adjustmentfactor;
+    odomreset(std::vector<double> values, position newtpos, radians af):actioniterator(values,ODOM_RESET_ACTION,false),hardset(newtpos),adjustmentfactor(af){}
     virtual void* getval(){
-      return &hardset;
+      return new std::tuple<position,radians>{hardset,adjustmentfactor};
+    //  return &adjustmentfactor;
     }
   };
 
@@ -318,10 +320,19 @@ namespace STL_lib{
                             delete static_cast<bool*>(valptr);
                             break;
                           }
+
+                        //NOTE: the radian value is calculated as inaccurate angle - desired value for that angle post reset
                         case ODOM_RESET_ACTION:{
-                            current = *static_cast<position*>(valptr);
+                      //    position temp = *static_cast<position*>(valptr);
+                            std::tuple<position,radians> values = *static_cast<std::tuple<position,radians>*>(valptr); //THIS COPIES THE POINTER< IT IS NOT IT
+                            coordinate localoffset(current,initial.target); //make copy
+                            position temp = std::get<0>(values);  //make copy
+                            temp += localoffset.transform_matrix(-std::get<1>(values)); //transform coordinate offset from current coord system into corrected coords
+                            temp.angle = initial.target.angle-std::get<1>(values); //convert current global orientation into new global orientation
+                            current = temp;
+                            delete static_cast<std::tuple<position,radians>*>(valptr);
                             break;
-                        }
+                          }
                     }
                 }
             }
