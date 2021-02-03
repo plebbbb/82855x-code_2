@@ -36,6 +36,7 @@ namespace STL_lib{
     pros::ADIEncoder Encoder; //The shaft encoder
     inches WheelRadius; //The radius of the deadwheel
     inches Distance_CenterOfRotation; //Distance to center of rotation
+    int encoderTotal = 0; // Stores total encoder value
 
     //Constructor if the encoder is plugged directly into the V5 Brain ADI ports
     DeadWheel(int portA, int portB, bool direction, inches Diameter, inches Dist_to_ctr):
@@ -66,10 +67,20 @@ namespace STL_lib{
     //get_distance. Note that this resets the encoder as well. Do not call this multiple times per cycle
     inches get_distance_AUTORESET(){
       inches val = get_distance();
+      encoderTotal += get_distance(); // Add encoder's value to a total
       reset();
       return val;
     }
 
+    // Returns radian value of the encoder total
+    radians get_radianTotal(){
+      return radians(degrees(encoderTotal));
+    }
+
+    // Returns total distance via the encoder total
+    inches get_distanceTotal(){
+      return inches((double)WheelRadius*(double)get_radianTotal());
+    }
 
     void reset(){
       Encoder.reset();
@@ -103,6 +114,15 @@ namespace STL_lib{
         LEFT.get_distance_AUTORESET(),
         RIGHT.get_distance_AUTORESET(),
         BACK.get_distance_AUTORESET()
+      };
+    }
+
+    // Returns array of total encoder distances
+    std::array<inches,3> get_distancesTotal_nonpointer(){
+      return std::array<inches, 3>{
+        LEFT.get_distanceTotal(),
+        RIGHT.get_distanceTotal(),
+        BACK.get_distanceTotal()
       };
     }
     /*This function basically takes control of the [] thing you see in arrays.
@@ -158,12 +178,18 @@ namespace STL_lib{
     position cycle(position precycle){
       std::array EncoderDistanceValues = wheels.get_distances_nonpointer();
       //its a 50/50 that get_distances_nonpointer works
+      std::array EncoderDistanceTotalValues = wheels.get_distancesTotal_nonpointer();
 
       //Assuming forwards is 0rad, CCW is positive we calculate the relative offset
       //All coords are prior to move fyi.
-      radians rel_orientation_change =
-      (EncoderDistanceValues[0]-EncoderDistanceValues[1]) /
-      (wheels[ENCODER_POSITION_LEFT].Distance_CenterOfRotation +
+      radians raw_global_angle =
+        (EncoderDistanceValues[0]-EncoderDistanceValues[1]) /
+        (wheels[ENCODER_POSITION_LEFT].Distance_CenterOfRotation +
+        wheels[ENCODER_POSITION_RIGHT].Distance_CenterOfRotation);
+
+      radians rel_orientation_change = precycle.angle() -
+        (EncoderDistanceTotalValues[0]-EncoderDistanceTotalValues[1]) /
+        (wheels[ENCODER_POSITION_LEFT].Distance_CenterOfRotation +
         wheels[ENCODER_POSITION_RIGHT].Distance_CenterOfRotation);
 
       //SMART_radians' built in interval restriction isn't needed here. We need negative intervals.
@@ -188,7 +214,7 @@ namespace STL_lib{
       returncycle = returncycle.transform_matrix(-(precycle.angle+avg_angle-(M_PI/2)));
 
       precycle += returncycle;
-      precycle.angle.value -= rel_orientation_change;
+      precycle.angle = raw_global_angle;
 
       return precycle;
     }
