@@ -175,22 +175,59 @@ namespace STL_lib{
 
     /******************************************************************************/
     //Primary functions
+    //original odometry function. verfied working
     position cycle(position precycle){
       std::array EncoderDistanceValues = wheels.get_distances_nonpointer();
       //its a 50/50 that get_distances_nonpointer works
-      std::array EncoderDistanceTotalValues = wheels.get_distancesTotal_nonpointer();
 
       //Assuming forwards is 0rad, CCW is positive we calculate the relative offset
       //All coords are prior to move fyi.
-      radians raw_global_angle =
-        (EncoderDistanceValues[0]-EncoderDistanceValues[1]) /
-        (wheels[ENCODER_POSITION_LEFT].Distance_CenterOfRotation +
+      radians rel_orientation_change =
+      (EncoderDistanceValues[0]-EncoderDistanceValues[1]) /
+      (wheels[ENCODER_POSITION_LEFT].Distance_CenterOfRotation +
         wheels[ENCODER_POSITION_RIGHT].Distance_CenterOfRotation);
 
-      radians rel_orientation_change = precycle.angle -
+      //SMART_radians' built in interval restriction isn't needed here. We need negative intervals.
+
+      coordinate returncycle(std::pair<inches,inches>{0,0});
+
+      radians avg_angle = rel_orientation_change/2.0;
+
+      if (rel_orientation_change == 0){
+        returncycle.x = EncoderDistanceValues[2];
+        returncycle.y = EncoderDistanceValues[1];
+      } else {
+        returncycle.y = inches(2.0*sin(avg_angle) *
+        ((EncoderDistanceValues[1]/rel_orientation_change) +
+        wheels[ENCODER_POSITION_RIGHT].Distance_CenterOfRotation));
+
+        returncycle.x = inches(2.0*sin(avg_angle) *
+        ((EncoderDistanceValues[2]/rel_orientation_change) +
+        wheels[ENCODER_POSITION_BACK].Distance_CenterOfRotation));
+      }
+
+      returncycle = returncycle.transform_matrix(-(precycle.angle+avg_angle-(M_PI/2)));
+
+      precycle += returncycle;
+      precycle.angle.value -= rel_orientation_change;
+
+      return precycle;
+    }
+
+
+    //Candidate revision of prexisting odom function. Main improvement is less compounding error from adding angles. To be verified
+    position cycleV2(position precycle){
+      std::array EncoderDistanceValues = wheels.get_distances_nonpointer(); //compute all distances, reset odometry wheels, append delta distance to total dist
+      std::array EncoderDistanceTotalValues = wheels.get_distancesTotal_nonpointer(); //return array of total distances including new dist from get_distance_nonpointer
+
+      //Assuming forwards is 0rad, CCW is positive we calculate the relative offset
+      //All coords are prior to move fyi.
+      SMART_radians raw_global_angle =
         (EncoderDistanceTotalValues[0]-EncoderDistanceTotalValues[1]) /
         (wheels[ENCODER_POSITION_LEFT].Distance_CenterOfRotation +
         wheels[ENCODER_POSITION_RIGHT].Distance_CenterOfRotation);
+
+      radians rel_orientation_change = SMART_radians().findDiff(raw_global_angle,precycle.angle);
 
       //SMART_radians' built in interval restriction isn't needed here. We need negative intervals.
 
