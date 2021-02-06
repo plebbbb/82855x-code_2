@@ -116,17 +116,15 @@ std::vector<linearmotion> cmdset = {
 		}
 	},
 
-	{position({32, 104, M_PI/2}), {
+	{position({32, 108, M_PI/2}), {
 		new rotation({50,100,M_PI})
 	}},
 	{
-		position({0, 104, M_PI}), {
+		position({0, 108, M_PI}), {
 			new intake({70, 100}, {1, 200})
 		}
 	},
-	{position({-16, 108, M_PI*3/4}), {}},
-	{
-		position({-28, 120, M_PI*3/4}), {
+	{position({-8, 124, M_PI*3/4}), {
 			new score({90, 100}, {1, 600})	// goal 7 (top left)
 		}
 	},
