@@ -91,19 +91,19 @@ std::vector<linearmotion> cmdset = {
 			},
 
 	    {position({79.6, 101, M_PI/2}), {
-	            new intake({85, 100}, {1, 1000})    // intaking this before to avoid sketcch movements
+	            new intake({65, 100}, {1, 1000})    // intaking this before to avoid sketcch movements
 	        }
 	    },
-	    {position({99.20, 112.60, 0.713280}), {	// goal 5 (top right)
+	    {position({101, 114, 0.713280}), {	// goal 5 (top right)
 				new score({85,100},{1,1000})
 			}},
 	    {position({80, 108, M_PI/4}), {
-				new odomreset({0,10},std::tuple<inches,inches,SMART_radians>{93.8,117.8,M_PI/4},0.07211816339)
+				new odomreset({0,10},std::tuple<inches,inches,SMART_radians>{93.8,117.8,M_PI/4},0.07256416339),
+				new rotation({20, 100, M_PI/2})
 			}},
 
 	{
-		position({40, 108, M_PI/4}), {
-			new rotation({20, 100, M_PI/2})	// simutaniously move and turn a bit
+		position({45, 108, M_PI/2}), {
 		}
 	},
 // safer alternative to the above move/turn
@@ -111,15 +111,16 @@ std::vector<linearmotion> cmdset = {
 	// {position({80, 108, M_PI/2}), {}},
 	// {position({32, 108, M_PI/2}), {}},
 	{
-		position({40, 114, M_PI/2}), {
+		position({45, 117, M_PI/2}), {
 			new score({60, 100}, {1, 600})	// goal 6 (top middle)
 		}
 	},
 
-	{position({32, 108, M_PI/2}), {}},
-	{position({32, 108, M_PI}), {}},
+	{position({32, 104, M_PI/2}), {
+		new rotation({50,100,M_PI})
+	}},
 	{
-		position({-16, 108, M_PI}), {
+		position({0, 104, M_PI}), {
 			new intake({70, 100}, {1, 200})
 		}
 	},
@@ -227,11 +228,11 @@ void ADVballindexcontroller(){
 	}
 
 	//cancelation case 2: ball present in middle(going to top will cause bottom ball to get stuck in middle)
-	if (balltransferstate && middle.returnval() && bottom.returnval()){
+/*	if (balltransferstate && middle.returnval() && bottom.returnval()){
 		balltransferstate = false;
 		Ejector.move_velocity(0);
 		Shooter.move_velocity(0);
-	}
+	}*/
 }
 
 
@@ -266,6 +267,7 @@ void opcontrol() {
 */
 ///*
 delay(100);
+locationC = std::tuple<inches,inches,SMART_radians>{0,0,M_PI/2};
 	for(int i = 0; i < cmdset.size(); i++){
 		while(true){
 		//	break;

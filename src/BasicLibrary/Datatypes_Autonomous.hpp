@@ -327,8 +327,8 @@ namespace STL_lib{
                             std::tuple<position,radians> values = *static_cast<std::tuple<position,radians>*>(valptr); //THIS COPIES THE POINTER< IT IS NOT IT
                             coordinate localoffset(current,initial.target); //make copy
                             position temp = std::get<0>(values);  //make copy
-                            temp += localoffset.transform_matrix(-std::get<1>(values)); //transform coordinate offset from current coord system into corrected coords
-                            temp.angle = initial.target.angle-std::get<1>(values); //convert current global orientation into new global orientation
+                            temp += localoffset.transform_matrix(double(std::get<1>(values))); //transform coordinate offset from current coord system into corrected coords
+                            temp.angle = SMART_radians(double(current.angle)+double(std::get<1>(values))); //convert current global orientation into new global orientation
                             current = temp;
                             delete static_cast<std::tuple<position,radians>*>(valptr);
                             break;

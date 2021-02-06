@@ -38,17 +38,17 @@ basecontroller_auton autonbase(
 Imu im(16);
 
 OdometryWheels Owheels{
-  DeadWheel({3,'A','B'},false,inches(2.7881),5.95936),
-  DeadWheel({3,'G','H'},true,inches(2.7535),5.807972),
-  DeadWheel({3,'C','D'},true,inches(2.8093),6.047798)
+  DeadWheel('A','B',true,inches(2.7881),5.95936),
+  DeadWheel('C','D',true,inches(2.7535),5.807972),
+  DeadWheel('E','f',true,inches(2.8093),6.047798)
 };
 
 OdometryComputer Odom = OdometryComputer(Owheels);
 
 
-linetracker bottom(ADIAnalogIn({3,'E'}),2500);
-linetracker top(ADIAnalogIn('A'),2750);
-linetracker middle(ADIAnalogIn('H'),2800);
+linetracker bottom(ADIAnalogIn('H'),2500);
+linetracker top(ADIAnalogIn('G'),2750);
+//linetracker middle(ADIAnalogIn('H'),2800);
 
 bool toggleglobaldrive = true;
 Motor Lintake(8);
@@ -57,4 +57,4 @@ Motor Shooter(6);
 Motor Ejector(10,true);
 
 intakecontroller inta(Lintake,Rintake,Ejector);
-scorecontroller scra(Ejector,Shooter,linetracker(ADIAnalogIn('A'),2750));
+scorecontroller scra(Ejector,Shooter,linetracker(ADIAnalogIn('G'),2750));
