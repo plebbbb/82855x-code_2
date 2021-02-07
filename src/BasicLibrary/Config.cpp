@@ -36,7 +36,7 @@ basecontroller_auton autonbase(
 //ODOM THINGS ***************************************************************/
 
 Imu im(16);
-
+///*
 OdometryWheels Owheels{
   DeadWheel('A','B',true,inches(2.7881),5.95936),
   DeadWheel('C','D',true,inches(2.7535),5.807972),
@@ -44,11 +44,11 @@ OdometryWheels Owheels{
 };
 
 OdometryComputer Odom = OdometryComputer(Owheels);
+//*/
 
-
-linetracker bottom(ADIAnalogIn('H'),2500);
+linetracker bottom(ADIAnalogIn('H'),2700);
 linetracker top(ADIAnalogIn('G'),2750);
-//linetracker middle(ADIAnalogIn('H'),2800);
+//linetracker middle(ADIAnalogIn('F'),2800);
 
 bool toggleglobaldrive = true;
 Motor Lintake(8);

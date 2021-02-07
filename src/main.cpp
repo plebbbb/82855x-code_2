@@ -14,6 +14,8 @@ void inertialreset(){
 	delay(10);
 	while(im.is_calibrating()){pros::delay(10);}
 }
+
+bool BBDZ = false;
 void intake_control(){
 	Lintake.move_velocity(0);
 	Rintake.move_velocity(0);
@@ -23,12 +25,19 @@ void intake_control(){
 		Lintake.move_velocity(200);
 		Rintake.move_velocity(200);
 	}
+
+	if (master.get_digital(DIGITAL_L2)){
+		Shooter.move_velocity(200);
+		Ejector.move_velocity(200);
+	}
+
 	if (master.get_digital(DIGITAL_R1)){
 		Shooter.move_velocity(200);
 	//	Ejector.move_velocity(200);
 	}
 	if (master.get_digital(DIGITAL_R2)){
 		Ejector.move_velocity(-200);
+		BBDZ = false;
 	}
 	if (master.get_digital(DIGITAL_UP)){
 		Shooter.move_velocity(-25);
@@ -94,11 +103,11 @@ std::vector<linearmotion> cmdset = {
 	            new intake({65, 100}, {1, 1000})    // intaking this before to avoid sketcch movements
 	        }
 	    },
-	    {position({101, 114, 0.713280}), {	// goal 5 (top right)
+	    {position({100.5, 113.5, 0.713280}), {	// goal 5 (top right)
 				new score({85,100},{1,1000})
 			}},
 	    {position({80, 108, M_PI/4}), {
-				new odomreset({0,10},std::tuple<inches,inches,SMART_radians>{93.8,117.8,M_PI/4},0.07256416339),
+				new odomreset({0,10},std::tuple<inches,inches,SMART_radians>{93.3,117.3,M_PI/4},0.07256416339),
 				new rotation({20, 100, M_PI/2})
 			}},
 
@@ -111,7 +120,7 @@ std::vector<linearmotion> cmdset = {
 	// {position({80, 108, M_PI/2}), {}},
 	// {position({32, 108, M_PI/2}), {}},
 	{
-		position({45, 117, M_PI/2}), {
+		position({43, 116, M_PI/2}), {
 			new score({60, 100}, {1, 600})	// goal 6 (top middle)
 		}
 	},
@@ -187,7 +196,12 @@ std::vector<linearmotion> cmdset = {
 */
 bool balltransferstate = false;
 
+Optical teest(1);
+
 void ballindexcontroller(){
+	Ejector.move_velocity(0);
+	Shooter.move_velocity(0);
+
 	if (bottom.returnval() && !top.returnval() && !balltransferstate){
 		balltransferstate = true;
 	}
@@ -200,22 +214,38 @@ void ballindexcontroller(){
 		Ejector.move_velocity(0);
 		Shooter.move_velocity(0);
 	}
+
+	//cancelation case 2: ball present in middle(going to top will cause bottom ball to get stuck in middle)
+/*
+	if (balltransferstate && middle.returnval() && bottom.returnval()){
+		balltransferstate = false;
+		Ejector.move_velocity(0);
+		Shooter.move_velocity(0);
+	}//*/
 }
 
+bool isblueball = false;
+int timeout;
 
 void ADVballindexcontroller(){
 	Ejector.move_velocity(0);
 	Shooter.move_velocity(0);
 
 	//enable move if top is clear for new ball
-	if (bottom.returnval() && !top.returnval() && !balltransferstate){
+	if (bottom.returnval() && !top.returnval() && !balltransferstate && !BBDZ){
 		balltransferstate = true;
+		timeout = 300;
+		if (teest.get_hue() > 200 && teest.get_hue() < 250) isblueball = true;
+		else isblueball = false;
 	}
 
 	//ball movement
 	if (balltransferstate) {
+		timeout -= 10;
 		Ejector.move_velocity(200);
-		Shooter.move_velocity(100);
+		if (!isblueball) {
+			Shooter.move_velocity(100);
+		}
 	}
 
 	//cancelation case 1: ball is at top
@@ -225,6 +255,18 @@ void ADVballindexcontroller(){
 		Shooter.move_velocity(0);
 	}
 
+	if (timeout <= 0 && isblueball) {
+		balltransferstate = false;
+		BBDZ = true;
+		Ejector.move_velocity(0);
+		Shooter.move_velocity(0);
+	}
+
+	if (timeout <= -1000 && isblueball) {
+		balltransferstate = false;
+		Ejector.move_velocity(0);
+		Shooter.move_velocity(0);
+	}
 	//cancelation case 2: ball present in middle(going to top will cause bottom ball to get stuck in middle)
 /*	if (balltransferstate && middle.returnval() && bottom.returnval()){
 		balltransferstate = false;
@@ -236,9 +278,10 @@ void ADVballindexcontroller(){
 
 //control_loop rotcontrol({new Proportional(70,{100,-100})},{100,-100});
 void opcontrol() {
-/*
-	while(im.is_calibrating()){pros::delay(10);}
-	currentcommand.lengthcompute(locationC);
+///*
+//	teest.set_led_pwm(75);
+	//while(im.is_calibrating()){pros::delay(10);}
+/*	currentcommand.lengthcompute(locationC);
 		currentcommand.percentcompute(locationC);
 		autonbase.updatebase(currentcommand, locationC);
 	while(true){
@@ -247,17 +290,21 @@ void opcontrol() {
 		lcd::print(1,"X: %f",locationC.x);
 		lcd::print(2,"Y: %f",locationC.y);
 		lcd::print(3,"R: %f",locationC.angle);
+//	*/
+/*
+		while(true){
 	if(master.get_digital_new_press(DIGITAL_B)) {inertialreset();}
-	if(master.get_digital_new_press(DIGITAL_X)) toggleglobaldrive = !toggleglobaldrive;
+//	if(master.get_digital_new_press(DIGITAL_X)) toggleglobaldrive = !toggleglobaldrive;
+	if(master.get_digital_new_press(DIGITAL_A)) balltransferstate = false;
 	coordinate currentcontrol = coordinate(std::pair<inches,inches>{inches(master.get_analog(ANALOG_LEFT_X)),inches(master.get_analog(ANALOG_LEFT_Y))});
-	if(toggleglobaldrive == true) {globalangle = SMART_radians(degrees(double(im.get_rotation()*-1.01056196909)));} //NOTE: NO 90 deg offset b/c this is relative to start pos
-	if(toggleglobaldrive == false) {globalangle = SMART_radians(0.00);}
+	if(true) {globalangle = SMART_radians(degrees(double(im.get_rotation()*-1.01056196909)));} //NOTE: NO 90 deg offset b/c this is relative to start pos
+	//if(toggleglobaldrive == false) {globalangle = SMART_radians(0.00);}
 	currentcontrol.self_transform_polar(-globalangle);
 	base.move_vector_RAW_AS_M(currentcontrol,-master.get_analog(ANALOG_RIGHT_X),test);
-	ADVballindexcontroller();
+	ballindexcontroller();
 	intake_control();
 	pros::delay(10);
-}
+}*/
 //*/
 /*	autonbase.updatebase(currentcommand, locationC);
 	pros::delay(10);
@@ -268,8 +315,8 @@ delay(100);
 locationC = std::tuple<inches,inches,SMART_radians>{0,0,M_PI/2};
 	for(int i = 0; i < cmdset.size(); i++){
 		while(true){
-		//	break;
-			if (master.get_digital_new_press(DIGITAL_UP)) break;
+			break;
+		//	if (master.get_digital_new_press(DIGITAL_UP)) break;
 			locationC = Odom.cycle(locationC);
 			lcd::print(5,"X: %f",locationC.x);
 			lcd::print(6,"Y: %f",locationC.y);
