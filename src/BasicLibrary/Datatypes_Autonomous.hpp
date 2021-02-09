@@ -19,6 +19,7 @@ namespace STL_lib{
         POS_ROTATE_ACTION = 3,      //a point targeting actioniterator
         EJECT_ACTION = 4,           //a ball ejection actioniterator
         ODOM_RESET_ACTION = 5,      //a coordinate reset actioniterator
+        ODOM_ANG_RESET = 6,         //a angle reset actioniterator
     };
 
     /* WARNING: THIS THING NEEDS TO BE DECLARED IN RUNTIME AGAIN. PLS USE TEMP VARIABLES OBTAINED FROM THE SOURCE
@@ -206,7 +207,13 @@ namespace STL_lib{
     }
   };
 
-
+  struct anglereset: public actioniterator{
+    SMART_radians PLACEHOLD;
+    anglereset(std::vector<double> values):actioniterator(values,ODOM_ANG_RESET,false),PLACEHOLD(0){}
+    virtual void* getval(){
+      return &PLACEHOLD;
+    }
+  };
 
   //velocity profile system
   /*
@@ -290,7 +297,7 @@ namespace STL_lib{
         linearmotion(std::tuple<position,std::vector<actioniterator*>> set):vector(std::get<0>(set)),commands(std::get<1>(set)){};
 
         //returns command with updated request parameters for new movement percentage situation
-        command processcommand(command initial, position current){
+        command processcommand(command initial, position current, SMART_radians IMU_ANGLE){
             for (actioniterator* cmd : commands){
                 void* valptr  = cmd->iterate(initial.completion);
                 if(valptr) {
@@ -327,12 +334,16 @@ namespace STL_lib{
                             std::tuple<position,radians> values = *static_cast<std::tuple<position,radians>*>(valptr); //THIS COPIES THE POINTER< IT IS NOT IT
                             coordinate localoffset(current,initial.target); //make copy
                             position temp = std::get<0>(values);  //make copy
-                            temp += localoffset.transform_matrix(double(std::get<1>(values))); //transform coordinate offset from current coord system into corrected coords
-                            temp.angle = SMART_radians(double(current.angle)+double(std::get<1>(values))); //convert current global orientation into new global orientation
+                            temp += localoffset.transform_matrix(IMU_ANGLE-current.angle); //transform coordinate offset from current coord system into corrected coords
+                            temp.angle = IMU_ANGLE; //convert current global orientation into new global orientation
                             current = temp;
                             delete static_cast<std::tuple<position,radians>*>(valptr);
                             break;
                           }
+                        case ODOM_ANG_RESET:{
+                          current.angle = *static_cast<SMART_radians*>(valptr);
+
+                        }
                     }
                 }
             }
@@ -354,6 +365,7 @@ namespace STL_lib{
 
     struct linetracker{
       pros::ADIAnalogIn port;
+      bool isactive = false;
       int threshold;
       linetracker(pros::ADIAnalogIn p, int tr):port(p),threshold(tr){};
       //return true if under threshold
@@ -361,6 +373,14 @@ namespace STL_lib{
         if (port.get_value() <= threshold) return true;
         return false;
       }
+
+      bool return_new_press(){
+        if (isactive != returnval()) {
+          isactive = returnval();
+          if (isactive) return true;
+      }
+      return false;
+    }
     };
 
 

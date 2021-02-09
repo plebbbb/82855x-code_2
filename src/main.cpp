@@ -68,11 +68,23 @@ std::vector<linearmotion> cmdset = {
 	            new score({90, 100}, {1, 600})    // goal 2 (bottom middle)
 	        }
 	    },
-
-	    {position({18.62, 46.36, 5.7}), {}},
+			{position({14,60.25,5.7}),{
+				new rotation({30,40,M_PI/2}),
+				new intake({65,90},{1,1000}),
+				new rotation({95,100,0})
+			}},
+			{position({25.85,60.25,6.22}),{
+				new intake({25,100},{1,3800}),
+				new score({85,100},{1,700})
+			}},
+			{position({14,60.25,6.22}),{
+				new anglereset({0,10}),
+				new rotation({50,100,M_PI*3/2}),
+				new score({95,100},{1,1000})
+			}},
 	    {position({21.8, 48.35, 5.7}), {}},
 	    {
-	        position({73.4, 13.4, 5.7}),    {
+	        position({74.3, 9.81, 5.7}),    {
 	            new intake({0, 30}, {1, 2000}),
 	            new intake({50, 100}, {1, 1000})
 	        }
@@ -84,6 +96,7 @@ std::vector<linearmotion> cmdset = {
 	    },
 
 	    {position({87, 58, M_PI*7/4}), {
+				new anglereset({0,10}),
 				new rotation({10,100,M_PI/2}),
 	      new intake({60, 85}, {1, 1000}),
 				new rotation({80,100,-0.174533})
@@ -100,14 +113,15 @@ std::vector<linearmotion> cmdset = {
 			},
 
 	    {position({79.6, 101, M_PI/2}), {
-	            new intake({65, 100}, {1, 1000})    // intaking this before to avoid sketcch movements
+	            new intake({55, 100}, {1, 1000})    // intaking this before to avoid sketcch movements
 	        }
 	    },
-	    {position({100.5, 113.5, 0.713280}), {	// goal 5 (top right)
+	    {position({102, 113.4, 0.68280}), {	// goal 5 (top right)
 				new score({85,100},{1,1000})
 			}},
-	    {position({80, 108, M_PI/4}), {
-				new odomreset({0,10},std::tuple<inches,inches,SMART_radians>{93.3,117.3,M_PI/4},0.07256416339),
+	    {position({41.64, 103.8, M_PI/4}), {
+				new anglereset({0,10}),
+			//	new odomreset({0,10},std::tuple<inches,inches,SMART_radians>{93.3,117.3,M_PI/4},0.07256416339),
 				new rotation({20, 100, M_PI/2})
 			}},
 
@@ -120,41 +134,43 @@ std::vector<linearmotion> cmdset = {
 	// {position({80, 108, M_PI/2}), {}},
 	// {position({32, 108, M_PI/2}), {}},
 	{
-		position({43, 116, M_PI/2}), {
+		position({43, 114.25, M_PI/2}), {
 			new score({60, 100}, {1, 600})	// goal 6 (top middle)
 		}
 	},
 
-	{position({32, 108, M_PI/2}), {
+	{position({32, 110.5, M_PI/2}), {
 		new rotation({50,100,M_PI})
 	}},
 	{
-		position({0, 108, M_PI}), {
-			new intake({70, 100}, {1, 200})
+		position({0, 110.5, M_PI}), {
+			new intake({50, 100}, {1, 1000})
 		}
 	},
-	{position({-8, 124, M_PI*3/4}), {
+	{position({-12, 123.5, M_PI*3/4}), {
 			new score({90, 100}, {1, 600})	// goal 7 (top left)
 		}
 	},
-	{position({-16, 108, M_PI*3/4}), {}},
-	{position({-16, 108, M_PI*3/2}), {}},
+	{position({-5, 114, M_PI*3/4}), {
+		new rotation({50,100,M_PI*3/2})
+
+	}},
 	{
-		position({-16, 60, M_PI*3/2}), {
-			new intake({70, 100}, {1, 200})
+		position({-8, 70, 4.648}), {
+			new intake({70, 100}, {1, 1000}),
+			new rotation({95,100,M_PI})
 		}
 	},
-	{position({-16, 60, M_PI}), {}},
-	{
-		position({-28, 60, M_PI}), {
-			new score({90, 100}, {1, 600})	// goal 8 (left middle)
+	{position({-12.9, 66, 3.07}), {
+			new score({70, 100}, {1, 600})	// goal 8 (left middle)
 		}
 	},
-	{position({-16, 60, M_PI}), {}},
-	{position({-16, 60, 0}), {}},
+	{position({-6.2, 60, 3.07}), {
+		new rotation({50,100,6.21})
+	}},
 	{
-		position({24, 60, 0}), {
-			new intake({10, 100}, {1, 1000}),
+		position({27.17, 63.68, 6.21}), { // MIDDLE GOAL
+			new intake({10, 100}, {1, 5000}), //intake ball, hug middle goal, score
 			new score ({90, 100}, {1, 600})	// middle goal, score could be delayed
 		}
 	},
@@ -207,9 +223,9 @@ void ballindexcontroller(){
 	}
 	if (balltransferstate) {
 		Ejector.move_velocity(200);
-		Shooter.move_velocity(100);
+		if (!(Shooter.get_target_velocity() > 110)) Shooter.move_velocity(100);
 	}
-	if (balltransferstate && top.returnval()){
+	if (top.returnval()){
 		balltransferstate = false;
 		Ejector.move_velocity(0);
 		Shooter.move_velocity(0);
@@ -280,7 +296,7 @@ void ADVballindexcontroller(){
 void opcontrol() {
 ///*
 //	teest.set_led_pwm(75);
-	//while(im.is_calibrating()){pros::delay(10);}
+	while(im.is_calibrating()){pros::delay(10);}
 /*	currentcommand.lengthcompute(locationC);
 		currentcommand.percentcompute(locationC);
 		autonbase.updatebase(currentcommand, locationC);
@@ -315,8 +331,8 @@ delay(100);
 locationC = std::tuple<inches,inches,SMART_radians>{0,0,M_PI/2};
 	for(int i = 0; i < cmdset.size(); i++){
 		while(true){
-			break;
-		//	if (master.get_digital_new_press(DIGITAL_UP)) break;
+			//break;
+			if (master.get_digital_new_press(DIGITAL_UP)) break;
 			locationC = Odom.cycle(locationC);
 			lcd::print(5,"X: %f",locationC.x);
 			lcd::print(6,"Y: %f",locationC.y);
@@ -336,13 +352,14 @@ locationC = std::tuple<inches,inches,SMART_radians>{0,0,M_PI/2};
 		while(!(currentcommand.disttotgt <= 0.75 && fabs(currentcommand.target.angle.findDiff(currentcommand.target.angle, locationC.angle)) <= 0.0872665 && currentcommand.isidle())){
 			locationC = Odom.cycle(locationC);
 			currentcommand.percentcompute(locationC);
-			currentcommand = cmdset[i].processcommand(currentcommand,locationC);     //update command state machine to new movement
+			SMART_radians realangle = SMART_radians(degrees(double(im.get_rotation()*-1.01106196909)));
+			currentcommand = cmdset[i].processcommand(currentcommand,locationC,realangle);     //update command state machine to new movement
 			lcd::print(4,"Len %f", currentcommand.disttotgt);
 			lcd::print(0,"CMPL %f", currentcommand.completion);
 			autonbase.updatebase(currentcommand, locationC);//update base motor power outputs for current position
 		//	autonbase.base.move_vector_RAW(std::pair<inches,inches>{0,0},0,0); //uncomment to disable movement
 			currentcommand = inta.refresh(currentcommand);
-			ADVballindexcontroller();
+			ballindexcontroller();
 			currentcommand = scra.refresh(currentcommand);
 			lcd::print(5,"X: %f",locationC.x);
 			lcd::print(6,"Y: %f",locationC.y);

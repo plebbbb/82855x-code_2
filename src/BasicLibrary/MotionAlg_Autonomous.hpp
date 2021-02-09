@@ -71,9 +71,11 @@ namespace STL_lib{
     pros::Motor L;
     pros::Motor R;
     pros::Motor S;
-    intakecontroller(pros::Motor LI, pros::Motor RI, pros::Motor SI):L(LI),R(RI),S(SI){}
+    linetracker ba;
+    intakecontroller(pros::Motor LI, pros::Motor RI, pros::Motor SI, linetracker bb):L(LI),R(RI),S(SI),ba(bb){}
     command refresh(command input){
-      if (std::get<1>(input.intake_status) > 0){
+      if (ba.return_new_press()) std::get<0>(input.intake_status)--;
+      if (std::get<1>(input.intake_status) > 0 && std::get<0>(input.intake_status) > 0){
         L.move_velocity(200);
         R.move_velocity(200);
     //    S.move_velocity(200);
@@ -81,6 +83,7 @@ namespace STL_lib{
       }
       else {
         std::get<0>(input.intake_status) = 0;
+        std::get<1>(input.intake_status) = 0;
         L.move_velocity(0);
         R.move_velocity(0);
     //    S.move_velocity(0);
@@ -110,7 +113,7 @@ namespace STL_lib{
           completion = true;
         }
         if (completion == true && toop.returnval()){
-          SS.move_velocity(0);
+          if (!(SS.get_target_velocity() == 100)) SS.move_velocity(0);
         }
       }
       else {
