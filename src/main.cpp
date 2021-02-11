@@ -73,18 +73,19 @@ std::vector<linearmotion> cmdset = {
 				new intake({65,90},{1,1000}),
 				new rotation({95,100,0})
 			}},
-			{position({25.85,60.25,6.22}),{
-				new intake({25,100},{1,3800}),
+			{position({26.95,60.25,6.22}),{
+				new intake({25,100},{1,4200}),
 				new score({85,100},{1,700})
 			}},
 			{position({14,60.25,6.22}),{
 				new anglereset({0,10}),
 				new rotation({50,100,M_PI*3/2}),
-				new score({95,100},{1,1000})
 			}},
-	    {position({21.8, 48.35, 5.7}), {}},
+	    {position({21.8, 48.35, 5.7}), {
+				new score({0,100},{1,1000})
+			}},
 	    {
-	        position({74.3, 9.81, 5.7}),    {
+	        position({74.3, 8.81, 5.7}),    {
 	            new intake({0, 30}, {1, 2000}),
 	            new intake({50, 100}, {1, 1000})
 	        }
@@ -112,29 +113,24 @@ std::vector<linearmotion> cmdset = {
 			}
 			},
 
-	    {position({79.6, 101, M_PI/2}), {
+	    {position({82.8, 92, M_PI/2}), {
 	            new intake({55, 100}, {1, 1000})    // intaking this before to avoid sketcch movements
 	        }
 	    },
-	    {position({102, 113.4, 0.68280}), {	// goal 5 (top right)
+	    {position({104.42, 110.69, 0.68280}), {	// goal 5 (top right)
 				new score({85,100},{1,1000})
 			}},
-	    {position({41.64, 103.8, M_PI/4}), {
+	    {position({48.93, 103, M_PI/4}), {
 				new anglereset({0,10}),
 			//	new odomreset({0,10},std::tuple<inches,inches,SMART_radians>{93.3,117.3,M_PI/4},0.07256416339),
 				new rotation({20, 100, M_PI/2})
 			}},
-
-	{
-		position({45, 108, M_PI/2}), {
-		}
-	},
 // safer alternative to the above move/turn
 	// {position({80, 108, M_PI/4}), {}},
 	// {position({80, 108, M_PI/2}), {}},
 	// {position({32, 108, M_PI/2}), {}},
 	{
-		position({43, 114.25, M_PI/2}), {
+			position({48.93, 113.5, M_PI/2}), {
 			new score({60, 100}, {1, 600})	// goal 6 (top middle)
 		}
 	},
@@ -143,37 +139,28 @@ std::vector<linearmotion> cmdset = {
 		new rotation({50,100,M_PI})
 	}},
 	{
-		position({0, 110.5, M_PI}), {
-			new intake({50, 100}, {1, 1000})
+		position({-0.3, 113.2, M_PI-0.15}), {
+			new rotation({70,100,2.24}),
+			new intake({20, 70}, {1, 1500})
 		}
 	},
-	{position({-12, 123.5, M_PI*3/4}), {
+	{position({-7.7, 125.3, 2.24}), {
 			new score({90, 100}, {1, 600})	// goal 7 (top left)
 		}
 	},
-	{position({-5, 114, M_PI*3/4}), {
-		new rotation({50,100,M_PI*3/2})
-
-	}},
-	{
-		position({-8, 70, 4.648}), {
+	{position({-8.24, 69.4, 2.24}), {
+		new rotation({20,100,4.57}),
 			new intake({70, 100}, {1, 1000}),
-			new rotation({95,100,M_PI})
+			new rotation({95,100,3.07})
 		}
 	},
-	{position({-12.9, 66, 3.07}), {
+	{position({-12.9, 69.5, 3.07}), {
 			new score({70, 100}, {1, 600})	// goal 8 (left middle)
 		}
 	},
-	{position({-6.2, 60, 3.07}), {
-		new rotation({50,100,6.21})
-	}},
-	{
-		position({27.17, 63.68, 6.21}), { // MIDDLE GOAL
-			new intake({10, 100}, {1, 5000}), //intake ball, hug middle goal, score
-			new score ({90, 100}, {1, 600})	// middle goal, score could be delayed
+	{position({-8.24, 69.4, 3.07}), {
 		}
-	},
+	}
 };
 //*/
 /*
@@ -210,7 +197,6 @@ std::vector<linearmotion> cmdset = {
  	{position({0,0,M_PI}),{}},
 };
 */
-bool balltransferstate = false;
 
 Optical teest(1);
 
@@ -218,14 +204,14 @@ void ballindexcontroller(){
 	Ejector.move_velocity(0);
 	Shooter.move_velocity(0);
 
-	if (bottom.returnval() && !top.returnval() && !balltransferstate){
+	if (bottom.returnval() && !top.return_new_press() && !balltransferstate){
 		balltransferstate = true;
 	}
 	if (balltransferstate) {
 		Ejector.move_velocity(200);
-		if (!(Shooter.get_target_velocity() > 110)) Shooter.move_velocity(100);
+	  Shooter.move_velocity(100);
 	}
-	if (top.returnval()){
+	if (top.return_new_press() && balltransferstate){
 		balltransferstate = false;
 		Ejector.move_velocity(0);
 		Shooter.move_velocity(0);
@@ -331,12 +317,13 @@ delay(100);
 locationC = std::tuple<inches,inches,SMART_radians>{0,0,M_PI/2};
 	for(int i = 0; i < cmdset.size(); i++){
 		while(true){
-			//break;
+			break;
 			if (master.get_digital_new_press(DIGITAL_UP)) break;
 			locationC = Odom.cycle(locationC);
 			lcd::print(5,"X: %f",locationC.x);
 			lcd::print(6,"Y: %f",locationC.y);
 			lcd::print(7,"R: %f",locationC.angle);
+			ballindexcontroller();
 			autonbase.base.move_vector_RAW(std::pair<inches,inches>{0,0},0,0); //uncomment to disable movement
 			lcd::print(4,"MODE: PAUSED_ODOMENABLE");
 			delay(10);

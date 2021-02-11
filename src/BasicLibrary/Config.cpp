@@ -46,6 +46,8 @@ OdometryWheels Owheels{
 OdometryComputer Odom = OdometryComputer(Owheels);
 //*/
 
+bool balltransferstate = false;
+
 linetracker bottom(ADIAnalogIn('H'),2700);
 linetracker top(ADIAnalogIn('G'),2750);
 //linetracker middle(ADIAnalogIn('F'),2800);

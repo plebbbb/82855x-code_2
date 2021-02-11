@@ -3,6 +3,7 @@
 
 #ifndef MOTIONALG_AUTO_HPP
 #define MOTIONALG_AUTO_HPP
+extern bool balltransferstate; //HACK
 
 namespace STL_lib{
   struct basecontroller_auton{
@@ -113,14 +114,14 @@ namespace STL_lib{
           completion = true;
         }
         if (completion == true && toop.returnval()){
-          if (!(SS.get_target_velocity() == 100)) SS.move_velocity(0);
+          if (!balltransferstate) SS.move_velocity(0);
         }
       }
       else {
         lst = false;
         completion = false;
         std::get<0>(input.score_status) = 0;
-        SS.move_velocity(0);
+        if (!balltransferstate) SS.move_velocity(0);
       }
       return input;
 
