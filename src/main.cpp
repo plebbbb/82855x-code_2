@@ -75,8 +75,11 @@ std::vector<linearmotion> cmdset = {
 			}},
 			{position({26.95,60.25,6.22}),{
 				new intake({25,100},{1,4200}),
-				new score({85,100},{1,700})
 			}},
+			{position({26.95,60.25,6.22}),{
+				new score({-1,100},{1,600}),
+			}},
+
 			{position({14,60.25,6.22}),{
 				new anglereset({0,10}),
 				new rotation({50,100,M_PI*3/2}),
