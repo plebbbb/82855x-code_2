@@ -27,7 +27,7 @@ basecontroller_auton autonbase(
   base,
   control_loop({new Proportional(40,{100,-100}),new Derivitive(30,{70,-70})},{100,-100}),  //X control loop
   control_loop({new Proportional(40,{100,-100}),new Derivitive(30,{70,-70})},{100,-100}),  //Y control loop
-  control_loop({new Proportional(150,{100,-100}),new Derivitive(60,{20,-20})},{100,-100}),   //Rotation control loop
+  control_loop({new Proportional(200,{100,-100}),new Derivitive(80,{20,-20})},{100,-100}),   //Rotation control loop
 	control_loop({new Proportional(1,{0.5,-0.5}),new Derivitive(0.4,{0.25,-0.25})},{0.5,-0.5})   //Rotation control loop, vector mode
 );
 //, new Derivitive(1,{0.5,-0.5})},{1,-1}
@@ -48,8 +48,8 @@ OdometryComputer Odom = OdometryComputer(Owheels);
 
 bool balltransferstate = false;
 
-linetracker bottom(ADIAnalogIn('H'),2700);
-linetracker top(ADIAnalogIn('G'),2750);
+linetracker bottom(ADIAnalogIn('H'),2800);
+linetracker top(ADIAnalogIn('G'),2800);
 //linetracker middle(ADIAnalogIn('F'),2800);
 
 bool toggleglobaldrive = true;

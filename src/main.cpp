@@ -64,7 +64,7 @@ std::vector<linearmotion> cmdset = {
 
 	    {
 	        position({24.5, 5, M_PI*5/4}),    {
-	            new rotation({10, 80, 5.7}),
+	            new rotation({10, 80, M_PI*7/4}),
 	            new score({90, 100}, {1, 600})    // goal 2 (bottom middle)
 	        }
 	    },
@@ -96,7 +96,7 @@ std::vector<linearmotion> cmdset = {
 	        }
 	    },
 
-	    {position({87, 58, M_PI*7/4}), {
+	    {position({88, 58, M_PI*7/4}), {
 				new anglereset({0,10}),
 				new rotation({10,100,M_PI/2}),
 	      new intake({60, 85}, {1, 1000}),
@@ -105,7 +105,7 @@ std::vector<linearmotion> cmdset = {
 	    },
 	    {
 	        position({92.5, 58, -0.174533}), {
-	            new score({60, 100}, {1, 600})    // goal 4 (right middle)
+	            new score({30, 100}, {1, 800})    // goal 4 (right middle)
 	        }
 	    },
 			{position({79.6, 58, -0.174533}), {
@@ -118,7 +118,7 @@ std::vector<linearmotion> cmdset = {
 	        }
 	    },
 	    {position({104.42, 110.69, 0.68280}), {	// goal 5 (top right)
-				new score({85,100},{1,1000})
+				new score({85,100},{1,600})
 			}},
 	    {position({48.93, 103, M_PI/4}), {
 				new anglereset({0,10}),
@@ -130,7 +130,7 @@ std::vector<linearmotion> cmdset = {
 	// {position({80, 108, M_PI/2}), {}},
 	// {position({32, 108, M_PI/2}), {}},
 	{
-			position({48.93, 113.5, M_PI/2}), {
+			position({48.93, 113.75, M_PI/2}), {
 			new score({60, 100}, {1, 600})	// goal 6 (top middle)
 		}
 	},
@@ -139,9 +139,9 @@ std::vector<linearmotion> cmdset = {
 		new rotation({50,100,M_PI})
 	}},
 	{
-		position({-0.3, 113.2, M_PI-0.15}), {
+		position({-0.3, 113.2, M_PI-0.225}), {
 			new rotation({70,100,2.24}),
-			new intake({20, 70}, {1, 1500})
+			new intake({10, 70}, {1, 1500})
 		}
 	},
 	{position({-7.7, 125.3, 2.24}), {
@@ -150,7 +150,7 @@ std::vector<linearmotion> cmdset = {
 	},
 	{position({-8.24, 69.4, 2.24}), {
 		new rotation({20,100,4.57}),
-			new intake({70, 100}, {1, 1000}),
+			new intake({60, 100}, {1, 1400}),
 			new rotation({95,100,3.07})
 		}
 	},
@@ -204,14 +204,14 @@ void ballindexcontroller(){
 	Ejector.move_velocity(0);
 	Shooter.move_velocity(0);
 
-	if (bottom.returnval() && !top.return_new_press() && !balltransferstate){
+	if (bottom.returnval() && !top.returnval() && !balltransferstate){
 		balltransferstate = true;
 	}
 	if (balltransferstate) {
 		Ejector.move_velocity(200);
 	  Shooter.move_velocity(100);
 	}
-	if (top.return_new_press() && balltransferstate){
+	if (top.returnval() && balltransferstate){
 		balltransferstate = false;
 		Ejector.move_velocity(0);
 		Shooter.move_velocity(0);
