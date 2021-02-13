@@ -32,7 +32,7 @@ std::vector<linearmotion> cmdset = {
 	  	{
 	        position({0, 26, M_PI/2}), {
 	            new rotation({40, 100, M_PI*5/4}),
-	            new intake({10, 40}, {1, 1000})
+	            new intake({0, 80}, {1, 5000})
 	        }
 	    },
 	    {
@@ -47,15 +47,15 @@ std::vector<linearmotion> cmdset = {
 	            new score({90, 100}, {1, 1000})    // goal 2 (bottom middle)
 	        }
 	    },
-			{position({14,60.25,5.7}),{
+			{position({14,60.75,M_PI*7/4}),{
 				new rotation({30,40,M_PI/2}),
 				new intake({65,90},{1,1000}),
 				new rotation({95,100,0})
 			}},
-			{position({26.65,60.25,6.22}),{
+			{position({26.65,60.55,6.22}),{
 				new intake({25,100},{1,4200}),
 			}},
-			{position({26.65,60.25,6.22}),{
+			{position({26.65,60.55,6.22}),{
 				new score({-1,100},{1,1000}),
 			}},
 
@@ -81,8 +81,8 @@ std::vector<linearmotion> cmdset = {
 				new anglereset({0,10}),
 				new rotation({50,100,M_PI/2}),
 			}},
-	    {position({88, 58, M_PI/2}), {
-	      new intake({60, 85}, {1, 1000}),
+	    {position({89.80, 58, M_PI/2}), {
+	      new intake({45, 85}, {1, 1500}),
 				new rotation({80,100,-0.174533})
 	       }
 	    },
@@ -96,8 +96,8 @@ std::vector<linearmotion> cmdset = {
 			}
 			},
 
-	    {position({82.8, 92, M_PI/2}), {
-	            new intake({55, 100}, {1, 1000})    // intaking this before to avoid sketcch movements
+	    {position({82.8, 92, M_PI/2+0.05}), {
+	            new intake({55, 100}, {1, 2000})    // intaking this before to avoid sketcch movements
 	        }
 	    },
 	    {position({104.42, 110.69, 0.68280}), {	// goal 5 (top right)
@@ -113,7 +113,7 @@ std::vector<linearmotion> cmdset = {
 	// {position({80, 108, M_PI/2}), {}},
 	// {position({32, 108, M_PI/2}), {}},
 	{
-			position({48.93, 113.75, M_PI/2}), {
+			position({48.93, 113.5, M_PI/2}), {
 			new score({60, 100}, {1, 1000})	// goal 6 (top middle)
 		}
 	},
@@ -147,9 +147,9 @@ std::vector<linearmotion> cmdset = {
 };
 void autonomous() {
 	delay(100);
-	Shooter.move_relative(150,200); //deploy
-	Lintake.move_relative(300,200);
-	Rintake.move_relative(300,200);
+//	Shooter.move_relative(150,200); //deploy
+//	Lintake.move_relative(300,200);
+//	Rintake.move_relative(300,200);
 	while(im.is_calibrating()){
 		locationC = Odom.cycle(locationC); //odom activated to prevent deploy induced tracking issues
 		delay(10);
