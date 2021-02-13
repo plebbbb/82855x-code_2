@@ -59,4 +59,4 @@ Motor Shooter(6);
 Motor Ejector(10,true);
 
 intakecontroller inta(Lintake,Rintake,Ejector,bottom);
-scorecontroller scra(Ejector,Shooter,linetracker(ADIAnalogIn('G'),2750));
+scorecontroller scra(Ejector,Shooter,top);

@@ -99,28 +99,29 @@ namespace STL_lib{
     pros::Motor S;
     bool completion = false;
     bool lst = false;
+    int tmptimer = 150;
     linetracker toop;
     scorecontroller (pros::Motor SI, pros::Motor SSI, linetracker tope):S(SI),SS(SSI),toop(tope){}
     command refresh(command input){
-      if (std::get<1>(input.score_status) > 0){
+      if (toop.returnval() != lst){
+        lst = !lst;
+        if(lst == false) {
+          if (!balltransferstate && tmptimer > 0 && std::get<0>(input.score_status) == 1){  //edge case: coast a bit after ball release
+            tmptimer-=10;
+          }
+          if (tmptimer <= 0 || balltransferstate){
+            std::get<0>(input.score_status)--;
+          }
+        }
+      }
+      if (std::get<1>(input.score_status) > 0 && std::get<0>(input.score_status) > 0){
         SS.move_velocity(200);
         //S.move_velocity(200);
         std::get<1>(input.score_status) -= 10;
-        if (toop.returnval() != lst){
-          if(lst == false) std::get<0>(input.score_status) -= 1;
-          lst = !lst;
-        }
-        if (std::get<0>(input.score_status) <= 0 && !toop.returnval()){
-          completion = true;
-        }
-        if (completion == true && toop.returnval()){
-          if (!balltransferstate) SS.move_velocity(0);
-        }
       }
       else {
         lst = false;
         completion = false;
-        std::get<0>(input.score_status) = 0;
         if (!balltransferstate) SS.move_velocity(0);
       }
       return input;
