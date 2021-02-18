@@ -42,29 +42,30 @@ std::vector<linearmotion> cmdset = {
 	    },
 
 	    {
-	        position({24.5, 5, M_PI*5/4}),    {
-	            new rotation({10, 80, M_PI*7/4}),
+	        position({27.7, 6.5, M_PI*5/4}),    {
+	            new rotation({10, 80, 5.35}),
 	            new score({90, 100}, {1, 1000})    // goal 2 (bottom middle)
 	        }
 	    },
-			{position({14,60.75,M_PI*7/4}),{
+			{position({12.55,61.15,M_PI*7/4}),{
 				new rotation({30,40,M_PI/2}),
-				new intake({65,90},{1,1000}),
-				new rotation({95,100,0})
+				new intake({65,100},{1,2000}),
+				new rotation({95,100,6.22})
 			}},
-			{position({26.65,60.55,6.22}),{
-				new intake({25,100},{1,4200}),
+			{position({25.25,61.15,6.22}),{
+				new intake({15,100},{1,4200}),
 			}},
-			{position({26.65,60.55,6.22}),{
+			{position({25.25,61.15,6.22}),{
 				new score({-1,100},{1,1000}),
 			}},
 
-			{position({14,60.25,6.22}),{
+			{position({14,61.15,6.22}),{
 				new anglereset({0,10}),
-				new rotation({50,100,M_PI*3/2}),
+		//		new intake({0,20},{1,1000}),
+				new rotation({80,100,M_PI*5/4}),
 			}},
-			{position({14,60.25,6.22}),{
-				new score({0,100},{1,1000}),
+			{position({14,60.25,M_PI*5/4}),{
+				new score({0,100},{1,2000}),
 			}},
 
 	    {position({21.8, 48.35, 5.7}), {
@@ -76,37 +77,39 @@ std::vector<linearmotion> cmdset = {
 	        }
 	    },
 	    {
-	        position({91.15, 1.4, M_PI*7/4}), {
+	        position({92.65, 6, M_PI*7/4}), {
 	            new score({90, 100}, {1, 1000})    // goal 3 (bottom right)
 	        }
 	    },
-			{position({80,10,M_PI*7/4}),{
+			{position({86,10,M_PI*7/4}),{
 				new anglereset({0,10}),
 				new rotation({50,100,M_PI/2}),
 			}},
-	    {position({89.80, 58, M_PI/2}), {
-	      new intake({45, 85}, {1, 1500}),
-				new rotation({80,100,-0.174533})
-	       }
+	    {position({86, 58, M_PI/2}), {
+	      new intake({60, 100}, {1, 2500}),
+			}
+	    },
+			{
+	    position({79, 58, 0}), {}
 	    },
 	    {
-	        position({92.5, 58, -0.174533}), {
+	        position({92, 60.6, 0}), {
 	            new score({30, 100}, {1, 1000})    // goal 4 (right middle)
 	        }
 	    },
-			{position({79.6, 58, -0.174533}), {
+			{position({76, 58, 0}), {
 				new rotation({50,100,M_PI/2}),
 			}
 			},
 
-	    {position({82.8, 92, M_PI/2+0.05}), {
+	    {position({76, 100.68, M_PI/2}), {
 	            new intake({55, 100}, {1, 2000})    // intaking this before to avoid sketcch movements
 	        }
 	    },
-	    {position({104.42, 110.69, 0.68280}), {	// goal 5 (top right)
+	    {position({96.25, 116.5, 0.76}), {	// goal 5 (top right)
 				new score({85,100},{1,600})
 			}},
-	    {position({48.93, 103, M_PI/4}), {
+	    {position({38.5, 103, M_PI/4}), {
 				new anglereset({0,10}),
 			//	new odomreset({0,10},std::tuple<inches,inches,SMART_radians>{93.3,117.3,M_PI/4},0.07256416339),
 				new rotation({20, 100, M_PI/2})
@@ -116,42 +119,46 @@ std::vector<linearmotion> cmdset = {
 	// {position({80, 108, M_PI/2}), {}},
 	// {position({32, 108, M_PI/2}), {}},
 	{
-			position({48.93, 113.5, M_PI/2}), {
+			position({38.5, 113.2, M_PI/2}), {
 			new score({60, 100}, {1, 1000})	// goal 6 (top middle)
 		}
 	},
 
-	{position({32, 110.5, M_PI/2}), {
+	{position({32, 103.5, M_PI/2}), {
 		new rotation({50,100,M_PI})
 	}},
 	{
-		position({-0.3, 113.2, M_PI-0.225}), {
+		position({-8.61, 103, M_PI}), {
 			new rotation({70,100,2.24}),
-			new intake({10, 70}, {1, 1500})
+			new intake({5, 70}, {1, 3000})
 		}
 	},
-	{position({-7.7, 125.3, 2.24}), {
-			new score({90, 100}, {1, 600})	// goal 7 (top left)
+	{position({-15.75, 122, 2.46}), {
+			new score({90, 100}, {1, 1600})	// goal 7 (top left)
 		}
 	},
-	{position({-8.24, 69.4, 2.24}), {
-		new rotation({20,100,4.57}),
-			new intake({60, 100}, {1, 1400}),
-			new rotation({95,100,3.07})
+	{position({-8.76, 90, 2.46}), {
+		new rotation({40,100,4.57}),
 		}
 	},
-	{position({-12.9, 69.5, 3.07}), {
+	{position({-7.18,66,4.57}),{
+		new intake({50,100},{1,2000}),
+	}},
+	{position({-2.18,66,3.20}),{
+	}},
+
+	{position({-10.8, 66, 3.15}), {
 			new score({70, 100}, {1, 1000})	// goal 8 (left middle)
 		}
 	},
-	{position({-8.24, 69.4, 3.07}), {
+	{position({-2.24, 66, 3.20}), {
 		}
 	}
 };
 void autonomous() {
 	delay(100);
-//	Shooter.move_relative(150,200); //deploy
-//	Lintake.move_relative(300,200);
+	Shooter.move_relative(150,200);
+//	Lintake.move_relative(300,200); //these deploys are not implemented due to the vibrations screwing with the inertial sensor calibration
 //	Rintake.move_relative(300,200);
 	while(im.is_calibrating()){
 		locationC = Odom.cycle(locationC); //odom activated to prevent deploy induced tracking issues
@@ -160,7 +167,7 @@ void autonomous() {
   locationC = std::tuple<inches,inches,SMART_radians>{0,0,M_PI/2};
   	for(int i = 0; i < cmdset.size(); i++){
   		while(true){
-  			break;
+  	//		break;
   			if (master.get_digital_new_press(DIGITAL_UP)) break;
   			locationC = Odom.cycle(locationC);
   			lcd::print(5,"X: %f",locationC.x);
@@ -181,7 +188,7 @@ void autonomous() {
   		autonbase.profileupdate(currentcommand,locationC);
   		currentcommand = cmdset[i].processcommand(currentcommand,locationC,realangle);     //trigger instant start commands
   		//checks if within distance tollerance threshold, as well as if the lift is currently idle during that duration
-  		while(!(currentcommand.disttotgt <= 0.75 && fabs(currentcommand.target.angle.findDiff(currentcommand.target.angle, locationC.angle)) <= 0.0872665 && currentcommand.isidle())){
+  		while(!(currentcommand.disttotgt <= 0.7 && fabs(currentcommand.target.angle.findDiff(currentcommand.target.angle, locationC.angle)) <= 0.0872665 && currentcommand.isidle())){
   			locationC = Odom.cycle(locationC);
   			currentcommand.percentcompute(locationC);
   		  realangle = SMART_radians(degrees(double(im.get_rotation()*-1.01106196909)));
@@ -196,6 +203,7 @@ void autonomous() {
   			lcd::print(5,"X: %f",locationC.x);
   			lcd::print(6,"Y: %f",locationC.y);
   			lcd::print(7,"R: %f",locationC.angle);
+				if (master.get_digital_new_press(DIGITAL_LEFT)) break;
   			delay(10);
   		}
   	}

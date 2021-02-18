@@ -136,6 +136,10 @@ void ADVballindexcontroller(){
 	}
 }*/
 void opcontrol() {
+	autonomous();
+
+
+
 	while(im.is_calibrating()){pros::delay(10);}
 	while(true){
 	lcd::print(0,"BOTTOM: %d", (int)bottom.returnval());
