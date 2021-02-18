@@ -164,6 +164,7 @@ void autonomous() {
 		locationC = Odom.cycle(locationC); //odom activated to prevent deploy induced tracking issues
 		delay(10);
 	}
+	delay(100);
   locationC = std::tuple<inches,inches,SMART_radians>{0,0,M_PI/2};
   	for(int i = 0; i < cmdset.size(); i++){
   		while(true){
