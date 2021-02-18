@@ -136,7 +136,7 @@ void ADVballindexcontroller(){
 	}
 }*/
 void opcontrol() {
-	autonomous();
+	//autonomous();
 
 
 
