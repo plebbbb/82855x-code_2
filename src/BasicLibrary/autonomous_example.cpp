@@ -160,15 +160,16 @@ void autonomous() {
 //	Shooter.move_relative(150,200);
 //	Lintake.move_relative(300,200); //these deploys are not implemented due to the vibrations screwing with the inertial sensor calibration
 //	Rintake.move_relative(300,200);
+	im.reset();
 	while(im.is_calibrating()){
 		locationC = Odom.cycle(locationC); //odom activated to prevent deploy induced tracking issues
 		delay(10);
 	}
-//	delay(100);
+	delay(100);
   locationC = std::tuple<inches,inches,SMART_radians>{0,0,M_PI/2};
   	for(int i = 0; i < cmdset.size(); i++){
   		while(true){
-  			break;
+  	//		break;
   			if (master.get_digital_new_press(DIGITAL_UP)) break;
   			locationC = Odom.cycle(locationC);
   			lcd::print(5,"X: %f",locationC.x);
@@ -187,13 +188,13 @@ void autonomous() {
   		currentcommand.lengthcompute(locationC);
   		currentcommand.percentcompute(locationC);
   		autonbase.profileupdate(currentcommand,locationC);
-  		currentcommand = cmdset[i].processcommand(currentcommand,locationC,realangle);     //trigger instant start commands
+  		currentcommand = cmdset[i].processcommand(currentcommand,&locationC,realangle);     //trigger instant start commands
   		//checks if within distance tollerance threshold, as well as if the lift is currently idle during that duration
   		while(!(currentcommand.disttotgt <= 0.8 && fabs(currentcommand.target.angle.findDiff(currentcommand.target.angle, locationC.angle)) <= 0.0872665 && currentcommand.isidle())){
   			locationC = Odom.cycle(locationC);
   			currentcommand.percentcompute(locationC);
-  		  realangle = SMART_radians(degrees(double(im.get_rotation()*-1.01106196909)));
-  			currentcommand = cmdset[i].processcommand(currentcommand,locationC,realangle);     //update command state machine to new movement
+  		  realangle = SMART_radians(degrees(double(im.get_rotation()*-1.01106196909)+90.0));
+  			currentcommand = cmdset[i].processcommand(currentcommand,&locationC,realangle);     //update command state machine to new movement
   			lcd::print(4,"Len %f", currentcommand.disttotgt);
   			lcd::print(0,"CMPL %f", currentcommand.completion);
   			autonbase.updatebase(currentcommand, locationC);//update base motor power outputs for current position

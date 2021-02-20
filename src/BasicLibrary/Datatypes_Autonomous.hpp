@@ -341,7 +341,7 @@ namespace STL_lib{
                             break;
                           }
                         case ODOM_ANG_RESET:{
-                          current->angle = *static_cast<SMART_radians*>(valptr);
+                          current->angle = IMU_ANGLE;
 
                         }
                     }
