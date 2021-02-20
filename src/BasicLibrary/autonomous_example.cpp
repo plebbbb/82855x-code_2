@@ -48,6 +48,7 @@ std::vector<linearmotion> cmdset = {
 	        }
 	    },
 			{position({12.55,61.15,M_PI*7/4}),{
+				new anglereset({0,10}),
 				new rotation({30,40,M_PI/2}),
 				new intake({65,100},{1,2000}),
 				new rotation({95,100,6.22})
@@ -98,6 +99,7 @@ std::vector<linearmotion> cmdset = {
 	        }
 	    },
 			{position({77.2, 85.88, 0}), {
+				new anglereset({0,10}),
 				new rotation({50,100,M_PI/2}),
 			}
 			},
@@ -125,6 +127,7 @@ std::vector<linearmotion> cmdset = {
 	},
 
 	{position({26.17, 108.56, M_PI/2}), {
+		new anglereset({0,10}),
 		new rotation({50,100,M_PI})
 	}},
 	{
@@ -138,6 +141,7 @@ std::vector<linearmotion> cmdset = {
 		}
 	},
 	{position({-5.68, 95.5, 2.34}), {
+		new anglereset({0,10}),
 		new rotation({40,100,M_PI*3/2}),
 		}
 	},
