@@ -157,13 +157,13 @@ std::vector<linearmotion> cmdset = {
 };
 void autonomous() {
 	delay(100);
-	Shooter.move_relative(150,200);
+//	Shooter.move_relative(150,200);
 //	Lintake.move_relative(300,200); //these deploys are not implemented due to the vibrations screwing with the inertial sensor calibration
 //	Rintake.move_relative(300,200);
-/*	while(im.is_calibrating()){
+	while(im.is_calibrating()){
 		locationC = Odom.cycle(locationC); //odom activated to prevent deploy induced tracking issues
 		delay(10);
-	}*/
+	}
 //	delay(100);
   locationC = std::tuple<inches,inches,SMART_radians>{0,0,M_PI/2};
   	for(int i = 0; i < cmdset.size(); i++){

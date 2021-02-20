@@ -297,7 +297,7 @@ namespace STL_lib{
         linearmotion(std::tuple<position,std::vector<actioniterator*>> set):vector(std::get<0>(set)),commands(std::get<1>(set)){};
 
         //returns command with updated request parameters for new movement percentage situation
-        command processcommand(command initial, position current, SMART_radians IMU_ANGLE){
+        command processcommand(command initial, position* current, SMART_radians IMU_ANGLE){
             for (actioniterator* cmd : commands){
                 void* valptr  = cmd->iterate(initial.completion);
                 if(valptr) {
@@ -318,7 +318,7 @@ namespace STL_lib{
                           }
                         case POS_ROTATE_ACTION:{
                             std::pair<inches,inches> tmp =* static_cast<std::pair<inches,inches>*>(valptr); //should be pointer and not copy construct, fix later
-                            vector.angle = SMART_radians(atan2(tmp.second - current.y, tmp.first - current.x)); //atan2 returns interval -pi to pi, conversion to SMART_radians adjusts that
+                            vector.angle = SMART_radians(atan2(tmp.second - current->y, tmp.first - current->x)); //atan2 returns interval -pi to pi, conversion to SMART_radians adjusts that
                           //  pros::lcd::print(4,"%f, %f, %f", tmp.second-current.y, tmp.first-current.x, vector.angle);
                             break;
                           }
@@ -332,16 +332,16 @@ namespace STL_lib{
                         case ODOM_RESET_ACTION:{
                       //    position temp = *static_cast<position*>(valptr);
                             std::tuple<position,radians> values = *static_cast<std::tuple<position,radians>*>(valptr); //THIS COPIES THE POINTER< IT IS NOT IT
-                            coordinate localoffset(current,initial.target); //make copy
+                            coordinate localoffset(*current,initial.target); //make copy
                             position temp = std::get<0>(values);  //make copy
-                            temp += localoffset.transform_matrix(IMU_ANGLE-current.angle); //transform coordinate offset from current coord system into corrected coords
+                            temp += localoffset.transform_matrix(IMU_ANGLE-current->angle); //transform coordinate offset from current coord system into corrected coords
                             temp.angle = IMU_ANGLE; //convert current global orientation into new global orientation
-                            current = temp;
+                            *current = temp;
                             delete static_cast<std::tuple<position,radians>*>(valptr);
                             break;
                           }
                         case ODOM_ANG_RESET:{
-                          current.angle = *static_cast<SMART_radians*>(valptr);
+                          current->angle = *static_cast<SMART_radians*>(valptr);
 
                         }
                     }
