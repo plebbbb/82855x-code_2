@@ -7,7 +7,7 @@ using namespace pros;
 
 Controller master(pros::E_CONTROLLER_MASTER);
 
-position locationC({0,0,M_PI/2});
+position locationC = *new position({0,0,M_PI/2});
 
 command currentcommand(position({15,15,M_PI}),{5,20,15},{0,0},{0,0});
 

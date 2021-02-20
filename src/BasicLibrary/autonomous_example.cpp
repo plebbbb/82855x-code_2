@@ -52,10 +52,10 @@ std::vector<linearmotion> cmdset = {
 				new intake({65,100},{1,2000}),
 				new rotation({95,100,6.22})
 			}},
-			{position({25.25,61.15,6.22}),{
-				new intake({15,100},{1,4200}),
+			{position({25.75,61.15,6.22}),{
+				new intake({0,100},{1,4200}),
 			}},
-			{position({25.25,61.15,6.22}),{
+			{position({25.75,61.15,6.22}),{
 				new score({-1,100},{1,1000}),
 			}},
 
@@ -68,48 +68,48 @@ std::vector<linearmotion> cmdset = {
 				new score({0,100},{1,2000}),
 			}},
 
-	    {position({21.8, 48.35, 5.7}), {
+	    {position({21.5, 48.0, 5.76}), {
 			}},
 	    {
-	        position({74.3, 8.81, 5.7}),    {
+	        position({78.14, 11.27, 5.62}),    {
 	            new intake({0, 30}, {1, 2000}),
 	            new intake({50, 100}, {1, 1000})
 	        }
 	    },
 	    {
-	        position({92.65, 6, M_PI*7/4}), {
-	            new score({90, 100}, {1, 1000})    // goal 3 (bottom right)
+	        position({94.75, 6.2, 5.485}), {
+	            new score({95, 100}, {1, 1000})    // goal 3 (bottom right)
 	        }
 	    },
-			{position({86,10,M_PI*7/4}),{
+			{position({84.70,9.90,M_PI*7/4}),{
 				new anglereset({0,10}),
 				new rotation({50,100,M_PI/2}),
 			}},
-	    {position({86, 58, M_PI/2}), {
+	    {position({87.63, 52.53, M_PI/2-0.06}), {
 	      new intake({55, 100}, {1, 3500}),
 			}
 	    },
 			{
-	    position({79, 58, 0}), {}
+	    position({85.7, 60.17, 0}), {}
 	    },
 	    {
-	        position({91, 60.6, 0}), {
+	        position({92.5, 60.17, 0}), {
 	            new score({30, 100}, {1, 1000})    // goal 4 (right middle)
 	        }
 	    },
-			{position({76, 58, 0}), {
+			{position({77.2, 85.88, 0}), {
 				new rotation({50,100,M_PI/2}),
 			}
 			},
 
-	    {position({76, 100.8, M_PI/2}), {
-	            new intake({55, 100}, {1, 2000})    // intaking this before to avoid sketcch movements
+	    {position({77.63, 101.6, M_PI/2-0.07}), {
+	            new intake({30, 100}, {1, 4000})    // intaking this before to avoid sketcch movements
 	        }
 	    },
-	    {position({96.8, 115.5, 0.76}), {	// goal 5 (top right)
+	    {position({99, 115.77, 0.72}), {	// goal 5 (top right)
 				new score({90,100},{1,600})
 			}},
-	    {position({41, 103, M_PI/4}), {
+	    {position({41.92, 102.44, 0.72}), {
 				new anglereset({0,10}),
 			//	new odomreset({0,10},std::tuple<inches,inches,SMART_radians>{93.3,117.3,M_PI/4},0.07256416339),
 				new rotation({20, 100, M_PI/2})
@@ -119,39 +119,39 @@ std::vector<linearmotion> cmdset = {
 	// {position({80, 108, M_PI/2}), {}},
 	// {position({32, 108, M_PI/2}), {}},
 	{
-			position({41, 113.5, M_PI/2}), {
-			new score({60, 100}, {1, 1000})	// goal 6 (top middle)
+			position({41.6, 114.6, M_PI/2}), {
+			new score({80, 100}, {1, 2000})	// goal 6 (top middle)
 		}
 	},
 
-	{position({32, 111, M_PI/2}), {
+	{position({26.17, 108.56, M_PI/2}), {
 		new rotation({50,100,M_PI})
 	}},
 	{
-		position({-6.61, 111, M_PI}), {
-			new rotation({70,100,2.24}),
+		position({-5.3, 108.56, M_PI}), {
+			new rotation({90,100,2.24}),
 			new intake({5, 100}, {1, 4000})
 		}
 	},
-	{position({-14.6, 123.4, 2.45}), {
+	{position({-14.7, 117.2, 2.34}), {
 			new score({90, 100}, {1, 1600})	// goal 7 (top left)
 		}
 	},
-	{position({-6.76, 90, 2.46}), {
-		new rotation({40,100,4.57}),
+	{position({-5.68, 95.5, 2.34}), {
+		new rotation({40,100,M_PI*3/2}),
 		}
 	},
-	{position({-7.18,66,4.57}),{
-		new intake({25,100},{1,2000}),
+	{position({-5.15,64.37,M_PI*3/2}),{
+		new intake({25,100},{1,3000}),
 	}},
-	{position({-2.18,66.7,3.20}),{
+	{position({-1.56,60.86,M_PI}),{
 	}},
 
-	{position({-11.4, 66.7, 3.15}), {
+	{position({-10, 61, M_PI}), {
 			new score({70, 100}, {1, 1000})	// goal 8 (left middle)
 		}
 	},
-	{position({-2.24, 67, 3.20}), {
+	{position({-2.24, 61, 3.20}), {
 		}
 	}
 };
@@ -169,7 +169,7 @@ void autonomous() {
   locationC = std::tuple<inches,inches,SMART_radians>{0,0,M_PI/2};
   	for(int i = 0; i < cmdset.size(); i++){
   		while(true){
-  	//		break;
+  			break;
   			if (master.get_digital_new_press(DIGITAL_UP)) break;
   			locationC = Odom.cycle(locationC);
   			lcd::print(5,"X: %f",locationC.x);
@@ -183,7 +183,7 @@ void autonomous() {
   		lcd::print(4,"MODE: MOVE");
 
   	//	delay(100);
-  		SMART_radians realangle = SMART_radians(degrees(double(im.get_rotation()*-1.01106196909)));
+  		SMART_radians realangle = SMART_radians(degrees(double(im.get_rotation()*-1.01006196909)+90));
   		currentcommand = cmdset[i].updatecommand(currentcommand,locationC);     //update command state machine to new movement
   		currentcommand.lengthcompute(locationC);
   		currentcommand.percentcompute(locationC);
@@ -193,7 +193,7 @@ void autonomous() {
   		while(!(currentcommand.disttotgt <= 0.8 && fabs(currentcommand.target.angle.findDiff(currentcommand.target.angle, locationC.angle)) <= 0.0872665 && currentcommand.isidle())){
   			locationC = Odom.cycle(locationC);
   			currentcommand.percentcompute(locationC);
-  		  realangle = SMART_radians(degrees(double(im.get_rotation()*-1.01106196909)+90.0));
+  		  realangle = SMART_radians(degrees(double(im.get_rotation()*-1.01006196909)+90.0));
   			currentcommand = cmdset[i].processcommand(currentcommand,&locationC,realangle);     //update command state machine to new movement
   			lcd::print(4,"Len %f", currentcommand.disttotgt);
   			lcd::print(0,"CMPL %f", currentcommand.completion);
