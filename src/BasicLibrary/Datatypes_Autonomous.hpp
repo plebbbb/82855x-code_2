@@ -22,6 +22,14 @@ namespace STL_lib{
         ODOM_ANG_RESET = 6,         //a angle reset actioniterator
     };
 
+    enum WALL_TGT{
+      LEFT_WALL = 0, //wall left of back wall
+      BACK_WALL = 1, //the wall the driver stands behind
+      RIGHT_WALL = 2, //wall right of back wall
+      FRONT_WALL = 3, //wall at the other end of the driver's spot
+    };
+
+
     /* WARNING: THIS THING NEEDS TO BE DECLARED IN RUNTIME AGAIN. PLS USE TEMP VARIABLES OBTAINED FROM THE SOURCE
        Polymorphic parent class which enables users to input a variety of commands with a start threshold.
        While we have a ending interval, it is only used in the rotaiton
@@ -252,6 +260,62 @@ namespace STL_lib{
         //this also prevents edge cases like super short profiles from screwing up. those cases will naturally become triangle profiles.
       }
     };
+
+    struct DSensor{
+      Distance sensor;
+      SMART_radians orientation; //angle of the sensor relative to the bot X axis(0rad is right)
+      coordinate COR_offset; //offset of sensor's measure distance from real center of rotation
+
+      //returns raw distance to contact point
+      inches returndistance(){
+        return inches(millimeter((double)sensor.get())); //we use automatic conversions to get an inches value
+      }
+
+      //returns real distance to specified wall
+      inches returnadjusteddist(WALL_TGT Esensedwall){//cannot compute contact wall as needs odom position to calculate
+        coordinate tmp = {0,returndistance()}; //get distance to wall
+        tmp = tmp.self_transform_matrix(orientation); //rotate to bot-centric refrence frame
+        tmp += COR_offset; //adjust for physical offset of sensor from center of rotation
+        tmp = tmp.self_transform_matrix(odomEpos->angle-M_PI/2); //rotate to global refrence frame
+        switch(Esensedwall){
+          case LEFT_WALL:
+          case RIGHT_WALL: return fabs(tmp.x);
+          case BACK_WALL:
+          case FRONT_WALL: return fabs(tmp.y);
+        }
+      }
+
+      coordinate return_walldist(WALL_TGT Esensedwall){
+        coordinate tmp = {0,returndistance()}; //get distance to wall
+        tmp = tmp.self_transform_matrix(orientation); //rotate to bot-centric refrence frame
+        tmp += COR_offset; //adjust for physical offset of sensor from center of rotation
+        tmp = tmp.self_transform_matrix(odomEpos->angle-M_PI/2); //rotate to global refrence frame
+        switch(Esensedwall){
+          //I think the magnitudes are already scaled so that I can just add but not sure so we have the fabs in there to ensure we are within range
+          case LEFT_WALL: tmp = {fabs(tmp.x),0}; break; //left wall distance is distance relative to x = 0
+          case RIGHT_WALL: tmp = {144-fabs(tmp.x),0}; break; //right wall distance is distance relative to x = 144, where we are between 0 and 144
+          case BACK_WALL: tmp = {0,fabs(tmp.y)}; break; //back wall is distance relative to y = 0;
+          case FRONT_WALL: tmp = {0,144-fabs(tmp.y)}; break;
+        }
+        return tmp;
+      }
+
+      void Pcorrect(position* odomEpos, WALL_TGT Esensedwall){
+          //while we could math out which wall we use via old coords, the whole point of this is to not use our old coords
+          /*our hard constraints are gonna be more reliable than odometry
+          //assuming that our angle is correct, our position constraining system
+          //is able to identify our effective distance to wall
+          //using this, we are able to get away with using absolute coordinates, as well as on the fly odom calibration*/
+          coordinate tmp = return_walldist(Esensedwall);
+          if (tmp.x != 0) {odomEpos->x = tmp.x; return;}
+          odomEpos->y = tmp.y;
+          return;
+      }
+
+      coordinates get_adjustment_vector_Pcorrect(position)
+    };
+
+
 
     struct command{
         position intentedstartvector = std::tuple<inches,inches,SMART_radians>{0,0,M_PI/2};
