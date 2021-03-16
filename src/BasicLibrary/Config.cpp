@@ -38,9 +38,9 @@ basecontroller_auton autonbase(
 Imu im(16);
 ///*
 OdometryWheels Owheels{
-  DeadWheel({10,'E','F'},true,inches(2.75),5.9),
-  DeadWheel({10,'A','B'},true,inches(2.75),5.9),
-  DeadWheel({10,'C','D'},true,inches(2.75),4.1)
+  DeadWheel({10,'E','F'},true,inches(2.7703),6.24176), //LEFT
+  DeadWheel({10,'A','B'},true,inches(2.7534),6.4186088), //RIGHT
+  DeadWheel({10,'C','D'},true,inches(2.7225),4.24502)  //BACK
 };
 
 OdometryComputer Odom = OdometryComputer(Owheels);
