@@ -261,8 +261,9 @@ namespace STL_lib{
       }
     };
 
+
     struct DSensor{
-      Distance sensor;
+      pros::Distance sensor;
       SMART_radians orientation; //angle of the sensor relative to the bot X axis(0rad is right)
       coordinate COR_offset; //offset of sensor's measure distance from real center of rotation
 
@@ -272,11 +273,11 @@ namespace STL_lib{
       }
 
       //returns real distance to specified wall
-      inches returnadjusteddist(WALL_TGT Esensedwall){//cannot compute contact wall as needs odom position to calculate
-        coordinate tmp = {0,returndistance()}; //get distance to wall
-        tmp = tmp.self_transform_matrix(orientation); //rotate to bot-centric refrence frame
+      inches returnadjusteddist(position* odomEpos,WALL_TGT Esensedwall){//cannot compute contact wall as needs odom position to calculate
+        coordinate tmp = std::pair<inches,inches>{inches(0),returndistance()}; //get distance to wall
+        tmp.self_transform_matrix(orientation); //rotate to bot-centric refrence frame
         tmp += COR_offset; //adjust for physical offset of sensor from center of rotation
-        tmp = tmp.self_transform_matrix(odomEpos->angle-M_PI/2); //rotate to global refrence frame
+        tmp.self_transform_matrix(odomEpos->angle-M_PI/2); //rotate to global refrence frame
         switch(Esensedwall){
           case LEFT_WALL:
           case RIGHT_WALL: return fabs(tmp.x);
@@ -285,11 +286,11 @@ namespace STL_lib{
         }
       }
 
-      coordinate return_walldist(WALL_TGT Esensedwall){
-        coordinate tmp = {0,returndistance()}; //get distance to wall
-        tmp = tmp.self_transform_matrix(orientation); //rotate to bot-centric refrence frame
+      coordinate return_walldist(position* odomEpos,WALL_TGT Esensedwall){
+        coordinate tmp = std::pair<inches,inches>{inches(0),returndistance()}; //get distance to wall
+        tmp.self_transform_matrix(orientation); //rotate to bot-centric refrence frame
         tmp += COR_offset; //adjust for physical offset of sensor from center of rotation
-        tmp = tmp.self_transform_matrix(odomEpos->angle-M_PI/2); //rotate to global refrence frame
+        tmp.self_transform_matrix(odomEpos->angle-M_PI/2); //rotate to global refrence frame
         switch(Esensedwall){
           //I think the magnitudes are already scaled so that I can just add but not sure so we have the fabs in there to ensure we are within range
           case LEFT_WALL: tmp = {fabs(tmp.x),0}; break; //left wall distance is distance relative to x = 0
@@ -306,13 +307,13 @@ namespace STL_lib{
           //assuming that our angle is correct, our position constraining system
           //is able to identify our effective distance to wall
           //using this, we are able to get away with using absolute coordinates, as well as on the fly odom calibration*/
-          coordinate tmp = return_walldist(Esensedwall);
+          coordinate tmp = return_walldist(odomEpos, Esensedwall);
           if (tmp.x != 0) {odomEpos->x = tmp.x; return;}
           odomEpos->y = tmp.y;
           return;
       }
 
-      coordinates get_adjustment_vector_Pcorrect(position)
+    //  coordinates get_adjustment_vector_Pcorrect(position)
     };
 
 

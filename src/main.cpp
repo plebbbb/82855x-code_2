@@ -136,25 +136,35 @@ void ADVballindexcontroller(){
 	}
 }*/
 void opcontrol() {
-	autonomous();
+//	autonomous();
+	/*while(true){
+		lcd::print(0,"LEFT ODOMWHEEL: %f", Owheels.LEFT.get_radian());
+		lcd::print(1,"RIGHT ODOMWHEEL: %f", Owheels.RIGHT.get_radian());
+		lcd::print(2,"REAR ODOMWHEEL: %f", Owheels.BACK.get_radian());
+		delay(10);
+	}*/
 
-
-
-	while(im.is_calibrating()){pros::delay(10);}
+delay(100);
+//	while(im.is_calibrating()){pros::delay(10);}
 	while(true){
-	lcd::print(0,"BOTTOM: %d", (int)bottom.returnval());
+/*	lcd::print(0,"BOTTOM: %d", (int)bottom.returnval());
 	lcd::print(1,"TOP: %d", (int)top.returnval());
 	lcd::print(2,"Intake State: %s", (balltransferstate) ? "TRANSFERING":"IDLE" );
-
+*/
+  locationC = Odom.cycle(locationC);
 	if(master.get_digital_new_press(DIGITAL_B)) {inertialreset();}
 	if(master.get_digital_new_press(DIGITAL_A)) balltransferstate = false;
 	coordinate currentcontrol = coordinate(std::pair<inches,inches>{inches(master.get_analog(ANALOG_LEFT_X)),inches(master.get_analog(ANALOG_LEFT_Y))});
-	if(true) {globalangle = SMART_radians(degrees(double(im.get_rotation()*-1.01056196909)));} //NOTE: NO 90 deg offset b/c this is relative to start pos
+	//if(true) {globalangle = SMART_radians(degrees(double(im.get_rotation()*-1.01056196909)));} //NOTE: NO 90 deg offset b/c this is relative to start pos
 //	if(toggleglobaldrive == false) {globalangle = SMART_radians(0.00);}
+	globalangle = SMART_radians(0.00);
 	currentcontrol.self_transform_polar(-globalangle);
-	base.move_vector_RAW_AS_M(currentcontrol,-master.get_analog(ANALOG_RIGHT_X),test);
-  ballindexcontroller();
-	intake_control();
+	lcd::print(0,"X: %f", locationC.x);
+	lcd::print(1,"Y: %f", locationC.y);
+	lcd::print(2,"R: %f", locationC.angle);
+	base.move_vector_RAW_AS_M(currentcontrol,(double)-master.get_analog(ANALOG_RIGHT_X),test);
+//  ballindexcontroller();
+//	intake_control();
 	pros::delay(10);
 	}
 }

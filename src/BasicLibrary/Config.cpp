@@ -16,10 +16,10 @@ command currentcommand(position({15,15,M_PI}),{5,20,15},{0,0},{0,0});
 
 holonomicbase base(
 	{
-		motorwheel(pros::Motor(20,true),3.25,3*M_PI/4), //top right corner
-		motorwheel(pros::Motor(15,true),3.25,5*M_PI/4),	//top left corner
-		motorwheel(pros::Motor(17,true),3.25,7*M_PI/4),	//bottom left corner
-		motorwheel(pros::Motor(19,true),3.25,M_PI/4)		//bottom right corner
+		motorwheel(pros::Motor(7,false),2.75,3*M_PI/4), //top right corner
+		motorwheel(pros::Motor(9,false),2.75,5*M_PI/4),	//top left corner
+		motorwheel(pros::Motor(8,false),2.75,7*M_PI/4),	//bottom left corner
+		motorwheel(pros::Motor(1,false),2.75,M_PI/4)		//bottom right corner
 	}
 );
 
@@ -38,9 +38,9 @@ basecontroller_auton autonbase(
 Imu im(16);
 ///*
 OdometryWheels Owheels{
-  DeadWheel('A','B',true,inches(2.7881),5.95936),
-  DeadWheel('C','D',true,inches(2.7535),5.807972),
-  DeadWheel('E','f',true,inches(2.8093),6.047798)
+  DeadWheel({10,'E','F'},true,inches(2.75),5.9),
+  DeadWheel({10,'A','B'},true,inches(2.75),5.9),
+  DeadWheel({10,'C','D'},true,inches(2.75),4.1)
 };
 
 OdometryComputer Odom = OdometryComputer(Owheels);
@@ -53,10 +53,13 @@ linetracker top(ADIAnalogIn('G'),2800);
 //linetracker middle(ADIAnalogIn('F'),2800);
 
 bool toggleglobaldrive = true;
-Motor Lintake(8);
-Motor Rintake(9,true);
-Motor Shooter(6);
-Motor Ejector(10,true);
+
+
+Motor Lintake(10);
+Motor Rintake(11,true);
+Motor Shooter(12);
+Motor Ejector(13,true);
+
 
 intakecontroller inta(Lintake,Rintake,Ejector,bottom);
 scorecontroller scra(Ejector,Shooter,top);

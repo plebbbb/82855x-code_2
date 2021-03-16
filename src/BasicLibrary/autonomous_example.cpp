@@ -170,7 +170,7 @@ void autonomous() {
 		delay(10);
 	}
 	delay(100);
-  locationC = std::tuple<inches,inches,SMART_radians>{0,0,M_PI/2};
+  locationC = std::tuple<inches,inches,SMART_radians>{0,0,M_PI/2}; //REMEMBER: LOCATIONC IS IN A STATIC ADDRESS
   	for(int i = 0; i < cmdset.size(); i++){
   		while(true){
   			break;
