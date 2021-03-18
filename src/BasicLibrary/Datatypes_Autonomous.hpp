@@ -267,6 +267,9 @@ namespace STL_lib{
       SMART_radians orientation; //angle of the sensor relative to the bot X axis(0rad is right)
       coordinate COR_offset; //offset of sensor's measure distance from real center of rotation
 
+      //NOTE: ANGLE IS ANGLE OF LASER LINE, NOT SENSOR
+      DSensor(int port, SMART_radians angle, coordinate offset):sensor(port),orientation(angle),COR_offset(offset){}
+
       //returns raw distance to contact point
       inches returndistance(){
         return inches(millimeter((double)sensor.get())); //we use automatic conversions to get an inches value
@@ -275,7 +278,7 @@ namespace STL_lib{
       //returns real distance to specified wall
       inches returnadjusteddist(position* odomEpos,WALL_TGT Esensedwall){//cannot compute contact wall as needs odom position to calculate
         coordinate tmp = std::pair<inches,inches>{inches(0),returndistance()}; //get distance to wall
-        tmp.self_transform_matrix(orientation); //rotate to bot-centric refrence frame
+        tmp = tmp.transform_matrix(orientation); //rotate to bot-centric refrence frame
         tmp += COR_offset; //adjust for physical offset of sensor from center of rotation
         tmp.self_transform_matrix(odomEpos->angle-M_PI/2); //rotate to global refrence frame
         switch(Esensedwall){
@@ -287,18 +290,23 @@ namespace STL_lib{
       }
 
       coordinate return_walldist(position* odomEpos,WALL_TGT Esensedwall){
-        coordinate tmp = std::pair<inches,inches>{inches(0),returndistance()}; //get distance to wall
-        tmp.self_transform_matrix(orientation); //rotate to bot-centric refrence frame
-        tmp += COR_offset; //adjust for physical offset of sensor from center of rotation
-        tmp.self_transform_matrix(odomEpos->angle-M_PI/2); //rotate to global refrence frame
+        coordinate tmp = std::pair<inches,inches>{returndistance(),inches(0)}; //get distance to wall
+        tmp = tmp.transform_matrix(orientation); //rotate to bot-centric refrence frame
+        pros::lcd::print(4,"global X %f", tmp.x);
+        pros::lcd::print(5,"global Y %f", tmp.y);
+        tmp -= COR_offset; //adjust for physical offset of sensor from center of rotation
+    //    pros::lcd::print(,"COR Local X %f", tmp.x);
+        pros::lcd::print(6,"COR Local X %f", tmp.x);
+        pros::lcd::print(7,"COR Local Y %f", tmp.y);
+        tmp = tmp.transform_matrix(-((*odomEpos).angle-M_PI/2)); //rotate to global refrence frame
+      //  return tmp;
         switch(Esensedwall){
           //I think the magnitudes are already scaled so that I can just add but not sure so we have the fabs in there to ensure we are within range
-          case LEFT_WALL: tmp = {fabs(tmp.x),0}; break; //left wall distance is distance relative to x = 0
-          case RIGHT_WALL: tmp = {144-fabs(tmp.x),0}; break; //right wall distance is distance relative to x = 144, where we are between 0 and 144
-          case BACK_WALL: tmp = {0,fabs(tmp.y)}; break; //back wall is distance relative to y = 0;
-          case FRONT_WALL: tmp = {0,144-fabs(tmp.y)}; break;
+          case LEFT_WALL: {return std::pair<inches,inches>{fabs(tmp.x),0};} //left wall distance is distance relative to x = 0
+          case RIGHT_WALL: {return std::pair<inches,inches>{144-fabs(tmp.x),0};} //right wall distance is distance relative to x = 144, where we are between 0 and 144
+          case BACK_WALL: {return std::pair<inches,inches>{0,fabs(tmp.y)};} //back wall is distance relative to y = 0;
+          case FRONT_WALL: {return std::pair<inches,inches>{0,144-fabs(tmp.y)};}
         }
-        return tmp;
       }
 
       void Pcorrect(position* odomEpos, WALL_TGT Esensedwall){

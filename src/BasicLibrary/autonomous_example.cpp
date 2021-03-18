@@ -164,11 +164,11 @@ void autonomous() {
 //	Shooter.move_relative(150,200);
 //	Lintake.move_relative(300,200); //these deploys are not implemented due to the vibrations screwing with the inertial sensor calibration
 //	Rintake.move_relative(300,200);
-	im.reset();
-	while(im.is_calibrating()){
+	//im.reset();
+	/*while(im.is_calibrating()){
 		locationC = Odom.cycle(locationC); //odom activated to prevent deploy induced tracking issues
 		delay(10);
-	}
+	}*/
 	delay(100);
   locationC = std::tuple<inches,inches,SMART_radians>{0,0,M_PI/2}; //REMEMBER: LOCATIONC IS IN A STATIC ADDRESS
   	for(int i = 0; i < cmdset.size(); i++){
@@ -187,25 +187,25 @@ void autonomous() {
   		lcd::print(4,"MODE: MOVE");
 
   	//	delay(100);
-  		SMART_radians realangle = SMART_radians(degrees(double(im.get_rotation()*-1.01006196909)+90));
+  	//	SMART_radians realangle = SMART_radians(degrees(double(im.get_rotation()*-1.01006196909)+90));
   		currentcommand = cmdset[i].updatecommand(currentcommand,locationC);     //update command state machine to new movement
   		currentcommand.lengthcompute(locationC);
   		currentcommand.percentcompute(locationC);
   		autonbase.profileupdate(currentcommand,locationC);
-  		currentcommand = cmdset[i].processcommand(currentcommand,&locationC,realangle);     //trigger instant start commands
+  		currentcommand = cmdset[i].processcommand(currentcommand,&locationC,/*realangle*/double(locationC.angle));      //trigger instant start commands
   		//checks if within distance tollerance threshold, as well as if the lift is currently idle during that duration
-  		while(!(currentcommand.disttotgt <= 0.8 && fabs(currentcommand.target.angle.findDiff(currentcommand.target.angle, locationC.angle)) <= 0.0872665 && currentcommand.isidle())){
+  		while(!(currentcommand.disttotgt <= 0.8 && fabs(currentcommand.target.angle.findDiff(currentcommand.target.angle, locationC.angle)) <= 0.0872665 /*&& currentcommand.isidle()*/)){
   			locationC = Odom.cycle(locationC);
   			currentcommand.percentcompute(locationC);
-  		  realangle = SMART_radians(degrees(double(im.get_rotation()*-1.01006196909)+90.0));
-  			currentcommand = cmdset[i].processcommand(currentcommand,&locationC,realangle);     //update command state machine to new movement
+  		 // realangle = SMART_radians(degrees(double(im.get_rotation()*-1.01006196909)+90.0));
+  			currentcommand = cmdset[i].processcommand(currentcommand,&locationC,/*realangle*/double(locationC.angle));     //update command state machine to new movement
   			lcd::print(4,"Len %f", currentcommand.disttotgt);
   			lcd::print(0,"CMPL %f", currentcommand.completion);
   			autonbase.updatebase(currentcommand, locationC);//update base motor power outputs for current position
   		//	autonbase.base.move_vector_RAW(std::pair<inches,inches>{0,0},0,0); //uncomment to disable movement
-  			currentcommand = inta.refresh(currentcommand);
-  			ballindexcontroller2();
-  			currentcommand = scra.refresh(currentcommand);
+  		//	currentcommand = inta.refresh(currentcommand);
+  		//	ballindexcontroller2();
+  		//	currentcommand = scra.refresh(currentcommand);
   			lcd::print(5,"X: %f",locationC.x);
   			lcd::print(6,"Y: %f",locationC.y);
   			lcd::print(7,"R: %f",locationC.angle);

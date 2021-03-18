@@ -438,6 +438,7 @@ namespace STL_lib {
 			y = inches(length * sin(double(polar_angle)));
 		}
 
+		//this, and self transform polar both seem to be broken for some reason
 		void self_transform_matrix(SMART_radians offset){
 			x = cos(offset)*x + sin(offset)*x;
 			y = - sin(offset)*y + cos(offset)*y;
@@ -480,6 +481,12 @@ namespace STL_lib {
 		void operator+=(position change) {
 			x += change.x;
 			y += change.y;
+			get_length();
+		}
+
+		void operator-=(position change) {
+			x -= change.x;
+			y -= change.y;
 			get_length();
 		}
 

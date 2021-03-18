@@ -135,6 +135,7 @@ void ADVballindexcontroller(){
 		Shooter.move_velocity(0);
 	}
 }*/
+DSensor teset(20, M_PI*1/4, std::pair<inches,inches>{-8,6});
 void opcontrol() {
 //	autonomous();
 	/*while(true){
@@ -147,6 +148,10 @@ void opcontrol() {
 delay(100);
 //	while(im.is_calibrating()){pros::delay(10);}
 	while(true){
+	coordinate ef = teset.return_walldist(&locationC,LEFT_WALL);
+	lcd::print(1,"ESTIMATED X: %f", ef.x);
+	lcd::print(2,"ESTIMATED Y: %f", ef.y);
+	lcd::print(3,"RAW SENS %f", teset.returndistance());
 /*	lcd::print(0,"BOTTOM: %d", (int)bottom.returnval());
 	lcd::print(1,"TOP: %d", (int)top.returnval());
 	lcd::print(2,"Intake State: %s", (balltransferstate) ? "TRANSFERING":"IDLE" );
@@ -159,9 +164,9 @@ delay(100);
 //	if(toggleglobaldrive == false) {globalangle = SMART_radians(0.00);}
 	globalangle = SMART_radians(0.00);
 	currentcontrol.self_transform_polar(-globalangle);
-	lcd::print(0,"X: %f", locationC.x);
-	lcd::print(1,"Y: %f", locationC.y);
-	lcd::print(2,"R: %f", locationC.angle);
+/*	lcd::print(0,"X: %f", locationC.x);
+/*	lcd::print(1,"Y: %f", locationC.y);*/
+	lcd::print(0,"R: %f", locationC.angle);
 	base.move_vector_RAW_AS_M(currentcontrol,(double)-master.get_analog(ANALOG_RIGHT_X),test);
 //  ballindexcontroller();
 //	intake_control();
