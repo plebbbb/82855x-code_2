@@ -10,9 +10,9 @@ void initialize() {
 void disabled() {}
 void competition_initialize() {}
 void inertialreset(){
-	im.reset();
+	LIM.reset();
 	delay(10);
-	while(im.is_calibrating()){pros::delay(10);}
+	while(LIM.is_calibrating()){pros::delay(10);}
 }
 
 bool BBDZ = false;
@@ -135,8 +135,7 @@ void ADVballindexcontroller(){
 		Shooter.move_velocity(0);
 	}
 }*/
-//DSensor LDS(20, M_PI*5/4, std::pair<inches,inches>{-8,6}); //left corner distance sensor
-DSensor RDS(19, M_PI*7/4, std::pair<inches,inches>{8,6}); //right corner distance sensor
+
 void opcontrol() {
 //	autonomous();
 	/*while(true){
@@ -148,8 +147,8 @@ void opcontrol() {
 delay(100);
 //	while(im.is_calibrating()){pros::delay(10);}
 	while(true){
-	coordinate ef = RDS.return_walldist(&locationC,RIGHT_WALL);
-//	ef += LDS.return_walldist(&locationC, BACK_WALL);
+	coordinate ef = RDS.return_walldist(&locationC,LEFT_WALL);
+	ef += LDS.return_walldist(&locationC, BACK_WALL);
 	lcd::print(1,"ESTIMATED X: %f", ef.x);
 	lcd::print(2,"ESTIMATED Y: %f", ef.y);
 /*	lcd::print(0,"BOTTOM: %d", (int)bottom.returnval());

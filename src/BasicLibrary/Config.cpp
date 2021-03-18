@@ -35,13 +35,16 @@ basecontroller_auton autonbase(
 
 //ODOM THINGS ***************************************************************/
 
-Imu im(16);
+Imu LIM(16);
 ///*
 OdometryWheels Owheels{
   DeadWheel({10,'E','F'},true,inches(2.7703),6.24176), //LEFT
   DeadWheel({10,'A','B'},true,inches(2.7534),6.4186088), //RIGHT
   DeadWheel({10,'C','D'},true,inches(2.7225),4.24502)  //BACK
 };
+
+DSensor LDS(20, M_PI*5/4, std::pair<inches,inches>{-8,6}); //left corner distance sensor
+DSensor RDS(19, M_PI*7/4, std::pair<inches,inches>{8,6}); //right corner distance sensor
 
 OdometryComputer Odom = OdometryComputer(Owheels);
 //*/

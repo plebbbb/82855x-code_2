@@ -28,12 +28,16 @@ extern STL_lib::basecontroller_auton autonbase;
 
 //ODOM THINGS ***************************************************************/
 
-extern pros::Imu im;
+extern pros::Imu LIM;
+extern pros::Imu RIM;
 
 extern STL_lib::OdometryWheels Owheels;
 
 extern STL_lib::OdometryComputer Odom;
 
+extern STL_lib::DSensor LDS;
+
+extern STL_lib::DSensor RDS;
 
 //**************************************************************************//
 
