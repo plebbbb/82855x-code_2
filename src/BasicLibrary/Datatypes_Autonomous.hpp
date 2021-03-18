@@ -267,15 +267,15 @@ namespace STL_lib{
       SMART_radians orientation; //angle of the sensor relative to the bot X axis(0rad is right)
       coordinate COR_offset; //offset of sensor's measure distance from real center of rotation
 
-      //NOTE: ANGLE IS ANGLE OF LASER LINE, NOT SENSOR
+      //NOTE: ANGLE IS ANGLE OF LASER LINE RELATIVE TO POSITIVE X AT THE POINT WHERE THE LASER HITS THE WALL
       DSensor(int port, SMART_radians angle, coordinate offset):sensor(port),orientation(angle),COR_offset(offset){}
 
-      //returns raw distance to contact point
+      //returns raw distance to contact point VERIFIED
       inches returndistance(){
         return inches(millimeter((double)sensor.get())); //we use automatic conversions to get an inches value
       }
 
-      //returns real distance to specified wall
+      //returns real distance to specified wall NOT VERIFIED
       inches returnadjusteddist(position* odomEpos,WALL_TGT Esensedwall){//cannot compute contact wall as needs odom position to calculate
         coordinate tmp = std::pair<inches,inches>{inches(0),returndistance()}; //get distance to wall
         tmp = tmp.transform_matrix(orientation); //rotate to bot-centric refrence frame
@@ -289,12 +289,13 @@ namespace STL_lib{
         }
       }
 
+//VERIFIED
       coordinate return_walldist(position* odomEpos,WALL_TGT Esensedwall){
         coordinate tmp = std::pair<inches,inches>{returndistance(),inches(0)}; //get distance to wall
         tmp = tmp.transform_matrix(orientation); //rotate to bot-centric refrence frame
-        pros::lcd::print(4,"global X %f", tmp.x);
-        pros::lcd::print(5,"global Y %f", tmp.y);
-        tmp -= COR_offset; //adjust for physical offset of sensor from center of rotation
+        pros::lcd::print(4,"LOCAL X %f", tmp.x);
+        pros::lcd::print(5,"LOCAL Y %f", tmp.y);
+        tmp += COR_offset; //adjust for physical offset of sensor from center of rotation
     //    pros::lcd::print(,"COR Local X %f", tmp.x);
         pros::lcd::print(6,"COR Local X %f", tmp.x);
         pros::lcd::print(7,"COR Local Y %f", tmp.y);
