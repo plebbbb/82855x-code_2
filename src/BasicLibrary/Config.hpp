@@ -35,9 +35,7 @@ extern STL_lib::OdometryWheels Owheels;
 
 extern STL_lib::OdometryComputer Odom;
 
-extern STL_lib::DSensor LDS;
-
-extern STL_lib::DSensor RDS;
+extern STL_lib::DSensorComputer DSodom;
 
 //**************************************************************************//
 

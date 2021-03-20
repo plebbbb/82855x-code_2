@@ -20,6 +20,7 @@ namespace STL_lib{
         EJECT_ACTION = 4,           //a ball ejection actioniterator
         ODOM_RESET_ACTION = 5,      //a coordinate reset actioniterator
         ODOM_ANG_RESET = 6,         //a angle reset actioniterator
+        DSODOM_CONTROL_ACTION = 7,  //a distance sensor odom toggle actioniterator
     };
 
     enum WALL_TGT{
@@ -58,7 +59,7 @@ namespace STL_lib{
         /* idle action behavior
              Should return a void* of whatever datatype the target controller uses. These will be cast to their correct forms
              via the actiontype enum for processing. This one is used to reset the controller to it's default format.
-             If a definition of this function is not created in a derivived class, the value will persist
+             If a definition of this function is not created in a derivived class, the value will persist until it gets overwritten
          */
         virtual void* getdefaultval() {return nullptr;}//behavior function
 
@@ -97,6 +98,7 @@ namespace STL_lib{
         SMART_radians angle;
         /******************************************************************************/
         //Constructor(s)
+        //Using one vector for all params is inconsistent. TBD: Convert into standard interval vector + command specific params format.
         rotation(std::vector<double> values):actioniterator(values,ROTATE_ACTION,false),angle(values[2]){}
 
 
@@ -160,6 +162,32 @@ namespace STL_lib{
               return new std::tuple<int,double>{0,0.0};
           }
       };
+
+      /* useDSensor actioniterator
+         This is a derivived actioniterator meant for configuring and enabling DSensorComputer
+         Specify the walls which each sensor is touching. Start from the leftmost sensor
+      */
+      struct useDistanceSensor: public actioniterator{
+            std::tuple<WALL_TGT,WALL_TGT> walls;
+            /******************************************************************************/
+            //Constructor(s)
+            useDistanceSensor(std::vector<double> vals, std::tuple<WALL_TGT,WALL_TGT> tg):actioniterator(vals,DSODOM_CONTROL_ACTION,false),walls(tg){}
+
+
+            /******************************************************************************/
+            //Primary function(s)
+            //Returns a std::tuple<int,double> with the ball count and time limit, must be cast later
+            //NOTE THAT THIS MUST BE DELETED UPON OBTAINING THE VALUES
+            virtual void* getval(){
+                return new std::tuple<bool,WALL_TGT,WALL_TGT>{true,std::get<0>(walls),std::get<1>(walls)};
+            }
+
+            //returns targets of zero if outside threshold
+            virtual void* getdefaultval(){
+                return new std::tuple<bool,WALL_TGT,WALL_TGT>{false,LEFT_WALL,LEFT_WALL}; //disabled state. walls dont matter b/c toggle is off
+            }
+        };
+
 
 
     /* coordinatetarget actioniterator
@@ -254,7 +282,7 @@ namespace STL_lib{
       percent determinepoweroutput(percent in){
         percent accelcurve = sqrt(2*accelcoeff*in+(initvel*initvel));
         percent decelcurve = sqrt(-2*decelcoeff*(in-100)+(endvel*endvel));
-        //NOTE: INFINITE/UNDEFINED FROM ACCELSCALEFAC 0 SHOULD BE RESOLVED VIA THE MIN CHECKS, EVEN THEN WE SHOULD BE USING LOCAL PID WHEN WE ARE THIS CLOSE
+        //NOTE: INFINITE/UNDEFINED FROM ACCELSCALEFAC 0 SHOULD BE RESOLVED VIA THE MIN DIST CHECKS IN BASECONTROLLER_AUTON
         return (percent)std::min<double>(std::min<double>(accelcurve,decelcurve),100.0); //I cant get the tuple version to compile in test environment so we are doing this instead
         //instead of doing the whole check which one should compute now stuff, its easier just to calculate all curves and check which one is the lowest
         //this also prevents edge cases like super short profiles from screwing up. those cases will naturally become triangle profiles.
@@ -276,11 +304,11 @@ namespace STL_lib{
       }
 
       //returns real distance to specified wall NOT VERIFIED
-      inches returnadjusteddist(position* odomEpos,WALL_TGT Esensedwall){//cannot compute contact wall as needs odom position to calculate
+      inches returnadjusteddist(position odomEpos,WALL_TGT Esensedwall){//cannot compute contact wall as needs odom position to calculate
         coordinate tmp = std::pair<inches,inches>{inches(0),returndistance()}; //get distance to wall
         tmp = tmp.transform_matrix(orientation); //rotate to bot-centric refrence frame
         tmp += COR_offset; //adjust for physical offset of sensor from center of rotation
-        tmp.self_transform_matrix(odomEpos->angle-M_PI/2); //rotate to global refrence frame
+        tmp.self_transform_matrix(odomEpos.angle-M_PI/2); //rotate to global refrence frame
         switch(Esensedwall){
           case LEFT_WALL:
           case RIGHT_WALL: return fabs(tmp.x);
@@ -290,7 +318,7 @@ namespace STL_lib{
       }
 
 //VERIFIED
-      coordinate return_walldist(position* odomEpos,WALL_TGT Esensedwall){
+      coordinate return_walldist(position odomEpos,WALL_TGT Esensedwall){
         coordinate tmp = std::pair<inches,inches>{returndistance(),inches(0)}; //get distance to wall
         tmp = tmp.transform_matrix(orientation); //rotate to bot-centric refrence frame
         pros::lcd::print(4,"LOCAL X %f", tmp.x);
@@ -299,7 +327,7 @@ namespace STL_lib{
     //    pros::lcd::print(,"COR Local X %f", tmp.x);
         pros::lcd::print(6,"COR Local X %f", tmp.x);
         pros::lcd::print(7,"COR Local Y %f", tmp.y);
-        tmp = tmp.transform_matrix(-((*odomEpos).angle-M_PI/2)); //rotate to global refrence frame
+        tmp = tmp.transform_matrix(-((odomEpos).angle-M_PI/2)); //rotate to global refrence frame
       //  return tmp;
         switch(Esensedwall){
           //I think the magnitudes are already scaled so that I can just add but not sure so we have the fabs in there to ensure we are within range
@@ -310,22 +338,20 @@ namespace STL_lib{
         }
       }
 
-      void Pcorrect(position* odomEpos, WALL_TGT Esensedwall){
+      position Pcorrect(position odomEpos, WALL_TGT Esensedwall){
           //while we could math out which wall we use via old coords, the whole point of this is to not use our old coords
           /*our hard constraints are gonna be more reliable than odometry
           //assuming that our angle is correct, our position constraining system
           //is able to identify our effective distance to wall
           //using this, we are able to get away with using absolute coordinates, as well as on the fly odom calibration*/
           coordinate tmp = return_walldist(odomEpos, Esensedwall);
-          if (tmp.x != 0) {odomEpos->x = tmp.x; return;}
-          odomEpos->y = tmp.y;
-          return;
+          if (tmp.x != 0) {odomEpos.x = tmp.x; return odomEpos;}
+          odomEpos.y = tmp.y;
+          return odomEpos;
       }
 
     //  coordinates get_adjustment_vector_Pcorrect(position)
     };
-
-
 
     struct command{
         position intentedstartvector = std::tuple<inches,inches,SMART_radians>{0,0,M_PI/2};
@@ -336,6 +362,7 @@ namespace STL_lib{
         std::tuple<inches,percent,percent> motionprofile_config; //ideal velocity profile constraints, indexes: accel dist, start power, end power
         std::tuple<unsigned short,double> intake_status; //current balls amount to be taken in and time before timeout
         std::tuple<unsigned short,double> score_status;  //current balls amount to be scored and time before timeout
+        std::tuple<bool,WALL_TGT,WALL_TGT> DSensor_status; //index 0: activation of distance sensor coord calc, index 1 and 2: walls the sensors are hitting(Left to right)
         percent completion; //current percentage of path completion, used to trigger commands
         command(position tgt, std::tuple<inches,percent,percent> trapconfig, std::tuple<int,double> in, std::tuple<int,double> out):
         target(tgt),
@@ -358,6 +385,27 @@ namespace STL_lib{
           //as well as the fact that there exists no case for negative balls in intake and score status
         }
 };
+
+    //this is not very modular. Will have to be rewritten for alternate sensor configurations which can do angle to walls
+    //module for modifying odometry coordinates based on command settings
+    //TBD: allow for angle constrainment when both facing same wall, as well as constraining only one global axis
+    struct DSensorComputer{
+      DSensor LC;
+      DSensor RC;
+      DSensorComputer(DSensor L, DSensor R):LC(L),RC(R){}
+
+      position updateposition(command currentcommand, position read){
+        if(std::get<0>(currentcommand.DSensor_status) == true){
+          coordinate E = LC.return_walldist(read,std::get<1>(currentcommand.DSensor_status));
+          E += RC.return_walldist(read,std::get<2>(currentcommand.DSensor_status));
+          read.x = E.x;
+          read.y = E.y;
+        }
+        return read;
+      }
+
+    };
+
 
     //updates command each cycle based on new status
     struct linearmotion{
@@ -416,7 +464,12 @@ namespace STL_lib{
                           }
                         case ODOM_ANG_RESET:{
                           current->angle = IMU_ANGLE;
+                          break;
+                        }
 
+                        case DSODOM_CONTROL_ACTION:{
+                          initial.DSensor_status =* static_cast<std::tuple<bool,WALL_TGT,WALL_TGT>*>(valptr);
+                          delete  static_cast<std::tuple<bool,WALL_TGT,WALL_TGT>*>(valptr);
                         }
                     }
                 }

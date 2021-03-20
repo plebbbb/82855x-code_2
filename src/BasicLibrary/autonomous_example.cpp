@@ -28,6 +28,7 @@ void ballindexcontroller2(){
 			Shooter.move_velocity(0);
 		}//*/
 	}
+	/*
 std::vector<linearmotion> cmdset = {
 	  	{
 	        position({0, 26, M_PI/2}), {
@@ -158,6 +159,72 @@ std::vector<linearmotion> cmdset = {
 	{position({-2.24, 61, 3.20}), {
 		}
 	}
+};//*/
+
+//test for distance sensors
+std::vector<linearmotion> cmdset = {
+	{
+			position({0, 26, M_PI/2}), {
+					new rotation({40, 100, M_PI*5/4}),
+			}
+	},
+	{
+		position({16,16,M_PI*5/4}),{
+			new useDistanceSensor({-1,120},{BACK_WALL,LEFT_WALL})
+		}
+	},
+	{
+		position({24,24,0}),{
+		}
+	},
+	{
+		position({112,36,M_PI*7/4}),{
+		}
+	},
+	{
+		position({128,16,M_PI*7/4}),{
+			new useDistanceSensor({-1,120},{RIGHT_WALL,BACK_WALL})
+		}
+	},
+	{
+		position({108,48,M_PI/2}),{
+		}
+	},
+	{
+		position({108,108,M_PI/4}),{
+		}
+	},
+	{
+		position({128,128,M_PI/4}),{
+			new useDistanceSensor({-1,120},{FRONT_WALL,RIGHT_WALL})
+		}
+	},
+	{
+		position({108,108,M_PI}),{
+		}
+	},
+	{
+		position({36,108,M_PI*3/4}),{
+		}
+	},
+	{
+		position({16,128,M_PI*3/4}),{
+			new useDistanceSensor({-1,120},{LEFT_WALL,FRONT_WALL})
+		}
+	},
+	{
+		position({36,112,M_PI*3/2}),{
+		}
+	},
+	{
+		position({36,36,M_PI*5/4}),{
+		}
+	},
+	{
+		position({16,16,M_PI*5/4}),{
+			new useDistanceSensor({-1,120},{BACK_WALL,LEFT_WALL})
+		}
+	},
 };
 void autonomous() {
 	delay(100);
@@ -188,8 +255,10 @@ void autonomous() {
 
   	//	delay(100);
   	//	SMART_radians realangle = SMART_radians(degrees(double(im.get_rotation()*-1.01006196909)+90));
+			currentcommand.DSensor_status = {false,LEFT_WALL,LEFT_WALL}; //THIS IS A HACK. IMPLEMENT END OF MOVEMENT SHUTDOWN CALL SYSTEM FOR LINEARMOTION
   		currentcommand = cmdset[i].updatecommand(currentcommand,locationC);     //update command state machine to new movement
-  		currentcommand.lengthcompute(locationC);
+			locationC = DSodom.updateposition(currentcommand,locationC); //ensures that all length calcs are in right sensor refrences
+			currentcommand.lengthcompute(locationC);
   		currentcommand.percentcompute(locationC);
   		autonbase.profileupdate(currentcommand,locationC);
   		currentcommand = cmdset[i].processcommand(currentcommand,&locationC,/*realangle*/double(locationC.angle));      //trigger instant start commands
@@ -201,6 +270,7 @@ void autonomous() {
   			currentcommand = cmdset[i].processcommand(currentcommand,&locationC,/*realangle*/double(locationC.angle));     //update command state machine to new movement
   			lcd::print(4,"Len %f", currentcommand.disttotgt);
   			lcd::print(0,"CMPL %f", currentcommand.completion);
+				locationC = DSodom.updateposition(currentcommand,locationC);
   			autonbase.updatebase(currentcommand, locationC);//update base motor power outputs for current position
   		//	autonbase.base.move_vector_RAW(std::pair<inches,inches>{0,0},0,0); //uncomment to disable movement
   		//	currentcommand = inta.refresh(currentcommand);

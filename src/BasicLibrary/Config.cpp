@@ -43,8 +43,11 @@ OdometryWheels Owheels{
   DeadWheel({10,'C','D'},true,inches(2.7225),4.24502)  //BACK
 };
 
-DSensor LDS(20, M_PI*5/4, std::pair<inches,inches>{-8,6}); //left corner distance sensor
-DSensor RDS(19, M_PI*7/4, std::pair<inches,inches>{8,6}); //right corner distance sensor
+DSensorComputer DSodom(
+	DSensor(20, M_PI*5/4, std::pair<inches,inches>{-8,6}), //left corner distance sensor
+	DSensor(19, M_PI*7/4, std::pair<inches,inches>{8,6})   //right corner distance sensor
+);
+
 
 OdometryComputer Odom = OdometryComputer(Owheels);
 //*/
