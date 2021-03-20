@@ -135,7 +135,6 @@ void ADVballindexcontroller(){
 		Shooter.move_velocity(0);
 	}
 }*/
-
 void opcontrol() {
 	autonomous();
 	/*while(true){
@@ -145,7 +144,6 @@ void opcontrol() {
 		delay(10);
 	}*/
 delay(100);
-//	while(im.is_calibrating()){pros::delay(10);}
 	while(true){
 /*	lcd::print(0,"BOTTOM: %d", (int)bottom.returnval());
 	lcd::print(1,"TOP: %d", (int)top.returnval());

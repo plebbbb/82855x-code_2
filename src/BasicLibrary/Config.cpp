@@ -25,8 +25,8 @@ holonomicbase base(
 
 basecontroller_auton autonbase(
   base,
-  control_loop({new Proportional(40,{100,-100}),new Derivitive(30,{70,-70})},{100,-100}),  //X control loop
-  control_loop({new Proportional(40,{100,-100}),new Derivitive(30,{70,-70})},{100,-100}),  //Y control loop
+  control_loop({new Proportional(40,{100,-100}),new Derivitive(35,{70,-70})},{100,-100}),  //X control loop
+  control_loop({new Proportional(40,{100,-100}),new Derivitive(35,{70,-70})},{100,-100}),  //Y control loop
   control_loop({new Proportional(200,{100,-100}),new Derivitive(80,{20,-20})},{100,-100}),   //Rotation control loop
 	control_loop({new Proportional(1,{0.5,-0.5}),new Derivitive(0.4,{0.25,-0.25})},{0.5,-0.5})   //Rotation control loop, vector mode
 );

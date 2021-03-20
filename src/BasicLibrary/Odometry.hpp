@@ -30,6 +30,24 @@ namespace STL_lib{
     ENCODER_POSITION_BACK = 2
   };
 
+  //wrapper class for two IMUs, whose results are then averaged out
+  struct DoubleIMU{
+    pros::Imu L; //imu where clockwise rotation yields negative angles
+    pros::Imu R; //imu where clockwise rotation yields positive angles
+    DoubleIMU(int CCWP, int CWP):L(CCWP),R(CWP){};
+    bool is_calibrating(){
+      if(!L.is_calibrating() && !R.is_calibrating()) return false;
+      return true;
+    }
+    SMART_radians get_heading(){
+      degrees rawvalue = -(L.get_rotation());
+      return (double)(radians(rawvalue)+M_PI/2)*1.01056196909;
+    }
+    SMART_radians get_heading_AVG(){
+      degrees rawvalue = -(L.get_rotation() + R.get_rotation())/2.0000000;
+      return (double)(radians(rawvalue)+M_PI/2);
+    }
+  };
 
   //An ADI encoder wrapper that directly outputs distance values
   struct DeadWheel{
@@ -255,8 +273,43 @@ namespace STL_lib{
 
       return precycle;
     }
-  };
 
+    //IMU odometry function
+    position cycleIMU(position precycle, SMART_radians new_heading){
+      std::array EncoderDistanceValues = wheels.get_distances_nonpointer();
+      //its a 50/50 that get_distances_nonpointer works
+
+      //Assuming forwards is 0rad, CCW is positive we calculate the relative offset
+      //All coords are prior to move fyi.
+      radians rel_orientation_change = new_heading.findDiff(new_heading,precycle.angle);
+
+      //SMART_radians' built in interval restriction isn't needed here. We need negative intervals.
+
+      coordinate returncycle(std::pair<inches,inches>{0,0});
+
+      radians avg_angle = rel_orientation_change/2.0000000;
+
+      if (rel_orientation_change == 0){
+        returncycle.x = EncoderDistanceValues[2];
+        returncycle.y = EncoderDistanceValues[1];
+      } else {
+        returncycle.y = inches(2.0*sin(avg_angle) *
+        ((EncoderDistanceValues[1]/rel_orientation_change) +
+        wheels[ENCODER_POSITION_RIGHT].Distance_CenterOfRotation));
+
+        returncycle.x = inches(2.0*sin(avg_angle) *
+        ((EncoderDistanceValues[2]/rel_orientation_change) +
+        wheels[ENCODER_POSITION_BACK].Distance_CenterOfRotation));
+      }
+
+      returncycle = returncycle.transform_matrix(-(precycle.angle+avg_angle-(M_PI/2)));
+
+      precycle += returncycle;
+      precycle.angle.value = new_heading;
+
+      return precycle;
+    }
+  };
 }
 
 #endif

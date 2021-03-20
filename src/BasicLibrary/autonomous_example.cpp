@@ -226,8 +226,11 @@ std::vector<linearmotion> cmdset = {
 		}
 	},
 };
+DoubleIMU Tes(3,15);
 void autonomous() {
 	delay(100);
+	while(Tes.is_calibrating()){pros::delay(10);}
+
 //	Shooter.move_relative(150,200);
 //	Lintake.move_relative(300,200); //these deploys are not implemented due to the vibrations screwing with the inertial sensor calibration
 //	Rintake.move_relative(300,200);
@@ -242,7 +245,7 @@ void autonomous() {
   		while(true){
   			break;
   			if (master.get_digital_new_press(DIGITAL_UP)) break;
-  			locationC = Odom.cycle(locationC);
+  			locationC = Odom.cycleIMU(locationC,Tes.get_heading());
   			lcd::print(5,"X: %f",locationC.x);
   			lcd::print(6,"Y: %f",locationC.y);
   			lcd::print(7,"R: %f",locationC.angle);
@@ -252,11 +255,13 @@ void autonomous() {
   			delay(10);
   		}
   		lcd::print(4,"MODE: MOVE");
+		//	lcd::print(1,"%f",Tes.get_heading());
 
   	//	delay(100);
   	//	SMART_radians realangle = SMART_radians(degrees(double(im.get_rotation()*-1.01006196909)+90));
 			currentcommand.DSensor_status = {false,LEFT_WALL,LEFT_WALL}; //THIS IS A HACK. IMPLEMENT END OF MOVEMENT SHUTDOWN CALL SYSTEM FOR LINEARMOTION
-  		currentcommand = cmdset[i].updatecommand(currentcommand,locationC);     //update command state machine to new movement
+			locationC = Odom.cycleIMU(locationC,Tes.get_heading());
+			currentcommand = cmdset[i].updatecommand(currentcommand,locationC);     //update command state machine to new movement
 			locationC = DSodom.updateposition(currentcommand,locationC); //ensures that all length calcs are in right sensor refrences
 			currentcommand.lengthcompute(locationC);
   		currentcommand.percentcompute(locationC);
@@ -264,7 +269,8 @@ void autonomous() {
   		currentcommand = cmdset[i].processcommand(currentcommand,&locationC,/*realangle*/double(locationC.angle));      //trigger instant start commands
   		//checks if within distance tollerance threshold, as well as if the lift is currently idle during that duration
   		while(!(currentcommand.disttotgt <= 0.8 && fabs(currentcommand.target.angle.findDiff(currentcommand.target.angle, locationC.angle)) <= 0.0872665 /*&& currentcommand.isidle()*/)){
-  			locationC = Odom.cycle(locationC);
+			//	lcd::print(1,"%f",Tes.get_heading());
+				locationC = Odom.cycleIMU(locationC,Tes.get_heading());
   			currentcommand.percentcompute(locationC);
   		 // realangle = SMART_radians(degrees(double(im.get_rotation()*-1.01006196909)+90.0));
   			currentcommand = cmdset[i].processcommand(currentcommand,&locationC,/*realangle*/double(locationC.angle));     //update command state machine to new movement
