@@ -16,6 +16,19 @@ namespace STL_lib {
 		  Doesn't allow for conversion from radian to degrees or smart radians to radians
 	*/
 
+ static const std::vector<std::vector<double>> Ptriangle = {
+		{1},
+	  {1,1},
+	  {1,2,1},
+	  {1,3,3,1},
+	  {1,4,6,4,1},
+	  {1,5,10,10,5,1},
+	  {1,6,15,20,15,6,1},
+	  {1,7,21,35,35,21,7,1},
+	  {1,8,28,56,70,56,28,8,1},
+	  {1,9,36,84,126,126,84,36,9,1}
+	}
+
 
 	/**************************************************************************************************/
 	// ROTATIONAL UNITS
@@ -415,6 +428,7 @@ namespace STL_lib {
 		inches y;
 		inches length;
 		coordinate(std::pair<inches, inches> set) :x(set.first), y(set.second) { get_length(); }
+		coordinate(std::tuple<inches, inches> set) :x(std::get<0>(set)), y(std::get<1>(set)) { get_length(); }
 
 		//copy constructor
 		coordinate operator=(std::pair<inches, inches> set) {
@@ -513,6 +527,48 @@ namespace STL_lib {
 				return returnval;
 			}
 	};
+
+
+		//n degree bezier curve
+		struct bezier{
+			std::vector<coordinate> set; //lists transform coordinates from start to end
+			bezier(std::vector<coordinate> st):set(st){}
+			coordinate compute(percent input){
+				double T = input.getValue();
+				coordinate tmp = std::pair<inches,inches>{0,0};
+				int ivi = 0; //inverse of i
+				for(int i = set.size()-1; i > -1; i--){
+					//expression: binomial coeff * (1-current progression of curve)^(highest term - current term) * current progression of term^current term * current term transform point
+					tmp.x+=Ptriangle[set.size()-1][ivi]*pow((1-T),i)*pow(T,ivi)*set[ivi].x;
+					tmp.y+=Ptriangle[set.size()-1][ivi]*pow((1-T),i)*pow(T,ivi)*set[ivi].y;
+				}
+				return tmp;
+			}
+		};
+
+		//n degree bezier curve wrapper, which includes the derivative of bezier as well
+		struct bezierD{
+			bezier main;
+			bezier slope; //the slope of a bezier curve is the bezier curve of differences between each transform point
+			bezierD(std::vector<coordinate> st):main(st),slope(cut_down(st)){}
+			//cuts down bezier transform points into transform points for it's derivitive
+			std::vector<coordinate> cut_down(std::vector<coordinate> in){
+				std::vector<coordinate> inM(in.size()-1);
+				for(int i = 0; i < in.size(); i++){
+					inM[i] = {in[i+1].x-in[i].x,in[i+1].y-in[i+1].y};
+				}
+				return inM;
+			}
+			position compute(percent input){
+				position a; //apparently we had a default constructor for this
+				a += main.compute(input);
+				coordinate ang = slope.compute(input);
+				a.angle = SMART_radians(atan2(ang.y,ang.x));
+				return a;
+			}
+		};
+	}
+
 }
 
 #endif
