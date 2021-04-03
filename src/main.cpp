@@ -55,7 +55,7 @@ void intake_wait_check(){
 	}
 }
 
-polynomial test({0,0,0.00620001});
+polynomial test({0,1.8995,-0.0546142,0.000708088,-0.00000273233});
 
 SMART_radians globalangle = 0;
 
@@ -136,7 +136,7 @@ void ADVballindexcontroller(){
 	}
 }*/
 void opcontrol() {
-	autonomous();
+//	autonomous();
 	/*while(true){
 		lcd::print(0,"LEFT ODOMWHEEL: %f", Owheels.LEFT.get_radian());
 		lcd::print(1,"RIGHT ODOMWHEEL: %f", Owheels.RIGHT.get_radian());
@@ -161,8 +161,8 @@ delay(100);
 /*	lcd::print(1,"Y: %f", locationC.y);*/
 	lcd::print(0,"R: %f", locationC.angle);
 	base.move_vector_RAW_AS_M(currentcontrol,(double)-master.get_analog(ANALOG_RIGHT_X),test);
-//  ballindexcontroller();
-//	intake_control();
+  ballindexcontroller();
+	intake_control();
 	pros::delay(10);
 	}
 }
