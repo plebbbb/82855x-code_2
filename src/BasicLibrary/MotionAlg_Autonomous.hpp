@@ -104,7 +104,7 @@ namespace STL_lib{
     linetracker toop;
     scorecontroller (pros::Motor SI, pros::Motor SSI, linetracker tope):S(SI),SS(SSI),toop(tope){}
     command refresh(command input){
-      if (toop.returnval() != lst){
+      if (toop.returnval() != lst){ //get_new_press only returns rising edges, we need descending as well to determine when to delay stopping for shots
         statechange = true;
         lst = !lst;
       }
@@ -136,13 +136,75 @@ namespace STL_lib{
     }
   };
 
-  struct unifiedliftcontroller{
-    bool ballpositions[5] =
-    {0,0,0,0,0};
-    //intake, bottom roller, pooper slot, hold slot
-    void identifyballstatus(){
+  enum BALL_COLOR{
+    EMPTY = 0,
+    RED = 1,
+    BLUE = 2
+  };
 
+  struct ball{
+    BALL_COLOR color;
+    bool istransfer = false;
+    ball(BALL_COLOR detect):color(detect){};
+  };
+
+
+  //the array method probably makes revision difficult, but I cant think of any other way to do non-braindead indexing
+  struct unifiedliftcontroller{
+    pros::Optical intake;
+    std::vector<linetracker> set; //sensors from top sensor, downwards
+    linetracker eject; //ejection sensor
+    std::vector<ball> ballpositionset; //ball positions, lowest index is shooter, highest index is intake
+    intakecontroller in;
+    scorecontroller score;
+
+
+    //identifies current statuses of balls
+    void updateballstatus(){
+      int i = 0;
+      if (eject.return_new_press() == true) ballpositionset[1] = ball(EMPTY); //this cannot fail, as there is no way for the positions to get messed up by top sensor detection, as this is the only ball which can hit the top
+      for (int g = 0; g < 3; g++){ //iterate from top down
+        if (set[g].return_new_press() == true){
+          for (int y = 0; y < 4; y++){ //iterate ball positions from top down as well, that way each moving ball will be matched with its sensor correctly
+            if (ballpositionset[y].color != EMPTY && ballpositionset[y].istransfer == true){
+              ballpositionset[g] = ballpositionset[y];
+              ballpositionset[y] = ball(EMPTY); //clear out this position. Its position will be updated down the line once next sensor is checked
+              ballpositionset[g].istransfer = false; //disable transfer flag. This will be updated if the ball still needs to move in another function further down the chain
+              break; //continue to next sensor
+            }
+          }
+        }
+      }
     }
+
+    //flags balls for movement based on current motor outputs
+    void determinetargetstates(){
+      if(score.S.get_target_velocity() != 0) ballpositionset[0] = ball(EMPTY); //this is not with the rest of updateballstatus so that scorecontroller gets a chance to set new velocities
+      if(score.SS.get_target_velocity() != 0) {ballpositionset[1].istransfer = true; ballpositionset[2].istransfer = true;}
+      if(in.L.get_target_velocity() > 0) ballpositionset[3].istransfer = true; //it doesnt matter if there is no ball, color detection function will just set color to EMPTY, meaning ball update function won't move it
+      //only positive values to factor in
+    }
+
+    //detects new balls in the intake, and determines its color
+    void intakeballupdate(){
+      //proximity maxes out at 255, fyi
+      if(intake.get_proximity() < 200){
+        //NOTE: THIS MUST TAKE PLACE AFTER INTAKECONTROLLER UPDATE AND DETERMINETARGETSTATE SO THAT INTAKES GET SHUT OFF AFTER HITTING BALL QUOTA. THIS PREVENTS THE SENSOR FROM COUNTING UNINTAKED BALLS
+        if(ballpositionset[3].istransfer && ballpositionset[3].color == EMPTY){
+          ballpositionset[3].color = color_check();
+        }
+      }
+    }
+
+    //intake color checking function
+    BALL_COLOR color_check(){
+      if (fabs(intake.get_hue() - 20) < 5) return RED;
+      if (fabs(intake.get_hue() - 240) < 15) return BLUE;
+      return EMPTY;
+    }
+
+    
+
   };
 };
 
