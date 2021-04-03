@@ -55,7 +55,7 @@ void intake_wait_check(){
 	}
 }
 
-polynomial test({0,1.8995,-0.0546142,0.000708088,-0.00000273233});
+polynomial test({0,0.737075,-0.0274916,0.000446275,-0.0000017788});
 
 SMART_radians globalangle = 0;
 

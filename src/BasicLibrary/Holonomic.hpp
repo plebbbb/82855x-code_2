@@ -26,6 +26,7 @@
 
     struct holonomicbase{
       std::vector<motorwheel> motors;
+      double lastspeed = 0;
 
       /******************************************************************************/
       //Constructors:
@@ -88,6 +89,7 @@
       //automatic rotation weighting, conversion, polynomial speed curve
       void move_vector_RAW_AS_M(coordinate heading, double rotationRAW, polynomial val){
         percent speed = val.compute(std::max(sqrt(heading.x*heading.x+heading.y*heading.y),fabs(rotationRAW)));
+        if (fabs(speed-lastspeed) > 15) speed = ((speed-lastspeed)/fabs(speed-lastspeed))*15+lastspeed; //attempt at accelleration limit
         coordinate Lheading = tare_SUM(heading);
         rotationRAW/= (sqrt(heading.x*heading.x+heading.y*heading.y) + fabs(rotationRAW));
         if (isnanf(rotationRAW)) rotationRAW = 0; //prevent div by zero from sending nan to motor command
@@ -97,6 +99,7 @@
       //    printf("%d\n",temp.get_target_velocity());
           //multiply by 2 at very end due to move_velocity having a default interval of -200 to 200
         }
+        speed = lastspeed;
       }
 
 
