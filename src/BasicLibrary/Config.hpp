@@ -56,5 +56,6 @@ extern STL_lib::linetracker middle;
 extern STL_lib::intakecontroller inta;
 extern STL_lib::scorecontroller scra;
 
+extern STL_lib::unifiedliftcontroller ttt;
 
 #endif

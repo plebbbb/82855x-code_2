@@ -154,10 +154,11 @@ namespace STL_lib{
     pros::Optical intake;
     std::vector<linetracker> set; //sensors from top sensor, downwards
     linetracker eject; //ejection sensor
-    std::vector<ball> ballpositionset; //ball positions, lowest index is shooter, highest index is intake
+    std::vector<ball> ballpositionset = {ball(EMPTY),ball(EMPTY),ball(EMPTY),ball(EMPTY)}; //ball positions, lowest index is shooter, highest index is intake
     intakecontroller in;
     scorecontroller score;
 
+    unifiedliftcontroller(pros::Optical op, std::vector<linetracker> st, linetracker eje, intakecontroller s, scorecontroller i):intake(op),set(st),eject(eje),in(s),score(i){};
 
     //identifies current statuses of balls
     void updateballstatus(){
@@ -179,16 +180,23 @@ namespace STL_lib{
 
     //flags balls for movement based on current motor outputs
     void determinetargetstates(){
-      if(score.S.get_target_velocity() != 0) ballpositionset[0] = ball(EMPTY); //this is not with the rest of updateballstatus so that scorecontroller gets a chance to set new velocities
-      if(score.SS.get_target_velocity() != 0) {ballpositionset[1].istransfer = true; ballpositionset[2].istransfer = true;}
+      if(score.SS.get_target_velocity() != 0) ballpositionset[0] = ball(EMPTY); //this is not with the rest of updateballstatus so that scorecontroller gets a chance to set new velocities
+      if(score.S.get_target_velocity() != 0) {
+        if (ballpositionset[1].color != EMPTY) ballpositionset[1].istransfer = true;
+        else ballpositionset[1].istransfer = false;
+        if (ballpositionset[2].color != EMPTY) ballpositionset[2].istransfer = true;
+        else ballpositionset[2].istransfer = false;
+
+      }
       if(in.L.get_target_velocity() > 0) ballpositionset[3].istransfer = true; //it doesnt matter if there is no ball, color detection function will just set color to EMPTY, meaning ball update function won't move it
       //only positive values to factor in
+      else if(ballpositionset[3].color == EMPTY) ballpositionset[3].istransfer = false;
     }
 
     //detects new balls in the intake, and determines its color
     void intakeballupdate(){
-      //proximity maxes out at 255, fyi
-      if(intake.get_proximity() < 200){
+      //proximity maxes out at 255(very close), fyi
+      if(intake.get_proximity() > 70){
         //NOTE: THIS MUST TAKE PLACE AFTER INTAKECONTROLLER UPDATE AND DETERMINETARGETSTATE SO THAT INTAKES GET SHUT OFF AFTER HITTING BALL QUOTA. THIS PREVENTS THE SENSOR FROM COUNTING UNINTAKED BALLS
         if(ballpositionset[3].istransfer && ballpositionset[3].color == EMPTY){
           ballpositionset[3].color = color_check();
@@ -198,13 +206,55 @@ namespace STL_lib{
 
     //intake color checking function
     BALL_COLOR color_check(){
+    //  return BLUE; //TESTING ONLY
       if (fabs(intake.get_hue() - 20) < 5) return RED;
-      if (fabs(intake.get_hue() - 240) < 15) return BLUE;
+      if (fabs(intake.get_hue() - 220) < 15) return BLUE;
       return EMPTY;
     }
 
-    
+    void update_state(bool ejct){
+      updateballstatus();
+      set_velocities(ejct);
+      //determinetargetstates();
+      //intakeballupdate();
+      for(int i = 0; i < 4; i++){
+        pros::lcd::print(i,"%d %d %d",ballpositionset[i].color, set[i].returnval(), ballpositionset[i].istransfer);
+      };
+      pros::lcd::print(4, "BOTTOM: %d", score.S.get_target_velocity());
+      pros::lcd::print(5, "TOP: %d", score.SS.get_target_velocity());
+      pros::lcd::print(6, "LINTAKE: %d", in.L.get_target_velocity());
+      pros::lcd::print(7, "EJECT: %d", eject.returnval());
+    }
 
+    void set_velocities(bool ejct){
+      score.S.move_velocity(0);
+      score.SS.move_velocity(0);
+      if(ballpositionset[0].color == EMPTY){
+        for(ball v : ballpositionset){
+          if (v.color != EMPTY){
+            if (v.color == RED){
+              score.S.move_velocity(200);
+              score.SS.move_velocity(200);
+            }
+          }
+        }
+      }
+        if(ballpositionset[3].color != EMPTY && ballpositionset[2].color != EMPTY){
+          if (ballpositionset[1].color == EMPTY){
+              score.S.move_velocity(200);
+          }
+        }
+
+      if(ejct){
+        for (int i = 1; i < 4; i++){ //this pattern ensures that the next existing ball which will be pooped is pooped
+          if (ballpositionset[i].color != EMPTY){
+              if(ballpositionset[i].color == RED) return;
+              score.S.move_velocity(-200);
+              return;
+          }
+        }
+      }
+    }
   };
 };
 

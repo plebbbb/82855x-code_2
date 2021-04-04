@@ -16,6 +16,7 @@ namespace STL_lib {
 		  Doesn't allow for conversion from radian to degrees or smart radians to radians
 	*/
 
+//TBD: ma lot of our classes should be static, specifically subsystem controllers like intakecontroller
  static const std::vector<std::vector<double>> Ptriangle = {
 		{1},
 	  {1,1},

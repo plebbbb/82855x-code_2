@@ -70,3 +70,5 @@ Motor Ejector(10);
 
 intakecontroller inta(Lintake,Rintake,Ejector,bottom);
 scorecontroller scra(Ejector,Shooter,top);
+
+unifiedliftcontroller ttt(input, {top,middle,bottom}, eject, inta, scra);

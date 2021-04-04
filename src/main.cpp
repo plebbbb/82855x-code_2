@@ -55,7 +55,8 @@ void intake_wait_check(){
 	}
 }
 
-polynomial test({0,0.737075,-0.0274916,0.000446275,-0.0000017788});
+polynomial test({0,0.737075,-0.0274916,0.000446275,-0.0000017788}); //https://www.desmos.com/calculator/jdmxo3mfvs
+polynomial spinning({0,0.107181,0,0.0000553549});
 
 SMART_radians globalangle = 0;
 
@@ -87,54 +88,37 @@ void ballindexcontroller(){
 
 bool isblueball = false;
 int timeout;
-/*
+///*
 void ADVballindexcontroller(){
+Ejector.move_velocity(0);
+Shooter.move_velocity(0);
+
+if (bottom.returnval() && !balltransferstate){
+	balltransferstate = true;
+}
+if (balltransferstate && (!top.returnval() || !middle.returnval())) {
+	Ejector.move_velocity(200);
+	Shooter.move_velocity(100);
+}
+if (balltransferstate && middle.returnval()){
+	balltransferstate = false;
 	Ejector.move_velocity(0);
 	Shooter.move_velocity(0);
+}
 
-	//enable move if top is clear for new ball
-	if (bottom.returnval() && !top.returnval() && !balltransferstate && !BBDZ){
-		balltransferstate = true;
-		timeout = 300;
-		if (teest.get_hue() > 200 && teest.get_hue() < 250) isblueball = true;
-		else isblueball = false;
-	}
+if (!balltransferstate && top.returnval()){
+	Ejector.move_velocity(0);
+	Shooter.move_velocity(0);
+}
 
-	//ball movement
-	if (balltransferstate) {
-		timeout -= 10;
-		Ejector.move_velocity(200);
-		if (!isblueball) {
-			Shooter.move_velocity(100);
-		}
-	}
-
-	//cancelation case 1: ball is at top
-	if (balltransferstate && top.returnval()){
-		balltransferstate = false;
-		Ejector.move_velocity(0);
-		Shooter.move_velocity(0);
-	}
-
-	if (timeout <= 0 && isblueball) {
-		balltransferstate = false;
-		BBDZ = true;
-		Ejector.move_velocity(0);
-		Shooter.move_velocity(0);
-	}
-
-	if (timeout <= -1000 && isblueball) {
-		balltransferstate = false;
-		Ejector.move_velocity(0);
-		Shooter.move_velocity(0);
-	}
-	//cancelation case 2: ball present in middle(going to top will cause bottom ball to get stuck in middle)
-/*	if (balltransferstate && middle.returnval() && bottom.returnval()){
-		balltransferstate = false;
-		Ejector.move_velocity(0);
-		Shooter.move_velocity(0);
-	}
-}*/
+//cancelation case 2: ball present in middle(going to top will cause bottom ball to get stuck in middle)
+/*
+if (balltransferstate && middle.returnval() && bottom.returnval()){
+	balltransferstate = false;
+	Ejector.move_velocity(0);
+	Shooter.move_velocity(0);
+}//*/
+	}//*/
 void opcontrol() {
 //	autonomous();
 	/*while(true){
@@ -143,6 +127,9 @@ void opcontrol() {
 		lcd::print(2,"REAR ODOMWHEEL: %f", Owheels.BACK.get_radian());
 		delay(10);
 	}*/
+	while(LIM.is_calibrating()){
+		delay(10);
+	};
 delay(100);
 	while(true){
 /*	lcd::print(0,"BOTTOM: %d", (int)bottom.returnval());
@@ -153,16 +140,19 @@ delay(100);
 	if(master.get_digital_new_press(DIGITAL_B)) {inertialreset();}
 	if(master.get_digital_new_press(DIGITAL_A)) balltransferstate = false;
 	coordinate currentcontrol = coordinate(std::pair<inches,inches>{inches(master.get_analog(ANALOG_LEFT_X)),inches(master.get_analog(ANALOG_LEFT_Y))});
-	//if(true) {globalangle = SMART_radians(degrees(double(im.get_rotation()*-1.01056196909)));} //NOTE: NO 90 deg offset b/c this is relative to start pos
+	if(true) {globalangle = SMART_radians(degrees(double(LIM.get_rotation()*-1.01056196909)));} //NOTE: NO 90 deg offset b/c this is relative to start pos
 //	if(toggleglobaldrive == false) {globalangle = SMART_radians(0.00);}
-	globalangle = SMART_radians(0.00);
+	//globalangle = SMART_radians(0.00);
 	currentcontrol.self_transform_polar(-globalangle);
 /*	lcd::print(0,"X: %f", locationC.x);
 /*	lcd::print(1,"Y: %f", locationC.y);*/
-	lcd::print(0,"R: %f", locationC.angle);
-	base.move_vector_RAW_AS_M(currentcontrol,(double)-master.get_analog(ANALOG_RIGHT_X),test);
-  ballindexcontroller();
+//	lcd::print(0,"R: %f", locationC.angle);
+	base.move_vector_RAW_AS_M(currentcontrol,spinning.compute((double)-master.get_analog(ANALOG_RIGHT_X)),test);
+  //ballindexcontroller();
+	ttt.update_state((bool)master.get_digital(DIGITAL_DOWN));
 	intake_control();
+	ttt.determinetargetstates();
+	ttt.intakeballupdate();
 	pros::delay(10);
-	}
+};
 }
