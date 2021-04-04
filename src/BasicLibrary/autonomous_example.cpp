@@ -3,6 +3,8 @@
 using namespace STL_lib;
 using namespace pros;
 std::uint32_t now = pros::millis();
+//DEPRECIATED, SORTA - BELOW IS OLD FUNCTION BASED BALL SORTING SYSTEM
+/*
 void ballindexcontroller2(){
 			Ejector.move_velocity(0);
 		Shooter.move_velocity(0);
@@ -26,8 +28,10 @@ void ballindexcontroller2(){
 			balltransferstate = false;
 			Ejector.move_velocity(0);
 			Shooter.move_velocity(0);
-		}//*/
-	}
+		}//
+	}*/
+
+	//OG 106 path, lacks new drive features
 	/*
 std::vector<linearmotion> cmdset = {
 	  	{
@@ -281,9 +285,8 @@ void autonomous() {
   		//	autonbase.base.move_vector_RAW(std::pair<inches,inches>{0,0},0,0); //uncomment to disable movement
 				ttt.update_state(currentcommand.allow_ejection); //initial ball situation detection and auto sorting behavior
   			currentcommand = inta.refresh(currentcommand); //overwrite lift sorting outputs for commands
-  		//	ballindexcontroller2();
   			currentcommand = scra.refresh(currentcommand); //set intake output
-				ttt.determinetargetstates(); //react to output power decisions made in above lines
+				ttt.determinetargetstates(); //react to lift and intake output power decisions made in above lines
 				ttt.intakeballupdate(); //identify intake ball status after accounting for intake power decisions
   			lcd::print(5,"X: %f",locationC.x);
   			lcd::print(6,"Y: %f",locationC.y);

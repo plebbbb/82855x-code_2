@@ -60,6 +60,8 @@ polynomial spinning({0,0.107181,0,0.0000553549});
 
 SMART_radians globalangle = 0;
 
+//DEPRECIATED, SORTA - BELOW ARE OLD FUNCTION BASED BALL SORTING SYSTEMS
+/*
 void ballindexcontroller(){
 	Ejector.move_velocity(0);
 	Shooter.move_velocity(0);
@@ -83,7 +85,7 @@ void ballindexcontroller(){
 		balltransferstate = false;
 		Ejector.move_velocity(0);
 		Shooter.move_velocity(0);
-	}//*/
+	}
 }
 
 bool isblueball = false;
@@ -117,8 +119,9 @@ if (balltransferstate && middle.returnval() && bottom.returnval()){
 	balltransferstate = false;
 	Ejector.move_velocity(0);
 	Shooter.move_velocity(0);
-}//*/
+}
 	}//*/
+
 void opcontrol() {
 //	autonomous();
 	/*while(true){
@@ -132,10 +135,6 @@ void opcontrol() {
 	};
 delay(100);
 	while(true){
-/*	lcd::print(0,"BOTTOM: %d", (int)bottom.returnval());
-	lcd::print(1,"TOP: %d", (int)top.returnval());
-	lcd::print(2,"Intake State: %s", (balltransferstate) ? "TRANSFERING":"IDLE" );
-*/
   locationC = Odom.cycle(locationC);
 	if(master.get_digital_new_press(DIGITAL_B)) {inertialreset();}
 	if(master.get_digital_new_press(DIGITAL_A)) balltransferstate = false;
@@ -148,7 +147,6 @@ delay(100);
 /*	lcd::print(1,"Y: %f", locationC.y);*/
 //	lcd::print(0,"R: %f", locationC.angle);
 	base.move_vector_RAW_AS_M(currentcontrol,spinning.compute((double)-master.get_analog(ANALOG_RIGHT_X)),test);
-  //ballindexcontroller();
 	ttt.update_state((bool)master.get_digital(DIGITAL_DOWN));
 	intake_control();
 	ttt.determinetargetstates();
