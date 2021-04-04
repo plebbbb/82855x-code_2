@@ -217,6 +217,7 @@ namespace STL_lib{
       set_velocities(ejct);
       //determinetargetstates();
       //intakeballupdate();
+      /*
       for(int i = 0; i < 4; i++){
         pros::lcd::print(i,"%d %d %d",ballpositionset[i].color, set[i].returnval(), ballpositionset[i].istransfer);
       };
@@ -224,9 +225,11 @@ namespace STL_lib{
       pros::lcd::print(5, "TOP: %d", score.SS.get_target_velocity());
       pros::lcd::print(6, "LINTAKE: %d", in.L.get_target_velocity());
       pros::lcd::print(7, "EJECT: %d", eject.returnval());
+      //*/
     }
 
     void set_velocities(bool ejct){
+      bool tempflag = true;
       score.S.move_velocity(0);
       score.SS.move_velocity(0);
       if(ballpositionset[0].color == EMPTY){
@@ -235,13 +238,20 @@ namespace STL_lib{
             if (v.color == RED){
               score.S.move_velocity(200);
               score.SS.move_velocity(200);
+              goto topballtargeted; //this is just a double break statmeent in one, dont kill me
             }
           }
         }
       }
+      //technically, break statements are just macroed goto statements, so this isnt as scuffed as it looks
+      topballtargeted:
         if(ballpositionset[3].color != EMPTY && ballpositionset[2].color != EMPTY){
           if (ballpositionset[1].color == EMPTY){
               score.S.move_velocity(200);
+          } else {
+            //emergency edge case to prevent underutilization: if top slot is availiable but lowers are not, shift everything up, regardless of color
+              score.S.move_velocity(200);
+              score.SS.move_velocity(200); //shooter on to shift ball forwards
           }
         }
 
@@ -252,6 +262,7 @@ namespace STL_lib{
               score.S.move_velocity(-200);
               return;
           }
+          //special edge case: all
         }
       }
     }

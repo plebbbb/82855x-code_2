@@ -195,11 +195,11 @@ namespace STL_lib{
        Alongside the start and end interval, you must append an x and y targ
     */
     struct coordinatetarget: public actioniterator{
-      std::pair<inches,inches> set;
+      coordinate set;
 
       /******************************************************************************/
       //Constructor(s)
-      coordinatetarget(std::vector<double> values):actioniterator(values,POS_ROTATE_ACTION,true),set(values[2],values[3]){}
+      coordinatetarget(std::vector<double> values, coordinate in):actioniterator(values,POS_ROTATE_ACTION,true),set(in){}
 
 
       /******************************************************************************/
@@ -439,8 +439,8 @@ namespace STL_lib{
                             break;
                           }
                         case POS_ROTATE_ACTION:{
-                            std::pair<inches,inches> tmp =* static_cast<std::pair<inches,inches>*>(valptr); //should be pointer and not copy construct, fix later
-                            vector.angle = SMART_radians(atan2(tmp.second - current->y, tmp.first - current->x)); //atan2 returns interval -pi to pi, conversion to SMART_radians adjusts that
+                            coordinate tmp =* static_cast<coordinate*>(valptr); //should be pointer and not copy construct, fix later
+                            vector.angle = SMART_radians(atan2(tmp.y - current->y, tmp.x - current->x)); //atan2 returns interval -pi to pi, conversion to SMART_radians adjusts that to 0-2PI standard
                           //  pros::lcd::print(4,"%f, %f, %f", tmp.second-current.y, tmp.first-current.x, vector.angle);
                             break;
                           }
@@ -450,6 +450,7 @@ namespace STL_lib{
                             break;
                           }
 
+                          //this might be broken, check math pls. Its also kinda supersceeded by DSODOM, which directly updates coordinates in its class
                         //NOTE: the radian value is calculated as inaccurate angle - desired value for that angle post reset
                         case ODOM_RESET_ACTION:{
                       //    position temp = *static_cast<position*>(valptr);
@@ -462,6 +463,7 @@ namespace STL_lib{
                             delete static_cast<std::tuple<position,radians>*>(valptr);
                             break;
                           }
+
                         case ODOM_ANG_RESET:{
                           current->angle = IMU_ANGLE;
                           break;
@@ -469,7 +471,7 @@ namespace STL_lib{
 
                         case DSODOM_CONTROL_ACTION:{
                           initial.DSensor_status =* static_cast<std::tuple<bool,WALL_TGT,WALL_TGT>*>(valptr);
-                          delete  static_cast<std::tuple<bool,WALL_TGT,WALL_TGT>*>(valptr);
+                          delete static_cast<std::tuple<bool,WALL_TGT,WALL_TGT>*>(valptr);
                         }
                     }
                 }
@@ -501,6 +503,7 @@ namespace STL_lib{
         return false;
       }
 
+      //rising edge case
       bool return_new_press(){
         if (isactive != returnval()) {
           isactive = returnval();

@@ -268,7 +268,7 @@ void autonomous() {
   		autonbase.profileupdate(currentcommand,locationC);
   		currentcommand = cmdset[i].processcommand(currentcommand,&locationC,/*realangle*/double(locationC.angle));      //trigger instant start commands
   		//checks if within distance tollerance threshold, as well as if the lift is currently idle during that duration
-  		while(!(currentcommand.disttotgt <= 0.8 && fabs(currentcommand.target.angle.findDiff(currentcommand.target.angle, locationC.angle)) <= 0.0872665 /*&& currentcommand.isidle()*/)){
+  		while(!(currentcommand.disttotgt <= 0.8 && fabs(currentcommand.target.angle.findDiff(currentcommand.target.angle, locationC.angle)) <= 0.0872665 && currentcommand.isidle())){
 			//	lcd::print(1,"%f",Tes.get_heading());
 				locationC = Odom.cycleIMU(locationC,Tes.get_heading());
   			currentcommand.percentcompute(locationC);
@@ -279,9 +279,12 @@ void autonomous() {
 				locationC = DSodom.updateposition(currentcommand,locationC);
   			autonbase.updatebase(currentcommand, locationC);//update base motor power outputs for current position
   		//	autonbase.base.move_vector_RAW(std::pair<inches,inches>{0,0},0,0); //uncomment to disable movement
-  		//	currentcommand = inta.refresh(currentcommand);
+				ttt.update_state(currentcommand.allow_ejection); //initial ball situation detection and auto sorting behavior
+  			currentcommand = inta.refresh(currentcommand); //overwrite lift sorting outputs for commands
   		//	ballindexcontroller2();
-  		//	currentcommand = scra.refresh(currentcommand);
+  			currentcommand = scra.refresh(currentcommand); //set intake output
+				ttt.determinetargetstates(); //react to output power decisions made in above lines
+				ttt.intakeballupdate(); //identify intake ball status after accounting for intake power decisions
   			lcd::print(5,"X: %f",locationC.x);
   			lcd::print(6,"Y: %f",locationC.y);
   			lcd::print(7,"R: %f",locationC.angle);
