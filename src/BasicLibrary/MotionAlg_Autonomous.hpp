@@ -262,7 +262,12 @@ namespace STL_lib{
               score.S.move_velocity(-200);
               return;
           }
-          //special edge case: all
+          //special edge case: eject top ball if blue and bottom is EMPTY
+          //if we made it here, that means that everything below the top is EMPTY
+          if(ballpositionset[0].color ==BLUE){
+            score.S.move_velocity(-200);
+            score.SS.move_velocity(-100);
+          }
         }
       }
     }
