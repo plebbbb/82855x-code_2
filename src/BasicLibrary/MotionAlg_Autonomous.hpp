@@ -186,7 +186,8 @@ namespace STL_lib{
 
     //flags balls for movement based on current motor outputs
     void determinetargetstates(){
-      if(score.SS.get_target_velocity() != 0) ballpositionset[0] = ball(EMPTY); //this is not with the rest of updateballstatus so that scorecontroller gets a chance to set new velocities
+      if(score.SS.get_target_velocity() > 0) ballpositionset[0] = ball(EMPTY); //this is not with the rest of updateballstatus so that scorecontroller gets a chance to set new velocities
+      if(score.SS.get_target_velocity() < 0) ballpositionset[0].istransfer = -1; //special edge case: top ball going down to get pooped
       if(score.S.get_target_velocity() != 0) {
         if (ballpositionset[1].color != EMPTY) ballpositionset[1].istransfer = true;
         else ballpositionset[1].istransfer = false;
