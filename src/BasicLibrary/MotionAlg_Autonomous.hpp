@@ -144,7 +144,7 @@ namespace STL_lib{
 
   struct ball{
     BALL_COLOR color;
-    bool istransfer = false;
+    int istransfer = 0;
     ball(BALL_COLOR detect):color(detect){};
   };
 
@@ -172,6 +172,12 @@ namespace STL_lib{
               ballpositionset[y] = ball(EMPTY); //clear out this position. Its position will be updated down the line once next sensor is checked
               ballpositionset[g].istransfer = false; //disable transfer flag. This will be updated if the ball still needs to move in another function further down the chain
               break; //continue to next sensor
+            }
+            //special edge case for top ball moving downwards(pooping). This only happens if everything else is empty, so no risk of breaking things
+            if (y == 0 && g == 1 && ballpositionset[y].istransfer == -1 && ballpositionset[y] != EMPTY){
+              ballpositionset[g] == ballpositionset[y];
+              ballpositionset[y] == ball(EMPTY);
+              ballpositionset[g].istransfer = false;
             }
           }
         }
