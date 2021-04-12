@@ -166,21 +166,21 @@ namespace STL_lib{
       if (eject.return_new_press() == true) ballpositionset[1] = ball(EMPTY); //this cannot fail, as there is no way for the positions to get messed up by top sensor detection, as this is the only ball which can hit the top
       for (int g = 0; g < 3; g++){ //iterate from top down
         if (set[g].return_new_press() == true){
-          for (int y = 0; y < 4; y++){ //iterate ball positions from top down as well, that way each moving ball will be matched with its sensor correctly
+          for (int y = g+1; y < 4; y++){ //iterate ball positions from top down as well, that way each moving ball will be matched with its sensor correctly
             if (ballpositionset[y].color != EMPTY && ballpositionset[y].istransfer == 1){
               ballpositionset[g] = ballpositionset[y];
               ballpositionset[y] = ball(EMPTY); //clear out this position. Its position will be updated down the line once next sensor is checked
               ballpositionset[g].istransfer = 0; //disable transfer flag. This will be updated if the ball still needs to move in another function further down the chain
               break; //continue to next sensor
             }
-            //special edge case for top ball moving downwards(pooping). This only happens if everything else is empty, so no risk of breaking things
-            if (y == 0 && g == 1 && ballpositionset[y].istransfer == -1 && ballpositionset[y].color != EMPTY){
-              ballpositionset[g] = ballpositionset[y];
-              ballpositionset[y] = ball(EMPTY);
-              ballpositionset[g].istransfer = 0;
-            }
           }
         }
+      }
+      //special edge case for top ball moving downwards(pooping). This only happens if everything else is empty, so no risk of breaking things
+      if (ballpositionset[0].istransfer == -1 && ballpositionset[0].color != EMPTY){
+        ballpositionset[1] = ballpositionset[0];
+        ballpositionset[0] = ball(EMPTY);
+        ballpositionset[1].istransfer = 0;
       }
     }
 
@@ -193,7 +193,9 @@ namespace STL_lib{
         else ballpositionset[1].istransfer = 0;
         if (ballpositionset[2].color != EMPTY) ballpositionset[2].istransfer = 1;
         else ballpositionset[2].istransfer = 0;
-
+      } else {
+        ballpositionset[1].istransfer = 0;
+        ballpositionset[2].istransfer = 0;
       }
       if(in.L.get_target_velocity() > 0) ballpositionset[3].istransfer = 1; //it doesnt matter if there is no ball, color detection function will just set color to EMPTY, meaning ball update function won't move it
       //only positive values to factor in
@@ -296,7 +298,7 @@ namespace STL_lib{
         }
         //special edge case: eject top ball if blue and bottom is EMPTY
         //if we made it here, that means that everything below the top is EMPTY
-        if(ballpositionset[0].color ==BLUE){
+        if(ballpositionset[0].color == BLUE){
           score.S.move_velocity(-200);
           score.SS.move_velocity(-100);
         }
