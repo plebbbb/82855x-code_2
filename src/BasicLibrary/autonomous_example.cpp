@@ -183,6 +183,7 @@ std::vector<linearmotion> cmdset = {
 	},
 	{
 		position({112,36,M_PI*7/4}),{
+			new coordinatetarget({15,75},std::pair<inches,inches>{72,72})
 		}
 	},
 	{
