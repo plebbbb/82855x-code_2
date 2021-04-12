@@ -174,9 +174,9 @@ namespace STL_lib{
               break; //continue to next sensor
             }
             //special edge case for top ball moving downwards(pooping). This only happens if everything else is empty, so no risk of breaking things
-            if (y == 0 && g == 1 && ballpositionset[y].istransfer == -1 && ballpositionset[y] != EMPTY){
-              ballpositionset[g] == ballpositionset[y];
-              ballpositionset[y] == ball(EMPTY);
+            if (y == 0 && g == 1 && ballpositionset[y].istransfer == -1 && ballpositionset[y].color != EMPTY){
+              ballpositionset[g] = ballpositionset[y];
+              ballpositionset[y] = ball(EMPTY);
               ballpositionset[g].istransfer = false;
             }
           }

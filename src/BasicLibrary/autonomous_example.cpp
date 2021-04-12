@@ -253,7 +253,10 @@ void autonomous() {
   			lcd::print(5,"X: %f",locationC.x);
   			lcd::print(6,"Y: %f",locationC.y);
   			lcd::print(7,"R: %f",locationC.angle);
-  			ballindexcontroller2();
+  			//ballindexcontroller2();
+				ttt.update_state(currentcommand.allow_ejection); //initial ball situation detection and auto sorting behavior
+				ttt.determinetargetstates(); //react to lift and intake output power decisions made in above lines
+				ttt.intakeballupdate(); //identify intake ball status after accounting for intake power decisions
   			autonbase.base.move_vector_RAW(std::pair<inches,inches>{0,0},0,0); //uncomment to disable movement
   			lcd::print(4,"MODE: PAUSED_ODOMENABLE");
   			delay(10);
