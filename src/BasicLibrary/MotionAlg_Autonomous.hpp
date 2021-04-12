@@ -167,7 +167,7 @@ namespace STL_lib{
       for (int g = 0; g < 3; g++){ //iterate from top down
         if (set[g].return_new_press() == true){
           for (int y = 0; y < 4; y++){ //iterate ball positions from top down as well, that way each moving ball will be matched with its sensor correctly
-            if (ballpositionset[y].color != EMPTY && ballpositionset[y].istransfer == true){
+            if (ballpositionset[y].color != EMPTY && ballpositionset[y].istransfer == 1){
               ballpositionset[g] = ballpositionset[y];
               ballpositionset[y] = ball(EMPTY); //clear out this position. Its position will be updated down the line once next sensor is checked
               ballpositionset[g].istransfer = false; //disable transfer flag. This will be updated if the ball still needs to move in another function further down the chain
@@ -214,7 +214,7 @@ namespace STL_lib{
     //intake color checking function
     BALL_COLOR color_check(){
     //  return BLUE; //TESTING ONLY
-      if (fabs(intake.get_hue() - 20) < 5) return RED;
+      if (fabs(intake.get_hue() - 20) < 15) return RED;
       if (fabs(intake.get_hue() - 220) < 15) return BLUE;
       return EMPTY;
     }
