@@ -64,7 +64,7 @@ bool toggleglobaldrive = true;
 
 Motor Lintake(9);
 Motor Rintake(19,true);
-Motor Shooter(20);
+Motor Shooter(20,true);
 Motor Ejector(14);
 
 

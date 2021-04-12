@@ -57,5 +57,6 @@ extern STL_lib::intakecontroller inta;
 extern STL_lib::scorecontroller scra;
 
 extern STL_lib::unifiedliftcontroller ttt;
+extern pros::Optical input;
 
 #endif

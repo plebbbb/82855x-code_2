@@ -123,6 +123,7 @@ if (balltransferstate && middle.returnval() && bottom.returnval()){
 	}//*/
 
 void opcontrol() {
+	input.set_led_pwm(80);
 //	autonomous();
 	/*while(true){
 		lcd::print(0,"LEFT ODOMWHEEL: %f", Owheels.LEFT.get_radian());

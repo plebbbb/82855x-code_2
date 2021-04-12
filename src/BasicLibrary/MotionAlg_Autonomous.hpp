@@ -170,14 +170,14 @@ namespace STL_lib{
             if (ballpositionset[y].color != EMPTY && ballpositionset[y].istransfer == 1){
               ballpositionset[g] = ballpositionset[y];
               ballpositionset[y] = ball(EMPTY); //clear out this position. Its position will be updated down the line once next sensor is checked
-              ballpositionset[g].istransfer = false; //disable transfer flag. This will be updated if the ball still needs to move in another function further down the chain
+              ballpositionset[g].istransfer = 0; //disable transfer flag. This will be updated if the ball still needs to move in another function further down the chain
               break; //continue to next sensor
             }
             //special edge case for top ball moving downwards(pooping). This only happens if everything else is empty, so no risk of breaking things
             if (y == 0 && g == 1 && ballpositionset[y].istransfer == -1 && ballpositionset[y].color != EMPTY){
               ballpositionset[g] = ballpositionset[y];
               ballpositionset[y] = ball(EMPTY);
-              ballpositionset[g].istransfer = false;
+              ballpositionset[g].istransfer = 0;
             }
           }
         }
@@ -189,15 +189,15 @@ namespace STL_lib{
       if(score.SS.get_target_velocity() > 0) ballpositionset[0] = ball(EMPTY); //this is not with the rest of updateballstatus so that scorecontroller gets a chance to set new velocities
       if(score.SS.get_target_velocity() < 0) ballpositionset[0].istransfer = -1; //special edge case: top ball going down to get pooped
       if(score.S.get_target_velocity() != 0) {
-        if (ballpositionset[1].color != EMPTY) ballpositionset[1].istransfer = true;
-        else ballpositionset[1].istransfer = false;
-        if (ballpositionset[2].color != EMPTY) ballpositionset[2].istransfer = true;
-        else ballpositionset[2].istransfer = false;
+        if (ballpositionset[1].color != EMPTY) ballpositionset[1].istransfer = 1;
+        else ballpositionset[1].istransfer = 0;
+        if (ballpositionset[2].color != EMPTY) ballpositionset[2].istransfer = 1;
+        else ballpositionset[2].istransfer = 0;
 
       }
-      if(in.L.get_target_velocity() > 0) ballpositionset[3].istransfer = true; //it doesnt matter if there is no ball, color detection function will just set color to EMPTY, meaning ball update function won't move it
+      if(in.L.get_target_velocity() > 0) ballpositionset[3].istransfer = 1; //it doesnt matter if there is no ball, color detection function will just set color to EMPTY, meaning ball update function won't move it
       //only positive values to factor in
-      else if(ballpositionset[3].color == EMPTY) ballpositionset[3].istransfer = false;
+      else if(ballpositionset[3].color == EMPTY) ballpositionset[3].istransfer = 0;
     }
 
     //detects new balls in the intake, and determines its color
@@ -214,8 +214,8 @@ namespace STL_lib{
     //intake color checking function
     BALL_COLOR color_check(){
     //  return BLUE; //TESTING ONLY
-      if (fabs(intake.get_hue() - 20) < 15) return RED;
-      if (fabs(intake.get_hue() - 220) < 15) return BLUE;
+      if (fabs(intake.get_hue() - 10) < 7) return RED;
+      if (fabs(intake.get_hue() - 240) < 15) return BLUE;
       return EMPTY;
     }
 
@@ -224,7 +224,7 @@ namespace STL_lib{
       set_velocities(ejct);
       //determinetargetstates();
       //intakeballupdate();
-      /*
+      ///*
       for(int i = 0; i < 4; i++){
         pros::lcd::print(i,"%d %d %d",ballpositionset[i].color, set[i].returnval(), ballpositionset[i].istransfer);
       };
@@ -235,6 +235,7 @@ namespace STL_lib{
       //*/
     }
 
+//this is sloppy code but I have no idea how to do this in an organized manner
     void set_velocities(bool ejct){
       bool tempflag = true;
       score.S.move_velocity(0);
@@ -244,24 +245,30 @@ namespace STL_lib{
           if (v.color != EMPTY){
             if (v.color == RED){
               score.S.move_velocity(200);
-              score.SS.move_velocity(200);
-              goto topballtargeted; //this is just a double break statmeent in one, dont kill me
+              score.SS.move_velocity(100);
             }
+            goto topballtargeted; //this is just a double break statmeent in one, dont kill me
           }
         }
       }
       //technically, break statements are just macroed goto statements, so this isnt as scuffed as it looks
       topballtargeted:
-        if(ballpositionset[3].color != EMPTY && ballpositionset[2].color != EMPTY){
-          if (ballpositionset[1].color == EMPTY){
-              score.S.move_velocity(200);
-          } else {
+      if(ballpositionset[3].color != EMPTY && ballpositionset[2].color != EMPTY){
+        if (ballpositionset[1].color == EMPTY){
+            score.S.move_velocity(200);
+            goto statusupdatedone;
+        }
+      }
+       if(ballpositionset[2].color == EMPTY && ballpositionset[3].color != EMPTY && ballpositionset[1].color == EMPTY){
+          score.S.move_velocity(125);
+          goto statusupdatedone;
+        }
+       if (ballpositionset[0].color == EMPTY && ballpositionset[3].color != EMPTY && ballpositionset[1].color != EMPTY && ballpositionset[2].color != EMPTY){
             //emergency edge case to prevent underutilization: if top slot is availiable but lowers are not, shift everything up, regardless of color
               score.S.move_velocity(200);
-              score.SS.move_velocity(200); //shooter on to shift ball forwards
+              score.SS.move_velocity(125); //shooter on to shift ball forwards
           }
-        }
-
+      statusupdatedone:
       if(ejct){
         for (int i = 1; i < 4; i++){ //this pattern ensures that the next existing ball which will be pooped is pooped
           if (ballpositionset[i].color != EMPTY){
@@ -269,12 +276,12 @@ namespace STL_lib{
               score.S.move_velocity(-200);
               return;
           }
-          //special edge case: eject top ball if blue and bottom is EMPTY
-          //if we made it here, that means that everything below the top is EMPTY
-          if(ballpositionset[0].color ==BLUE){
-            score.S.move_velocity(-200);
-            score.SS.move_velocity(-100);
-          }
+        }
+        //special edge case: eject top ball if blue and bottom is EMPTY
+        //if we made it here, that means that everything below the top is EMPTY
+        if(ballpositionset[0].color ==BLUE){
+          score.S.move_velocity(-200);
+          score.SS.move_velocity(-100);
         }
       }
     }
