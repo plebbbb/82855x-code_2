@@ -259,7 +259,7 @@ namespace STL_lib{
             goto statusupdatedone;
         }
       }
-       if(ballpositionset[2].color == EMPTY && ballpositionset[3].color != EMPTY && ballpositionset[1].color == EMPTY){
+       if(ballpositionset[2].color == EMPTY && ballpositionset[3].color != EMPTY /*&& ballpositionset[1].color == EMPTY*/){
           score.S.move_velocity(125);
           goto statusupdatedone;
         }
@@ -283,6 +283,13 @@ namespace STL_lib{
           score.S.move_velocity(-200);
           score.SS.move_velocity(-100);
         }
+      }
+    }
+
+    //disables all istransfers which may arise from bugs
+    void emerg_debug(){
+      for(int i = 0; i < 4; i++){
+        ballpositionset[i].istransfer = 0;
       }
     }
   };

@@ -57,7 +57,7 @@ bool balltransferstate = false;
 linetracker bottom(ADIAnalogIn({7,'G'}),2800);
 linetracker top(ADIAnalogIn('D'),2800);
 linetracker middle(ADIAnalogIn({7,'H'}),2800);
-linetracker eject(ADIAnalogIn('E'),2800);
+linetracker eject(ADIAnalogIn('E'),2300);
 Optical input(8);
 
 bool toggleglobaldrive = true;

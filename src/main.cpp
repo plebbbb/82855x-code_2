@@ -144,6 +144,7 @@ delay(100);
 //	if(toggleglobaldrive == false) {globalangle = SMART_radians(0.00);}
 	//globalangle = SMART_radians(0.00);
 	currentcontrol.self_transform_polar(-globalangle);
+	if (master.get_digital(DIGITAL_A)) ttt.emerg_debug();
 /*	lcd::print(0,"X: %f", locationC.x);
 /*	lcd::print(1,"Y: %f", locationC.y);*/
 //	lcd::print(0,"R: %f", locationC.angle);
