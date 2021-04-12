@@ -240,6 +240,8 @@ namespace STL_lib{
       bool tempflag = true;
       score.S.move_velocity(0);
       score.SS.move_velocity(0);
+
+      //the idea with this portion: if the topmost ball is red, we force it up to the top
       if(ballpositionset[0].color == EMPTY){
         for(ball v : ballpositionset){
           if (v.color != EMPTY){
@@ -251,15 +253,30 @@ namespace STL_lib{
           }
         }
       }
+
       //technically, break statements are just macroed goto statements, so this isnt as scuffed as it looks
       topballtargeted:
+
+      //this section: if there is a ball in the intakes being sucked in, move to provide a spot in the lift
+      if (ballpositionset[3].color != EMPTY){
+        if(ballpositionset[2].color == EMPTY | ballpositionset[1].color == EMPTY){
+          if(ballpositionset[2].color == EMPTY) score.S.move_velocity(100); //slight rotation to get ball snugly in slot 2
+          else score.S.move_velocity(200); //full power to rush current slot 2 ball out of the way
+        }
+        //emergency edge case: if there is no space availaible below, but the top slot is clear, move slot 1 ball to slot 0(shooter)
+        else if(ballpositionset[0].color == EMPTY){
+          score.S.move_velocity(200); //full power to rush balls out of slot 2
+          score.SS.move_velocity(100); //shooter is high rpm so we run at half RPM target
+        }
+      }
+      /*
       if(ballpositionset[3].color != EMPTY && ballpositionset[2].color != EMPTY){
         if (ballpositionset[1].color == EMPTY){
             score.S.move_velocity(200);
             goto statusupdatedone;
         }
       }
-       if(ballpositionset[2].color == EMPTY && ballpositionset[3].color != EMPTY /*&& ballpositionset[1].color == EMPTY*/){
+       if(ballpositionset[2].color == EMPTY && ballpositionset[3].color != EMPTY && ballpositionset[1].color == EMPTY){
           score.S.move_velocity(125);
           goto statusupdatedone;
         }
@@ -267,7 +284,7 @@ namespace STL_lib{
             //emergency edge case to prevent underutilization: if top slot is availiable but lowers are not, shift everything up, regardless of color
               score.S.move_velocity(200);
               score.SS.move_velocity(125); //shooter on to shift ball forwards
-          }
+          }*/
       statusupdatedone:
       if(ejct){
         for (int i = 1; i < 4; i++){ //this pattern ensures that the next existing ball which will be pooped is pooped
