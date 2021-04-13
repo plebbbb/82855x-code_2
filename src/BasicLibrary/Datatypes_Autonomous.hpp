@@ -396,10 +396,17 @@ namespace STL_lib{
 
       position updateposition(command currentcommand, position read){
         if(std::get<0>(currentcommand.DSensor_status) == true){
-          coordinate E = LC.return_walldist(read,std::get<1>(currentcommand.DSensor_status));
-          E += RC.return_walldist(read,std::get<2>(currentcommand.DSensor_status));
-          read.x = E.x;
-          read.y = E.y;
+          if(std::get<1>(currentcommand.DSensor_status) == std::get<2>(currentcommand.DSensor_status)){
+            coordinate E = LC.return_walldist(read,std::get<1>(currentcommand.DSensor_status));
+            if (E.x == 0){
+              read.y = E.y;
+            } else {read.x = E.x;}
+          } else {
+            coordinate E = LC.return_walldist(read,std::get<1>(currentcommand.DSensor_status));
+            E += RC.return_walldist(read,std::get<2>(currentcommand.DSensor_status));
+            read.x = E.x;
+            read.y = E.y;
+          }
         }
         return read;
       }

@@ -262,54 +262,55 @@ std::vector<linearmotion> cmdset = {
 			}
 		},
 		{
-			position({67,13.9,5}),{
+			position({67.1,13.7,5}),{
 				new score({85,100},{1,2000})
 			}
 		},
 		{
-			position({48,71.25,5}),{
+			position({48,71,5}),{
 				new coordinatetarget({10,90},std::pair<inches,inches>{48,72}),
-				new intake({70,100},{1,2000}),
+				new intake({60,100},{1,2000}),
 				new rotation({90,100,0})
 			}
 		},
 		{
-			position({62.9,71,0}),{
+			position({63.6,69.8,0}),{
 				new intake({0,100},{1,6000}),
 			}
 		},
 		{
-			position({62.9,71,0}),{
+			position({63.6,69.8,0}),{
 				new score({0,100},{1,3000})
 			}
 		},
 		{
-			position({50,71,0}),{
+			position({50,70,0}),{
 				new rotation({40,90,M_PI*5/4}),
 				new intake({20,90},{1,1000}),
 				new score({70,100},{2,1500})
 			}
 		},
 		{
-			position({50,71,M_PI}),{
+			position({50,70,M_PI}),{
 			}
 		},
 		{
-			position({17.3,71,M_PI}),{
-				new intake({0,90},{1,2000}),
+			position({14.9,70.8,M_PI}),{
+				new intake({0,100},{1,2000}),
+				new useDistanceSensor({60,100},{LEFT_WALL,LEFT_WALL}),
 				new score({85,100},{1,3000})
 			}
 		},
 		{
-			position({36,120,M_PI}),{
+			position({38.5,120,M_PI}),{
 				new coordinatetarget({0,20},std::pair<inches,inches>{8,71}),
-				new coordinatetarget({20,80},std::pair<inches,inches>{38,120}),
-				new intake({55,100},{1,3000}),
-				new rotation({92,100,M_PI*3/4}),
+				new rotation({21,80,M_PI/2}),
+				new intake({55,100},{1,4000}),
+				new rotation({98,100,M_PI*3/4}),
 			}
 		},
 		{
-			position({24,120,M_PI*3/4}),{
+			position({34,110,M_PI*3/4}),{
 			}
 		},
 		{
@@ -326,18 +327,18 @@ std::vector<linearmotion> cmdset = {
 			}
 		},
 		{
-			position({70.7,130.8,M_PI/2}),{
+			position({69.8,127.8,M_PI/2}),{
+				new useDistanceSensor({60,100},{FRONT_WALL,FRONT_WALL}),
 				new score({92,100},{1,2000})
 			}
 		},
 		{
-			position({71.5,115,M_PI/2}),{
+			position({71.5,120,M_PI/2}),{
 			}
 		},
 		{
-			position({108,120,M_PI/2}),{
-				new coordinatetarget({0,90},std::pair<inches,inches>{108,120}),
-				new rotation({90,100,M_PI/4}),
+			position({108,126.3,0}),{
+				new rotation({95,100,M_PI/4}),
 				new intake({55,100},{1,3000})
 			}
 		},
@@ -356,9 +357,15 @@ std::vector<linearmotion> cmdset = {
 			}
 		},
 		{
-			position({130.8,73.2,0}),{
+			position({129.5,73.2,0}),{
 				new intake({0,100},{1,3000}),
-				new score({92,100},{2,4000})
+				new useDistanceSensor({60,100},{RIGHT_WALL,RIGHT_WALL}),
+			}
+		},
+		{
+			position({129.5,73.2,0}),{
+				new useDistanceSensor({0,100},{RIGHT_WALL,RIGHT_WALL}),
+				new score({0,100},{2,4000})
 			}
 		},
 		{
@@ -369,7 +376,7 @@ std::vector<linearmotion> cmdset = {
 			position({112,24,M_PI/4}),{
 				new coordinatetarget({0,90},std::pair<inches,inches>{112,24}),
 				new rotation({90,100,M_PI*7/4}),
-				new intake({70,100},{1,2000})
+				new intake({55,100},{1,2000})
 			}
 		},
 		{
@@ -379,9 +386,15 @@ std::vector<linearmotion> cmdset = {
 			}
 		},
 		{
-			position({120,24,M_PI*7/4}),{
+			position({144-12.3,12.3,M_PI*7/4}),{
+				new useDistanceSensor({0,120},{RIGHT_WALL,BACK_WALL}),
+				new intake({0,100},{2,3000})
 			}
 		},
+/*		{
+			position({120,24,M_PI*7/4}),{
+			}
+		},*/
 };
 
 //DoubleIMU Tes(3,15);
@@ -403,7 +416,7 @@ void autonomous() {
   locationC = std::tuple<inches,inches,SMART_radians>{36,0,M_PI/2}; //REMEMBER: LOCATIONC IS IN A STATIC ADDRESS
   	for(int i = 0; i < cmdset.size(); i++){
   		while(true){
-  			break;
+  			//break;
   			if (master.get_digital_new_press(DIGITAL_UP)) break;
   			locationC = Odom.cycleIMU(locationC,SMART_radians(degrees(double(LIM.get_rotation()*-1.01056196909)+90)));
   			lcd::print(5,"X: %f",locationC.x);
