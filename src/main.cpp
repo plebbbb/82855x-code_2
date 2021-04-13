@@ -124,7 +124,7 @@ if (balltransferstate && middle.returnval() && bottom.returnval()){
 
 void opcontrol() {
 	input.set_led_pwm(80);
-//	autonomous();
+	autonomous();
 	/*while(true){
 		lcd::print(0,"LEFT ODOMWHEEL: %f", Owheels.LEFT.get_radian());
 		lcd::print(1,"RIGHT ODOMWHEEL: %f", Owheels.RIGHT.get_radian());
@@ -148,6 +148,7 @@ delay(100);
 /*	lcd::print(0,"X: %f", locationC.x);
 /*	lcd::print(1,"Y: %f", locationC.y);*/
 //	lcd::print(0,"R: %f", locationC.angle);
+lcd::print(0,"%d",input.get_proximity());
 	base.move_vector_RAW_AS_M(currentcontrol,spinning.compute((double)-master.get_analog(ANALOG_RIGHT_X)),test);
 	ttt.update_state((bool)master.get_digital(DIGITAL_DOWN));
 	intake_control();

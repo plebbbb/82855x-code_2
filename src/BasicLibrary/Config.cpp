@@ -7,7 +7,7 @@ using namespace pros;
 
 Controller master(pros::E_CONTROLLER_MASTER);
 
-position locationC = *new position({0,0,M_PI/2});
+position locationC = *new position({36,0,M_PI/2});
 
 command currentcommand(position({15,15,M_PI}),{5,20,15},{0,0},{0,0});
 
@@ -28,7 +28,7 @@ basecontroller_auton autonbase(
   control_loop({new Proportional(40,{100,-100}),new Derivitive(35,{70,-70})},{100,-100}),  //X control loop
   control_loop({new Proportional(40,{100,-100}),new Derivitive(35,{70,-70})},{100,-100}),  //Y control loop
   control_loop({new Proportional(200,{100,-100}),new Derivitive(80,{20,-20})},{100,-100}),   //Rotation control loop
-	control_loop({new Proportional(1,{0.5,-0.5}),new Derivitive(0.4,{0.25,-0.25})},{0.5,-0.5})   //Rotation control loop, vector mode
+	control_loop({new Proportional(1,{0.5,-0.5}),new Derivitive(0.5,{0.25,-0.25})},{0.5,-0.5})   //Rotation control loop, vector mode
 );
 //, new Derivitive(1,{0.5,-0.5})},{1,-1}
 //**************************************************************************//

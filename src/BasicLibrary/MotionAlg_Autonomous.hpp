@@ -205,19 +205,21 @@ namespace STL_lib{
     //detects new balls in the intake, and determines its color
     void intakeballupdate(){
       //proximity maxes out at 255(very close), fyi
-      if(intake.get_proximity() > 70){
+      if(intake.get_proximity() > 100){
         //NOTE: THIS MUST TAKE PLACE AFTER INTAKECONTROLLER UPDATE AND DETERMINETARGETSTATE SO THAT INTAKES GET SHUT OFF AFTER HITTING BALL QUOTA. THIS PREVENTS THE SENSOR FROM COUNTING UNINTAKED BALLS
         if(ballpositionset[3].istransfer && ballpositionset[3].color == EMPTY){
           ballpositionset[3].color = color_check();
         }
+  //      else ballpositionset[3] = ball(EMPTY);
       }
+    //  else ballpositionset[3] = ball(EMPTY);
     }
 
     //intake color checking function
     BALL_COLOR color_check(){
     //  return BLUE; //TESTING ONLY
-      if (fabs(intake.get_hue() - 10) < 7) return RED;
-      if (fabs(intake.get_hue() - 240) < 15) return BLUE;
+      if (fabs(intake.get_hue() - 15) < 15) return RED;
+      if (fabs(intake.get_hue() - 240) < 25) return BLUE;
       return EMPTY;
     }
 
@@ -226,11 +228,11 @@ namespace STL_lib{
       set_velocities(ejct);
       //determinetargetstates();
       //intakeballupdate();
-      ///*
+    //  /*
       for(int i = 0; i < 4; i++){
         pros::lcd::print(i,"%d %d %d",ballpositionset[i].color, set[i].returnval(), ballpositionset[i].istransfer);
       };
-      pros::lcd::print(4, "BOTTOM: %d", score.S.get_target_velocity());
+    /*  pros::lcd::print(4, "BOTTOM: %d", score.S.get_target_velocity());
       pros::lcd::print(5, "TOP: %d", score.SS.get_target_velocity());
       pros::lcd::print(6, "LINTAKE: %d", in.L.get_target_velocity());
       pros::lcd::print(7, "EJECT: %d", eject.returnval());
@@ -244,7 +246,7 @@ namespace STL_lib{
       score.SS.move_velocity(0);
 
       //the idea with this portion: if the topmost ball is red, we force it up to the top
-      if(ballpositionset[0].color == EMPTY){
+      if(set[0].returnval() == false){
         for(ball v : ballpositionset){
           if (v.color != EMPTY){
             if (v.color == RED){
@@ -260,33 +262,27 @@ namespace STL_lib{
       topballtargeted:
 
       //this section: if there is a ball in the intakes being sucked in, move to provide a spot in the lift
-      if (ballpositionset[3].color != EMPTY){
-        if(ballpositionset[2].color == EMPTY | ballpositionset[1].color == EMPTY){
-          if(ballpositionset[2].color == EMPTY) score.S.move_velocity(100); //slight rotation to get ball snugly in slot 2
-          else score.S.move_velocity(200); //full power to rush current slot 2 ball out of the way
-        }
+  /*    if (ballpositionset[3].color != EMPTY && ballpositionset[3].istransfer == 1){
+        if(ballpositionset[1].color != EMPTY && score.S.get_target_velocity() == 0){
+          score.S.move_velocity(0); //full power to rush current slot 2 ball out of the way
+        } else {
+          score.S.move_velocity(100);
+        }*/
+/*
         //emergency edge case: if there is no space availaible below, but the top slot is clear, move slot 1 ball to slot 0(shooter)
         else if(ballpositionset[0].color == EMPTY){
           score.S.move_velocity(200); //full power to rush balls out of slot 2
           score.SS.move_velocity(100); //shooter is high rpm so we run at half RPM target
         }
-      }
-      /*
+      }*/
+    //  /*
       if(ballpositionset[3].color != EMPTY && ballpositionset[2].color != EMPTY){
         if (ballpositionset[1].color == EMPTY){
             score.S.move_velocity(200);
             goto statusupdatedone;
         }
       }
-       if(ballpositionset[2].color == EMPTY && ballpositionset[3].color != EMPTY && ballpositionset[1].color == EMPTY){
-          score.S.move_velocity(125);
-          goto statusupdatedone;
-        }
-       if (ballpositionset[0].color == EMPTY && ballpositionset[3].color != EMPTY && ballpositionset[1].color != EMPTY && ballpositionset[2].color != EMPTY){
-            //emergency edge case to prevent underutilization: if top slot is availiable but lowers are not, shift everything up, regardless of color
-              score.S.move_velocity(200);
-              score.SS.move_velocity(125); //shooter on to shift ball forwards
-          }*/
+
       statusupdatedone:
       if(ejct){
         for (int i = 1; i < 4; i++){ //this pattern ensures that the next existing ball which will be pooped is pooped
