@@ -242,12 +242,16 @@ std::vector<linearmotion> cmdset = {
 };
 //*/
 std::vector<linearmotion> cmdset = {
+
+	//intake goal 1 balls
 		{
 				position({36, 26, M_PI/2}), {
 						new intake({0,80},{1,2000}),
 						new rotation({80, 100, M_PI*5/4}),
 				}
 		},
+
+		//score all at goal 1, intake bottom wall left ball
 		{
 			position({12.1,12.1,M_PI*5/4}),{
 				new useDistanceSensor({40,120},{BACK_WALL,LEFT_WALL}),
@@ -255,12 +259,16 @@ std::vector<linearmotion> cmdset = {
 				new score({96,100},{2,2000})
 			}
 		},
+
+		//prepare for intaking bottom left wall ball as well as eject
 		{
 			position({20,20,M_PI*5/4}),{
 				new intake({0,80},{-1,5400}),
 				new rotation({30,50,M_PI/2-0.2})
 			}
 		},
+
+		//intake bottom left wall ball, eject goal 1 blue balls
 		{
 			position({14.7,36,M_PI*5/4}),{
 				new ejectionenable({0,50}),
@@ -268,17 +276,23 @@ std::vector<linearmotion> cmdset = {
 				new intake({20,100},{1,2000})
 			}
 		},
+
+		//prepare movement to goal 2
 		{
 			position({60,20,M_PI*5/4}),{
 				new coordinatetarget({0,30},std::pair<inches,inches>{0,0}),
 				new rotation({30,100,5}),
 			}
 		},
+
+		//score one on goal 2
 		{
 			position({67.1,13.7,5}),{
 				new score({85,100},{1,2000})
 			}
 		},
+
+		//intake middle goal left ball
 		{
 			position({48,71,5}),{
 				new coordinatetarget({10,90},std::pair<inches,inches>{48,72}),
@@ -286,33 +300,45 @@ std::vector<linearmotion> cmdset = {
 				new rotation({90,100,0})
 			}
 		},
+
+		//enter middle goal, intake blue ball
 		{
 			position({62.05,69.8,0}),{
 				new intake({0,100},{1,6000}),
 			}
 		},
+
+		//score red ball at middle goal
 		{
 			position({62.05,69.8,0}),{
 				new score({0,100},{1,3000})
 			}
 		},
+
+		//leave middle goal, eject blue balls from bot
 		{
 			position({50,70,0}),{
-				new rotation({40,90,M_PI*5/4}),
+				new rotation({40,90,M_PI*5/4+0.2}),
 				new intake({20,90},{1,1000}),
 				new score({93,100},{2,1500})
 			}
 		},
+
+		//prepare for left wall middle ball intake and goal 4
 		{
 			position({50,70,M_PI}),{
 			}
 		},
+
+		//intake left wall middle ball, reach goal 4
 		{
 			position({14.35,70.8,M_PI}),{
 				new useDistanceSensor({60,100},{LEFT_WALL,LEFT_WALL}),
 				new intake({0,100},{1,2000}),
 			}
 		},
+
+		//score goal 4, intake its blue ball
 		{
 			position({14.35,70.8,M_PI}),{
 				new useDistanceSensor({60,100},{LEFT_WALL,LEFT_WALL}),
@@ -320,6 +346,8 @@ std::vector<linearmotion> cmdset = {
 				new score({0,100},{1,3000})
 			}
 		},
+
+		//exit goal 4, eject blue ball, prepare to intake top wall left ball
 		{
 			position({37.5,90,M_PI}),{
 				new intake({0,20},{-1,1000}),
@@ -329,6 +357,8 @@ std::vector<linearmotion> cmdset = {
 				new rotation({90,100,M_PI/2})
 			}
 		},
+
+		//intake top wall left ball
 		{
 			position({37.5,120,M_PI/2}),{
 				new ejectionenable({0,10}),
@@ -336,25 +366,33 @@ std::vector<linearmotion> cmdset = {
 				new rotation({90,100,M_PI*3/4}),
 			}
 		},
+
+		//prepare to score goal 5
 		{
 			position({34,110,M_PI*3/4}),{
 			}
 		},
+
+		//score goal 5, intake one blue ball
 		{
 			position({12.1,144-12.1,M_PI*3/4}),{
 				new useDistanceSensor({40,120},{LEFT_WALL,FRONT_WALL}),
 				new score({90,100},{1,2000}),
-				new intake({90,100},{2,3000})
+				new intake({90,100},{1,3000})
 			}
 		},
+
+		//exit goal 5, prepare to intake left wall top ball, eject goal 5 blue balls
 		{
 			position({20,114,M_PI/3*4}),{
 				new coordinatetarget({0,20},std::pair<inches,inches>{144,144}),
 				new rotation({21,89,M_PI/2}),
-				new ejectionenable({35,100}),
+				new ejectionenable({45,100}),
 				new coordinatetarget({90,100},std::pair<inches,inches>{4,108}),
 			}
 		},
+
+		//intake left wall top ball
 		{
 			position({13.5,108,M_PI/3*4}),{
 				new ejectionenable({0,10}),
@@ -362,6 +400,8 @@ std::vector<linearmotion> cmdset = {
 				new intake({50,100},{1,2000})
 			}
 		},
+
+		//prepare for goal 6, intake middle goal top ball
 		{
 			position({71,96,M_PI*3/4}),{
 				new coordinatetarget({20,90},std::pair<inches,inches>{72,96}),
@@ -369,11 +409,15 @@ std::vector<linearmotion> cmdset = {
 				new intake({60,100},{1,2000})
 			}
 		},
+
+		//move to goal 6
 		{
 			position({69.8,129.8,M_PI/2}),{
 				new useDistanceSensor({60,100},{FRONT_WALL,FRONT_WALL}),
 			}
 		},
+
+		//score on goal 6, intake blue ball
 		{
 			position({69.8,129.8,M_PI/2}),{
 				new useDistanceSensor({0,100},{FRONT_WALL,FRONT_WALL}),
@@ -381,6 +425,8 @@ std::vector<linearmotion> cmdset = {
 				new intake({0,100},{1,2000})
 			}
 		},
+
+		//prepare for top wall right ball, eject blue ball
 		{
 			position({71.5,120,M_PI/2}),{
 				new coordinatetarget({0,20},std::pair<inches,inches>{69.8,144}),
@@ -388,6 +434,8 @@ std::vector<linearmotion> cmdset = {
 				new ejectionenable({50,100})
 			}
 		},
+
+		//intake top wall right ball, prepare for goal 7
 		{
 			position({108,126.3,0}),{
 				new ejectionenable({0,10}), //here to toggle ejectionenable of last operation off in case 100 is not hit, preventing the toggling of the eject bool to false
@@ -395,12 +443,16 @@ std::vector<linearmotion> cmdset = {
 				new intake({55,100},{1,3000})
 			}
 		},
+
+		//move to and score on goal 7
 		{
 			position({144-12.1,144-12.1,M_PI/4}),{
 				new useDistanceSensor({40,120},{FRONT_WALL,RIGHT_WALL}),
 				new score({92,100},{1,2000})
 			}
 		},
+
+		//exist goal 7, prepare for goal 8, intake middle goal right ball
 		{
 			position({96,72.8,M_PI/4}),{
 				new coordinatetarget({0,20},std::pair<inches,inches>{144,144}),
@@ -410,24 +462,32 @@ std::vector<linearmotion> cmdset = {
 				new intake({55,100},{1,2000})
 			}
 		},
+
+		//move to goal 8, intake right wall middle  ball
 		{
 			position({129.5,73.2,0}),{
 				new intake({0,100},{1,3000}),
 				new useDistanceSensor({60,100},{RIGHT_WALL,RIGHT_WALL}),
 			}
 		},
+
+		//score both balls, intake blue ball
 		{
-			position({129.3,73.2,0}),{
+			position({129.5,73.2,0}),{
 				new useDistanceSensor({0,100},{RIGHT_WALL,RIGHT_WALL}),
 				new score({0,100},{2,4000}),
 				new intake({0,100},{1,1000})
 			}
 		},
+
+		//exit goal 8, prepare to intake bottom wall right ball
 		{
 			position({115,72.8,0}),{
 				new intake({0,60},{-1,2000})
 			}
 		},
+
+		//intake bottom wall right ball, eject goal 8 blue ball, prepare for intaking right wall bottom ball
 		{
 			position({112,24,M_PI/4}),{
 				new ejectionenable({0,40}),
@@ -436,12 +496,16 @@ std::vector<linearmotion> cmdset = {
 				new intake({55,100},{1,2000})
 			}
 		},
+
+		//intake right wall botttom ball
 		{
 			position({131.5,38.6,M_PI/4}),{
 				new coordinatetarget({0,90},std::pair<inches,inches>{140,38.6}),
 				new intake({55,100},{1,2000})
 			}
 		},
+
+		//move to goal 9, score both balls and intake one blue ball
 		{
 			position({144-12.3,12.3,M_PI*7/4}),{
 				new useDistanceSensor({40,120},{RIGHT_WALL,BACK_WALL}),
@@ -449,12 +513,16 @@ std::vector<linearmotion> cmdset = {
 				new intake({92,100},{1,1000})
 			}
 		},
+
+		//intake last goal 9 blue ball
 		{
 			position({144-12.3,12.3,M_PI*7/4}),{
 				new useDistanceSensor({0,120},{RIGHT_WALL,BACK_WALL}),
 				new intake({0,100},{1,3000})
 			}
 		},
+
+		//exit goal 9
 		{
 			position({120,24,M_PI*7/4}),{
 				new intake({0,50},{-1,5000})
