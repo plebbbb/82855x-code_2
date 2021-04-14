@@ -1,6 +1,7 @@
 //A header guard
 #pragma once
 //#include "Library.hpp"
+#include <stack>
 
 #ifndef DATATYPES_AUTO_HPP
 #define DATATYPES_AUTO_HPP
@@ -392,25 +393,45 @@ namespace STL_lib{
     struct DSensorComputer{
       DSensor LC;
       DSensor RC;
+      std::stack<coordinate> pastvalues = {};
+
       DSensorComputer(DSensor L, DSensor R):LC(L),RC(R){}
 
       position updateposition(command currentcommand, position read){
         if(std::get<0>(currentcommand.DSensor_status) == true){
+          coordinate E = LC.return_walldist(read,std::get<1>(currentcommand.DSensor_status));
           if(std::get<1>(currentcommand.DSensor_status) == std::get<2>(currentcommand.DSensor_status)){
-            coordinate E = LC.return_walldist(read,std::get<1>(currentcommand.DSensor_status));
             if (E.x == 0){
+              E = return_avg(E);
               read.y = E.y;
             } else {read.x = E.x;}
           } else {
-            coordinate E = LC.return_walldist(read,std::get<1>(currentcommand.DSensor_status));
             E += RC.return_walldist(read,std::get<2>(currentcommand.DSensor_status));
+            E = return_avg(E);
             read.x = E.x;
             read.y = E.y;
           }
-        }
         return read;
       }
+    }
 
+      coordinate return_avg(coordinate NV){
+        pastvalues.push(NV);
+        if(pastvalues.size() > 4){
+          pastvalues.pop();
+        }
+        coordinate RV = std::pair<inches,inches>{0,0};
+        //low effort hack solution for iterating through a stack. Doesnt matter as we don't care about the memory location of the values anyways
+        std::stack<coordinate> tmp = {};
+        while(!pastvalues.empty()){
+          RV+=pastvalues.top();
+          tmp.push(pastvalues.top());
+          pastvalues.pop();
+        }
+        pastvalues = tmp;
+        RV.x = RV.x/pastvalues.size();
+        RV.y = RV.y/pastvalues.size();
+      }
     };
 
 
