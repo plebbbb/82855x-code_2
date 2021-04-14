@@ -76,9 +76,10 @@ namespace STL_lib{
     intakecontroller(pros::Motor LI, pros::Motor RI, pros::Motor SI, linetracker bb):L(LI),R(RI),S(SI),ba(bb){}
     command refresh(command input){
       if (ba.return_new_press()) std::get<0>(input.intake_status)--;
-      if (std::get<1>(input.intake_status) > 0 && std::get<0>(input.intake_status) > 0){
-        L.move_velocity(200);
-        R.move_velocity(200);
+      if (std::get<1>(input.intake_status) > 0 && std::get<0>(input.intake_status) != 0){
+        //hack solution. Negative ball count values mean intakes spin backwards for delay interval
+        L.move_velocity(fabs(std::get<0>(input.intake_status))/std::get<0>(input.intake_status)*200);
+        R.move_velocity(fabs(std::get<0>(input.intake_status))/std::get<0>(input.intake_status)*200);
     //    S.move_velocity(200);
         std::get<1>(input.intake_status) -= 10;
       }

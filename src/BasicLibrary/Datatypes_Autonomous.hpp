@@ -360,7 +360,7 @@ namespace STL_lib{
         inches disttotgt; //distance to target
         bool allow_ejection = false; //ball eject toggle;
         std::tuple<inches,percent,percent> motionprofile_config; //ideal velocity profile constraints, indexes: accel dist, start power, end power
-        std::tuple<unsigned short,double> intake_status; //current balls amount to be taken in and time before timeout
+        std::tuple<short,double> intake_status; //current balls amount to be taken in and time before timeout
         std::tuple<unsigned short,double> score_status;  //current balls amount to be scored and time before timeout
         std::tuple<bool,WALL_TGT,WALL_TGT> DSensor_status; //index 0: activation of distance sensor coord calc, index 1 and 2: walls the sensors are hitting(Left to right)
         percent completion; //current percentage of path completion, used to trigger commands

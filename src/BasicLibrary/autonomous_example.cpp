@@ -23,6 +23,13 @@ std::uint32_t now = pros::millis();
 				}
 	}
 
+	void hack_poop(command a){
+		if (a.allow_ejection == true) {
+			Shooter.move_velocity(-200);
+			Ejector.move_velocity(-200);
+		}
+	}
+
 		//cancelation case 2: ball present in middle(going to top will cause bottom ball to get stuck in middle)
 	/*
 		if (balltransferstate && middle.returnval() && bottom.returnval()){
@@ -244,17 +251,24 @@ std::vector<linearmotion> cmdset = {
 		{
 			position({12.1,12.1,M_PI*5/4}),{
 				new useDistanceSensor({40,120},{BACK_WALL,LEFT_WALL}),
-			//	new intake({85,100},{1,5000}),
-				new score({95,100},{1,2000})
+				new intake({95,100},{1,5000}),
+				new score({95,100},{2,2000})
 			}
 		},
-	/*	{
-			position({15,36,M_PI*5/4}),{
-				new coordinatetarget({15,100},std::pair<inches,inches>{4,36}),
-				new ejectionenable({40,90}),
-				new intake({70,100},{1,2000})
+		{
+			position({20,20,M_PI*5/4}),{
+				new intake({0,80},{-1,5400}),
+				new ejectionenable({70,100}),
+				new rotation({21,50,M_PI/2-0.2})
 			}
-		},*/
+		},
+		{
+			position({15,36,M_PI*5/4}),{
+				new ejectionenable({0,50}),
+				new coordinatetarget({15,100},std::pair<inches,inches>{4,36}),
+				new intake({50,100},{1,2000})
+			}
+		},
 		{
 			position({60,20,M_PI*5/4}),{
 				new coordinatetarget({0,30},std::pair<inches,inches>{0,0}),
@@ -274,12 +288,12 @@ std::vector<linearmotion> cmdset = {
 			}
 		},
 		{
-			position({63.6,69.8,0}),{
+			position({62.9,69.8,0}),{
 				new intake({0,100},{1,6000}),
 			}
 		},
 		{
-			position({63.6,69.8,0}),{
+			position({62.9,69.8,0}),{
 				new score({0,100},{1,3000})
 			}
 		},
@@ -295,7 +309,7 @@ std::vector<linearmotion> cmdset = {
 			}
 		},
 		{
-			position({14.9,70.8,M_PI}),{
+			position({14.35,70.8,M_PI}),{
 				new intake({0,100},{1,2000}),
 				new useDistanceSensor({60,100},{LEFT_WALL,LEFT_WALL}),
 				new score({85,100},{1,3000})
@@ -320,6 +334,12 @@ std::vector<linearmotion> cmdset = {
 			}
 		},
 		{
+			position({12.5,115.27,M_PI/3*4}),{
+				new coordinatetarget({20,100},std::pair<inches,inches>{4,108}),
+				new intake({50,100},{1,2000})
+			}
+		},
+		{
 			position({71,96,M_PI*3/4}),{
 				new coordinatetarget({20,90},std::pair<inches,inches>{72,96}),
 				new rotation({90,100,M_PI/2}),
@@ -327,9 +347,9 @@ std::vector<linearmotion> cmdset = {
 			}
 		},
 		{
-			position({69.8,127.8,M_PI/2}),{
+			position({69.8,130,M_PI/2}),{
 				new useDistanceSensor({60,100},{FRONT_WALL,FRONT_WALL}),
-				new score({92,100},{1,2000})
+				new score({92,100},{2,2000})
 			}
 		},
 		{
@@ -363,40 +383,49 @@ std::vector<linearmotion> cmdset = {
 			}
 		},
 		{
-			position({129.5,73.2,0}),{
+			position({129.3,73.2,0}),{
 				new useDistanceSensor({0,100},{RIGHT_WALL,RIGHT_WALL}),
-				new score({0,100},{2,4000})
+				new score({0,100},{2,4000}),
+				new intake({0,100},{1,1000})
 			}
 		},
 		{
 			position({115,72.8,0}),{
+				new intake({0,60},{-1,2000})
 			}
 		},
 		{
 			position({112,24,M_PI/4}),{
 				new coordinatetarget({0,90},std::pair<inches,inches>{112,24}),
-				new rotation({90,100,M_PI*7/4}),
+				new rotation({90,100,M_PI*1/4}),
+				new intake({55,100},{1,2000})
+			}
+		},
+		{
+			position({131.5,38.6,M_PI/4}),{
+				new coordinatetarget({0,90},std::pair<inches,inches>{140,38.6}),
 				new intake({55,100},{1,2000})
 			}
 		},
 		{
 			position({144-12.3,12.3,M_PI*7/4}),{
 				new useDistanceSensor({40,120},{RIGHT_WALL,BACK_WALL}),
-				new score({92,100},{1,2000})
+				new score({92,100},{2,2000}),
+				new intake({92,100},{1,1000})
 			}
 		},
 		{
 			position({144-12.3,12.3,M_PI*7/4}),{
 				new useDistanceSensor({0,120},{RIGHT_WALL,BACK_WALL}),
-				new intake({0,100},{2,3000})
+				new intake({0,100},{1,3000})
 			}
 		},
-/*		{
+		{
 			position({120,24,M_PI*7/4}),{
+				new intake({0,50},{-1,5000})
 			}
-		},*/
+		},
 };
-
 //DoubleIMU Tes(3,15);
 void autonomous() {
 	delay(100);
@@ -416,7 +445,7 @@ void autonomous() {
   locationC = std::tuple<inches,inches,SMART_radians>{36,0,M_PI/2}; //REMEMBER: LOCATIONC IS IN A STATIC ADDRESS
   	for(int i = 0; i < cmdset.size(); i++){
   		while(true){
-  			//break;
+  		//	break;
   			if (master.get_digital_new_press(DIGITAL_UP)) break;
   			locationC = Odom.cycleIMU(locationC,SMART_radians(degrees(double(LIM.get_rotation()*-1.01056196909)+90)));
   			lcd::print(5,"X: %f",locationC.x);
@@ -457,6 +486,7 @@ void autonomous() {
   		//	autonbase.base.move_vector_RAW(std::pair<inches,inches>{0,0},0,0); //uncomment to disable movement
 		//		ttt.update_state(currentcommand.allow_ejection); //initial ball situation detection and auto sorting behavior
 				ballindexcontroller2();
+				hack_poop(currentcommand);
 				currentcommand = inta.refresh(currentcommand); //overwrite lift sorting outputs for commands
   			currentcommand = scra.refresh(currentcommand); //set intake output
 		//		ttt.determinetargetstates(); //react to lift and intake output power decisions made in above lines
