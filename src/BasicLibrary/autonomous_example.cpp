@@ -258,15 +258,14 @@ std::vector<linearmotion> cmdset = {
 		{
 			position({20,20,M_PI*5/4}),{
 				new intake({0,80},{-1,5400}),
-				new ejectionenable({70,100}),
-				new rotation({21,50,M_PI/2-0.2})
+				new rotation({30,50,M_PI/2-0.2})
 			}
 		},
 		{
-			position({15,36,M_PI*5/4}),{
+			position({14.7,36,M_PI*5/4}),{
 				new ejectionenable({0,50}),
-				new coordinatetarget({15,100},std::pair<inches,inches>{4,36}),
-				new intake({50,100},{1,2000})
+				new coordinatetarget({15,100},std::pair<inches,inches>{0,36}),
+				new intake({20,100},{1,2000})
 			}
 		},
 		{
@@ -288,12 +287,12 @@ std::vector<linearmotion> cmdset = {
 			}
 		},
 		{
-			position({62.9,69.8,0}),{
+			position({62.5,69.8,0}),{
 				new intake({0,100},{1,6000}),
 			}
 		},
 		{
-			position({62.9,69.8,0}),{
+			position({62.5,69.8,0}),{
 				new score({0,100},{1,3000})
 			}
 		},
@@ -301,7 +300,7 @@ std::vector<linearmotion> cmdset = {
 			position({50,70,0}),{
 				new rotation({40,90,M_PI*5/4}),
 				new intake({20,90},{1,1000}),
-				new score({70,100},{2,1500})
+				new score({93,100},{2,1500})
 			}
 		},
 		{
@@ -312,14 +311,22 @@ std::vector<linearmotion> cmdset = {
 			position({14.35,70.8,M_PI}),{
 				new intake({0,100},{1,2000}),
 				new useDistanceSensor({60,100},{LEFT_WALL,LEFT_WALL}),
-				new score({85,100},{1,3000})
+				new score({90,100},{1,3000})
 			}
 		},
 		{
-			position({38.5,120,M_PI}),{
+			position({14.35,70.8,M_PI}),{
+				new intake({0,100},{1,2000}),
+				new useDistanceSensor({60,100},{LEFT_WALL,LEFT_WALL}),
+				new score({0,100},{1,3000})
+			}
+		},
+		{
+			position({39,120,M_PI}),{
 				new coordinatetarget({0,20},std::pair<inches,inches>{8,71}),
 				new rotation({21,80,M_PI/2}),
 				new intake({55,100},{1,4000}),
+				new ejectionenable({40,65}),
 				new rotation({98,100,M_PI*3/4}),
 			}
 		},
@@ -330,12 +337,21 @@ std::vector<linearmotion> cmdset = {
 		{
 			position({12.1,144-12.1,M_PI*3/4}),{
 				new useDistanceSensor({40,120},{LEFT_WALL,FRONT_WALL}),
-				new score({90,100},{1,2000})
+				new score({90,100},{1,2000}),
+				new intake({90,100},{2,3000})
 			}
 		},
 		{
-			position({12.5,115.27,M_PI/3*4}),{
-				new coordinatetarget({20,100},std::pair<inches,inches>{4,108}),
+			position({20,114,M_PI/3*4}),{
+				new coordinatetarget({0,20},std::pair<inches,inches>{144,144}),
+				new rotation({21,89,M_PI*3/2+0.2}),
+				new ejectionenable({35,95}),
+				new coordinatetarget({90,100},std::pair<inches,inches>{4,108}),
+			}
+		},
+		{
+			position({11,108,M_PI/3*4}),{
+				new coordinatetarget({0,100},std::pair<inches,inches>{4,108}),
 				new intake({50,100},{1,2000})
 			}
 		},
@@ -349,11 +365,15 @@ std::vector<linearmotion> cmdset = {
 		{
 			position({69.8,130,M_PI/2}),{
 				new useDistanceSensor({60,100},{FRONT_WALL,FRONT_WALL}),
-				new score({92,100},{2,2000})
+				new score({92,100},{2,2000}),
+				new intake({92,100},{1,2000})
 			}
 		},
 		{
 			position({71.5,120,M_PI/2}),{
+				new coordinatetarget({0,20},std::pair<inches,inches>{69.8,144}),
+				new rotation({21,100,0}),
+				new ejectionenable({50,100})
 			}
 		},
 		{
@@ -373,6 +393,7 @@ std::vector<linearmotion> cmdset = {
 				new coordinatetarget({0,20},std::pair<inches,inches>{144,144}),
 				new coordinatetarget({20,92},std::pair<inches,inches>{96,72}),
 				new rotation({92,100,0}),
+				new ejectionenable({25,65}),
 				new intake({55,100},{1,2000})
 			}
 		},
@@ -396,6 +417,7 @@ std::vector<linearmotion> cmdset = {
 		},
 		{
 			position({112,24,M_PI/4}),{
+				new ejectionenable({0,40}),
 				new coordinatetarget({0,90},std::pair<inches,inches>{112,24}),
 				new rotation({90,100,M_PI*1/4}),
 				new intake({55,100},{1,2000})
