@@ -322,12 +322,12 @@ namespace STL_lib{
       coordinate return_walldist(position odomEpos,WALL_TGT Esensedwall){
         coordinate tmp = std::pair<inches,inches>{returndistance(),inches(0)}; //get distance to wall
         tmp = tmp.transform_matrix(orientation); //rotate to bot-centric refrence frame
-        pros::lcd::print(4,"LOCAL X %f", tmp.x);
-        pros::lcd::print(5,"LOCAL Y %f", tmp.y);
+  //      pros::lcd::print(4,"LOCAL X %f", tmp.x);
+    //    pros::lcd::print(5,"LOCAL Y %f", tmp.y);
         tmp += COR_offset; //adjust for physical offset of sensor from center of rotation
     //    pros::lcd::print(,"COR Local X %f", tmp.x);
-        pros::lcd::print(6,"COR Local X %f", tmp.x);
-        pros::lcd::print(7,"COR Local Y %f", tmp.y);
+      //  pros::lcd::print(6,"COR Local X %f", tmp.x);
+        //pros::lcd::print(7,"COR Local Y %f", tmp.y);
         tmp = tmp.transform_matrix(-((odomEpos).angle-M_PI/2)); //rotate to global refrence frame
       //  return tmp;
         switch(Esensedwall){
@@ -338,6 +338,21 @@ namespace STL_lib{
           case FRONT_WALL: {return std::pair<inches,inches>{0,144-fabs(tmp.y)};}
         }
       }
+
+      //VERIFIED
+            coordinate return_FV(position odomEpos,WALL_TGT Esensedwall){
+              coordinate tmp = std::pair<inches,inches>{returndistance(),inches(0)}; //get distance to wall
+              tmp = tmp.transform_matrix(orientation); //rotate to bot-centric refrence frame
+          //    pros::lcd::print(4,"LOCAL X %f", tmp.x);
+            //  pros::lcd::print(5,"LOCAL Y %f", tmp.y);
+              tmp += COR_offset; //adjust for physical offset of sensor from center of rotation
+          //    pros::lcd::print(,"COR Local X %f", tmp.x);
+            //  pros::lcd::print(6,"COR Local X %f", tmp.x);
+            //  pros::lcd::print(7,"COR Local Y %f", tmp.y);
+              tmp = tmp.transform_matrix(-((odomEpos).angle-M_PI/2)); //rotate to global refrence frame
+              return tmp;
+            }
+
 
       position Pcorrect(position odomEpos, WALL_TGT Esensedwall){
           //while we could math out which wall we use via old coords, the whole point of this is to not use our old coords
@@ -393,48 +408,35 @@ namespace STL_lib{
     struct DSensorComputer{
       DSensor LC;
       DSensor RC;
-      std::stack<coordinate> pastvalues = {};
-
       DSensorComputer(DSensor L, DSensor R):LC(L),RC(R){}
 
       position updateposition(command currentcommand, position read){
         if(std::get<0>(currentcommand.DSensor_status) == true){
-          coordinate E = LC.return_walldist(read,std::get<1>(currentcommand.DSensor_status));
           if(std::get<1>(currentcommand.DSensor_status) == std::get<2>(currentcommand.DSensor_status)){
-            if (E.x == 0){
-              E = return_avg(E);
-              read.y = E.y;
-            } else {read.x = E.x;}
+            coordinate L = LC.return_FV(read,std::get<1>(currentcommand.DSensor_status));
+            coordinate R = RC.return_walldist(read,std::get<2>(currentcommand.DSensor_status));
+            inches LD = L.get_length();
+            inches RD = R.get_length();
+            inches DBTW = sqrt(LD*LD+RD*RD);
+            inches REALD = (LD*RD)/DBTW; //solve for real height, we can use this for angle too but not too trustworthy
+            switch(std::get<1>(currentcommand.DSensor_status)){
+              //I think the magnitudes are already scaled so that I can just add but not sure so we have the fabs in there to ensure we are within range
+              case LEFT_WALL: {return std::pair<inches,inches>{fabs(REALD),0};} //left wall distance is distance relative to x = 0
+              case RIGHT_WALL: {return std::pair<inches,inches>{144-fabs(REALD),0};} //right wall distance is distance relative to x = 144, where we are between 0 and 144
+              case BACK_WALL: {return std::pair<inches,inches>{0,fabs(REALD)};} //back wall is distance relative to y = 0;
+              case FRONT_WALL: {return std::pair<inches,inches>{0,144-fabs(REALD)};}
+            }
           } else {
+            coordinate E = LC.return_walldist(read,std::get<1>(currentcommand.DSensor_status));
             E += RC.return_walldist(read,std::get<2>(currentcommand.DSensor_status));
-            E = return_avg(E);
             read.x = E.x;
             read.y = E.y;
           }
+        }
         return read;
       }
-    }
 
-      coordinate return_avg(coordinate NV){
-        pastvalues.push(NV);
-        if(pastvalues.size() > 4){
-          pastvalues.pop();
-        }
-        coordinate RV = std::pair<inches,inches>{0,0};
-        //low effort hack solution for iterating through a stack. Doesnt matter as we don't care about the memory location of the values anyways
-        std::stack<coordinate> tmp = {};
-        while(!pastvalues.empty()){
-          RV+=pastvalues.top();
-          tmp.push(pastvalues.top());
-          pastvalues.pop();
-        }
-        pastvalues = tmp;
-        RV.x = RV.x/pastvalues.size();
-        RV.y = RV.y/pastvalues.size();
-      }
     };
-
-
     //updates command each cycle based on new status
     struct linearmotion{
         position vector;

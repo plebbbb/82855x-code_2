@@ -241,6 +241,7 @@ std::vector<linearmotion> cmdset = {
 	},
 };
 //*/
+/* //121 path, WIP
 std::vector<linearmotion> cmdset = {
 
 	//intake goal 1 balls
@@ -530,14 +531,286 @@ std::vector<linearmotion> cmdset = {
 				new intake({0,50},{-1,5000})
 			}
 		},
+};*/
+//114 path
+std::vector<linearmotion> cmdset = {
+
+		{
+				position({36, 20, M_PI/2}), {
+						new intake({0,100},{1,2000}),
+						new coordinatetarget({80,100},std::pair<inches,inches>{0,0})
+				}
+		},
+
+		//score all at goal 1, intake bottom wall left ball
+		{
+			position({12.1,12.1,M_PI*5/4}),{
+				new coordinatetarget({0,50},std::pair<inches,inches>{0,0}),
+				new rotation({51,100,M_PI*5/4}),
+				new useDistanceSensor({40,120},{BACK_WALL,LEFT_WALL}),
+				new score({95,100},{1,2000})
+			}
+		},
+
+		{
+			position({24,24,M_PI*5/4}),{
+				new intake({0,20},{-1,2000}),
+				new coordinatetarget({21,100},std::pair<inches,inches>{4,36})
+			}
+		},
+		{
+		position({15,36,M_PI*3/4}),{
+			new intake({50,1000},{1,2000}),
+			new coordinatetarget({0,100},std::pair<inches,inches>{4,36})
+		}
+	},
+	{
+		position({70,13.5,M_PI}),{
+			new coordinatetarget({0,100},std::pair<inches,inches>{70,4}),
+			new score({95,100},{2,3000})
+		}
+	},
+	{
+		position({72,24,M_PI*3/2}),{
+			new coordinatetarget({0,50},std::pair<inches,inches>{72,4}),
+			new rotation({51,100,M_PI/2})
+		}
+	},
+	{
+		position({72,59.2,M_PI/2}),{
+			new intake({0,100},{2,6000}),
+		}
+	},
+	{
+		position({72,59.2,M_PI/2}),{
+			new score({0,100},{1,2000}),
+		}
+	},
+	{
+		position({72,40,M_PI/2}),{
+			new rotation({0,50,M_PI/2-0.2}),
+			new intake({30,100},{1,1000}),
+			new ejectionenable({20,100}),
+		}
+	},
+
+		//intake middle goal left ball
+		{
+			position({48,71,M_PI*3/4}),{
+				new ejectionenable({0,10}),
+				new coordinatetarget({0,90},std::pair<inches,inches>{48,72}),
+				new intake({60,100},{1,2000}),
+				new rotation({90,100,M_PI})
+			}
+		},
+
+		//intake left wall middle ball, reach goal 4
+		{
+			position({15.1,72.8,M_PI}),{
+				new useDistanceSensor({60,100},{LEFT_WALL,LEFT_WALL}),
+				new intake({0,100},{1,2000}),
+			}
+		},
+
+		//score goal 4, intake its blue ball
+		{
+			position({15.5,72.8,M_PI}),{
+				new useDistanceSensor({60,100},{LEFT_WALL,LEFT_WALL}),
+		//		new intake({0,100},{1,2000}),
+				new score({0,100},{2,3000})
+			}
+		},
+
+		//exit goal 4, eject blue ball, prepare to intake top wall left ball
+		{
+			position({35,90,M_PI}),{
+				new intake({0,20},{-1,1000}),
+				new coordinatetarget({0,20},std::pair<inches,inches>{8,71}),
+				new rotation({21,80,M_PI/2}),
+			//	new ejectionenable({60,100}),
+				new rotation({90,100,M_PI/2})
+			}
+		},
+
+		//intake top wall left ball
+		{
+			position({35,120,M_PI/2}),{
+				new ejectionenable({0,10}),
+				new intake({0,100},{1,4000}),
+				new rotation({90,100,M_PI*3/4}),
+			}
+		},
+
+		//prepare to score goal 5
+		{
+			position({34,110,M_PI*3/4}),{
+			}
+		},
+
+		//score goal 5, intake one blue ball
+		{
+			position({12.1,144-12.1,M_PI*3/4}),{
+				new useDistanceSensor({40,120},{LEFT_WALL,FRONT_WALL}),
+				new score({95,100},{1,2000}),
+			//	new intake({90,100},{1,3000})
+			}
+		},
+
+		//exit goal 5, prepare to intake left wall top ball, eject goal 5 blue balls
+		{
+			position({20,114,M_PI/3*4}),{
+				new intake({0,20},{-1,2000}),
+				new coordinatetarget({0,20},std::pair<inches,inches>{144,144}),
+				new rotation({21,89,M_PI/2}),
+			//	new ejectionenable({45,100}),
+				new coordinatetarget({90,100},std::pair<inches,inches>{4,108}),
+			}
+		},
+
+		//intake left wall top ball
+		{
+			position({13.5,108,M_PI/3*4}),{
+			//	new ejectionenable({0,10}),
+				new coordinatetarget({0,100},std::pair<inches,inches>{4,108}),
+				new intake({50,100},{1,2000})
+			}
+		},
+
+		//prepare for goal 6, intake middle goal top ball
+		{
+			position({71,96,M_PI*3/4}),{
+				new coordinatetarget({20,90},std::pair<inches,inches>{72,96}),
+				new rotation({90,100,M_PI/2}),
+				new intake({60,100},{1,2000})
+			}
+		},
+
+		//move to goal 6
+		{
+			position({69.8,129.8,M_PI/2}),{
+				new useDistanceSensor({60,100},{FRONT_WALL,FRONT_WALL}),
+			}
+		},
+
+		//score on goal 6, intake blue ball
+		{
+			position({69.8,128.9,M_PI/2}),{
+				new useDistanceSensor({0,100},{FRONT_WALL,FRONT_WALL}),
+				new score({0,100},{2,2000}),
+			//	new intake({0,100},{1,2000})
+			}
+		},
+
+		//prepare for top wall right ball, eject blue ball
+		{
+			position({71.5,120,M_PI/2}),{
+				new coordinatetarget({0,20},std::pair<inches,inches>{69.8,144}),
+				new rotation({21,100,0}),
+			//	new ejectionenable({50,100})
+			}
+		},
+
+		//intake top wall right ball, prepare for goal 7
+		{
+			position({120,119.5,0}),{
+				//new ejectionenable({0,10}), //here to toggle ejectionenable of last operation off in case 100 is not hit, preventing the toggling of the eject bool to false
+				new rotation({95,100,M_PI/4}),
+				new intake({25,95},{1,3000})
+			}
+		},
+
+		//move to and score on goal 7
+		{
+			position({144-12.1,144-12.1,M_PI/4}),{
+				new useDistanceSensor({40,120},{FRONT_WALL,RIGHT_WALL}),
+				new score({92,100},{1,2000})
+			}
+		},
+
+		//exist goal 7, prepare for goal 8, intake middle goal right ball
+		{
+			position({96,72.8,M_PI/4}),{
+				new coordinatetarget({0,20},std::pair<inches,inches>{144,144}),
+				new coordinatetarget({20,92},std::pair<inches,inches>{96,72}),
+				new rotation({92,100,0}),
+				new ejectionenable({25,65}),
+				new intake({55,100},{1,2000})
+			}
+		},
+
+		//move to goal 8, intake right wall middle  ball
+		{
+			position({129.5,73.2,0}),{
+				new intake({0,100},{1,3000}),
+				new useDistanceSensor({60,100},{RIGHT_WALL,RIGHT_WALL}),
+			}
+		},
+
+		//score both balls, intake blue ball
+		{
+			position({129.5,73.2,0}),{
+				new useDistanceSensor({0,100},{RIGHT_WALL,RIGHT_WALL}),
+				new score({0,100},{2,4000}),
+				new intake({0,100},{1,1000})
+			}
+		},
+
+		//exit goal 8, prepare to intake bottom wall right ball
+		{
+			position({115,72.8,0}),{
+				new intake({0,60},{-1,2000})
+			}
+		},
+
+		//intake bottom wall right ball, eject goal 8 blue ball, prepare for intaking right wall bottom ball
+		{
+			position({112,24,M_PI/4}),{
+				new ejectionenable({0,40}),
+				new coordinatetarget({0,90},std::pair<inches,inches>{112,24}),
+				new rotation({90,100,M_PI*1/4}),
+				new intake({55,100},{1,2000})
+			}
+		},
+
+		//intake right wall botttom ball
+		{
+			position({131.5,38.6,M_PI/4}),{
+				new coordinatetarget({0,90},std::pair<inches,inches>{140,38.6}),
+				new intake({55,100},{1,2000})
+			}
+		},
+
+		//move to goal 9, score both balls and intake one blue ball
+		{
+			position({144-12.3,12.3,M_PI*7/4}),{
+				new useDistanceSensor({40,120},{RIGHT_WALL,BACK_WALL}),
+				new score({92,100},{2,2000}),
+				new intake({92,100},{1,1000})
+			}
+		},
+
+		//intake last goal 9 blue ball
+		{
+			position({144-12.3,12.3,M_PI*7/4}),{
+				new useDistanceSensor({0,120},{RIGHT_WALL,BACK_WALL}),
+				new intake({0,100},{1,3000})
+			}
+		},
+
+		//exit goal 9
+		{
+			position({120,24,M_PI*7/4}),{
+				new intake({0,50},{-1,5000})
+			}
+		},
 };
 //DoubleIMU Tes(3,15);
 void autonomous() {
 	delay(100);
 	//input.set_led_pwm(80);
 	while(LIM.is_calibrating()){pros::delay(10);}
-	Ejector.move_relative(210,200); //deploy hood
 	delay(100);
+	Ejector.move_relative(210,200); //deploy hood
   locationC = std::tuple<inches,inches,SMART_radians>{36,0,M_PI/2}; //REMEMBER: LOCATIONC IS IN A STATIC ADDRESS
   	for(int i = 0; i < cmdset.size(); i++){
   		while(true){
