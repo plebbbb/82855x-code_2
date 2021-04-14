@@ -303,14 +303,14 @@ std::vector<linearmotion> cmdset = {
 
 		//enter middle goal, intake blue ball
 		{
-			position({62.05,69.8,0}),{
-				new intake({0,100},{1,6000}),
+			position({60.9,69.8,0}),{
+				new intake({80,100},{1,6000}),
 			}
 		},
 
 		//score red ball at middle goal
 		{
-			position({62.05,69.8,0}),{
+			position({60.9,69.8,0}),{
 				new score({0,100},{1,3000})
 			}
 		},
@@ -349,7 +349,7 @@ std::vector<linearmotion> cmdset = {
 
 		//exit goal 4, eject blue ball, prepare to intake top wall left ball
 		{
-			position({37.5,90,M_PI}),{
+			position({36,90,M_PI}),{
 				new intake({0,20},{-1,1000}),
 				new coordinatetarget({0,20},std::pair<inches,inches>{8,71}),
 				new rotation({21,80,M_PI/2}),
@@ -360,7 +360,7 @@ std::vector<linearmotion> cmdset = {
 
 		//intake top wall left ball
 		{
-			position({37.5,120,M_PI/2}),{
+			position({36,120,M_PI/2}),{
 				new ejectionenable({0,10}),
 				new intake({0,100},{1,4000}),
 				new rotation({90,100,M_PI*3/4}),
@@ -385,6 +385,7 @@ std::vector<linearmotion> cmdset = {
 		//exit goal 5, prepare to intake left wall top ball, eject goal 5 blue balls
 		{
 			position({20,114,M_PI/3*4}),{
+				new intake({0,20},{-1,2000}),
 				new coordinatetarget({0,20},std::pair<inches,inches>{144,144}),
 				new rotation({21,89,M_PI/2}),
 				new ejectionenable({45,100}),
@@ -414,6 +415,7 @@ std::vector<linearmotion> cmdset = {
 		{
 			position({69.8,129.8,M_PI/2}),{
 				new useDistanceSensor({60,100},{FRONT_WALL,FRONT_WALL}),
+				new score({90,100},{1,1000})
 			}
 		},
 
@@ -421,7 +423,7 @@ std::vector<linearmotion> cmdset = {
 		{
 			position({69.8,129.8,M_PI/2}),{
 				new useDistanceSensor({0,100},{FRONT_WALL,FRONT_WALL}),
-				new score({0,100},{2,2000}),
+				new score({0,100},{1,2000}),
 				new intake({0,100},{1,2000})
 			}
 		},
@@ -437,7 +439,7 @@ std::vector<linearmotion> cmdset = {
 
 		//intake top wall right ball, prepare for goal 7
 		{
-			position({108,126.3,0}),{
+			position({108,120,0}),{
 				new ejectionenable({0,10}), //here to toggle ejectionenable of last operation off in case 100 is not hit, preventing the toggling of the eject bool to false
 				new rotation({95,100,M_PI/4}),
 				new intake({55,100},{1,3000})
@@ -532,18 +534,9 @@ std::vector<linearmotion> cmdset = {
 //DoubleIMU Tes(3,15);
 void autonomous() {
 	delay(100);
-	input.set_led_pwm(80);
-
-//	while(Tes.is_calibrating()){pros::delay(10);}
+	//input.set_led_pwm(80);
 	while(LIM.is_calibrating()){pros::delay(10);}
-//	Shooter.move_relative(150,200);
-//	Lintake.move_relative(300,200); //these deploys are not implemented due to the vibrations screwing with the inertial sensor calibration
-//	Rintake.move_relative(300,200);
-	//im.reset();
-	/*while(im.is_calibrating()){
-		locationC = Odom.cycle(locationC); //odom activated to prevent deploy induced tracking issues
-		delay(10);
-	}*/
+	Ejector.move_relative(210,200); //deploy hood
 	delay(100);
   locationC = std::tuple<inches,inches,SMART_radians>{36,0,M_PI/2}; //REMEMBER: LOCATIONC IS IN A STATIC ADDRESS
   	for(int i = 0; i < cmdset.size(); i++){
