@@ -251,8 +251,8 @@ std::vector<linearmotion> cmdset = {
 		{
 			position({12.1,12.1,M_PI*5/4}),{
 				new useDistanceSensor({40,120},{BACK_WALL,LEFT_WALL}),
-				new intake({95,100},{1,5000}),
-				new score({95,100},{2,2000})
+				new intake({90,100},{1,5000}),
+				new score({96,100},{2,2000})
 			}
 		},
 		{
@@ -287,12 +287,12 @@ std::vector<linearmotion> cmdset = {
 			}
 		},
 		{
-			position({62.5,69.8,0}),{
+			position({62.05,69.8,0}),{
 				new intake({0,100},{1,6000}),
 			}
 		},
 		{
-			position({62.5,69.8,0}),{
+			position({62.05,69.8,0}),{
 				new score({0,100},{1,3000})
 			}
 		},
@@ -309,25 +309,31 @@ std::vector<linearmotion> cmdset = {
 		},
 		{
 			position({14.35,70.8,M_PI}),{
-				new intake({0,100},{1,2000}),
 				new useDistanceSensor({60,100},{LEFT_WALL,LEFT_WALL}),
-				new score({90,100},{1,3000})
+				new intake({0,100},{1,2000}),
 			}
 		},
 		{
 			position({14.35,70.8,M_PI}),{
-				new intake({0,100},{1,2000}),
 				new useDistanceSensor({60,100},{LEFT_WALL,LEFT_WALL}),
+				new intake({0,100},{1,2000}),
 				new score({0,100},{1,3000})
 			}
 		},
 		{
-			position({39,120,M_PI}),{
+			position({37.5,90,M_PI}),{
+				new intake({0,20},{-1,1000}),
 				new coordinatetarget({0,20},std::pair<inches,inches>{8,71}),
 				new rotation({21,80,M_PI/2}),
-				new intake({55,100},{1,4000}),
-				new ejectionenable({40,65}),
-				new rotation({98,100,M_PI*3/4}),
+				new ejectionenable({60,100}),
+				new rotation({90,100,M_PI/2})
+			}
+		},
+		{
+			position({37.5,120,M_PI/2}),{
+				new ejectionenable({0,10}),
+				new intake({0,100},{1,4000}),
+				new rotation({90,100,M_PI*3/4}),
 			}
 		},
 		{
@@ -344,13 +350,14 @@ std::vector<linearmotion> cmdset = {
 		{
 			position({20,114,M_PI/3*4}),{
 				new coordinatetarget({0,20},std::pair<inches,inches>{144,144}),
-				new rotation({21,89,M_PI*3/2+0.2}),
-				new ejectionenable({35,95}),
+				new rotation({21,89,M_PI/2}),
+				new ejectionenable({35,100}),
 				new coordinatetarget({90,100},std::pair<inches,inches>{4,108}),
 			}
 		},
 		{
-			position({11,108,M_PI/3*4}),{
+			position({13.5,108,M_PI/3*4}),{
+				new ejectionenable({0,10}),
 				new coordinatetarget({0,100},std::pair<inches,inches>{4,108}),
 				new intake({50,100},{1,2000})
 			}
@@ -363,10 +370,15 @@ std::vector<linearmotion> cmdset = {
 			}
 		},
 		{
-			position({69.8,130,M_PI/2}),{
+			position({69.8,129.8,M_PI/2}),{
 				new useDistanceSensor({60,100},{FRONT_WALL,FRONT_WALL}),
-				new score({92,100},{2,2000}),
-				new intake({92,100},{1,2000})
+			}
+		},
+		{
+			position({69.8,129.8,M_PI/2}),{
+				new useDistanceSensor({0,100},{FRONT_WALL,FRONT_WALL}),
+				new score({0,100},{2,2000}),
+				new intake({0,100},{1,2000})
 			}
 		},
 		{
@@ -378,6 +390,7 @@ std::vector<linearmotion> cmdset = {
 		},
 		{
 			position({108,126.3,0}),{
+				new ejectionenable({0,10}), //here to toggle ejectionenable of last operation off in case 100 is not hit, preventing the toggling of the eject bool to false
 				new rotation({95,100,M_PI/4}),
 				new intake({55,100},{1,3000})
 			}
@@ -508,9 +521,9 @@ void autonomous() {
   		//	autonbase.base.move_vector_RAW(std::pair<inches,inches>{0,0},0,0); //uncomment to disable movement
 		//		ttt.update_state(currentcommand.allow_ejection); //initial ball situation detection and auto sorting behavior
 				ballindexcontroller2();
-				hack_poop(currentcommand);
 				currentcommand = inta.refresh(currentcommand); //overwrite lift sorting outputs for commands
   			currentcommand = scra.refresh(currentcommand); //set intake output
+				hack_poop(currentcommand); //WARNING: POOPING CANNOT BE DONE AT THE SAME TIME AS SHOOTING. THIS IS A CODE ISSUE
 		//		ttt.determinetargetstates(); //react to lift and intake output power decisions made in above lines
 		//		ttt.intakeballupdate(); //identify intake ball status after accounting for intake power decisions
   			lcd::print(5,"X: %f",locationC.x);
