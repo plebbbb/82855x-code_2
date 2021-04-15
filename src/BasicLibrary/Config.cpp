@@ -43,10 +43,15 @@ OdometryWheels Owheels{
   DeadWheel({7,'C','D'},true,inches(2.7225),4.24502)  //BACK
 };
 
+
+//NOTE: THESE OFFSETS ARE WRONG BUT WE ALREADY HAVE THE BOT AUTON SET UP FOR THESE VALUES
+//THE CORRECT VALUES ARE: X: 7.75, Y: 6.25
+//THIS ONLY AFFECTS CORNER GOAL DISTANCE CALCULATIONS
 DSensorComputer DSodom(
 	DSensor(4, M_PI*5/4, std::pair<inches,inches>{-8,6}), //left corner distance sensor
 	DSensor(17, M_PI*7/4, std::pair<inches,inches>{8,6})   //right corner distance sensor
 );
+//BTW, I HAVE NO IDEA HOW THE ANGLE MEASUREMENTS ARE CALCULATED. FIGURE OUT BY EXPERIMENTATION
 
 
 OdometryComputer Odom = OdometryComputer(Owheels);

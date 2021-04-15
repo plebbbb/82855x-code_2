@@ -552,7 +552,13 @@ std::vector<linearmotion> cmdset = {
 				new coordinatetarget({0,50},std::pair<inches,inches>{0,0}),
 				new rotation({51,100,M_PI*5/4}),
 				new useDistanceSensor({40,120},{BACK_WALL,LEFT_WALL}),
-				new score({90,100},{1,1000})
+		//		new score({92,100},{1,1000})
+			}
+		},
+		{
+			position({12.1,12.1,M_PI*5/4}),{
+				new useDistanceSensor({0,120},{BACK_WALL,LEFT_WALL}),
+				new score({0,100},{1,1000})
 			}
 		},
 		{
@@ -570,23 +576,31 @@ std::vector<linearmotion> cmdset = {
 	{
 		position({70,13.7,M_PI}),{
 			new coordinatetarget({0,100},std::pair<inches,inches>{70,4}),
-			new score({95,100},{2,3000})
+		}
+	},
+	{
+		position({70,13.7,M_PI*3/2}),{
+			new score({0,100},{2,3000}),
+			new intake({0,100},{1,2000})
 		}
 	},
 	{
 		position({72,24,M_PI*3/2}),{
 			new coordinatetarget({0,50},std::pair<inches,inches>{72,4}),
-			new rotation({51,100,M_PI/2})
+			new rotation({51,100,M_PI/2-0.1}),
+			new ejectionenable({70,100})
 		}
 	},
 	{
 		position({72,59.2,M_PI/2}),{
 			new intake({0,100},{2,6000}),
+			new ejectionenable({0,15})
 		}
 	},
 	{
 		position({72,59.2,M_PI/2}),{
 			new score({0,100},{1,2000}),
+			new intake({0,100},{1,2000})
 		}
 	},
 	{
@@ -614,7 +628,7 @@ std::vector<linearmotion> cmdset = {
 
 		//intake left wall middle ball, reach goal 4
 		{
-			position({16.3,71.05,M_PI}),{
+			position({16.5,71.05,M_PI}),{
 				new useDistanceSensor({80,100},{LEFT_WALL,LEFT_WALL}),
 				new intake({0,100},{1,2000}),
 			}
@@ -622,7 +636,7 @@ std::vector<linearmotion> cmdset = {
 
 		//score goal 4, intake its blue ball
 		{
-			position({16.3,71.05,M_PI}),{
+			position({16.5,71.05,M_PI}),{
 				new useDistanceSensor({0,100},{LEFT_WALL,LEFT_WALL}),
 		//		new intake({0,100},{1,2000}),
 				new score({0,100},{2,3000})
@@ -660,7 +674,7 @@ std::vector<linearmotion> cmdset = {
 			position({12.1,144-12.1,M_PI*3/4}),{
 				new useDistanceSensor({40,120},{LEFT_WALL,FRONT_WALL}),
 				new score({95,100},{1,2000}),
-			//	new intake({90,100},{1,3000})
+				new intake({90,100},{1,3000})
 			}
 		},
 
@@ -668,15 +682,16 @@ std::vector<linearmotion> cmdset = {
 		{
 			position({20,114,M_PI/3*4}),{
 				new intake({0,20},{-1,2000}),
-				new coordinatetarget({0,50},std::pair<inches,inches>{144,144}),
-				new rotation({51,100,M_PI})
+				new coordinatetarget({0,50},std::pair<inches,inches>{4,140}),
+				new rotation({51,100,M_PI}),
+				new ejectionenable({60,100})
 			}
 		},
 
 		//intake left wall top ball
 		{
 			position({13.5,112,M_PI}),{
-			//	new ejectionenable({0,10}),
+			new ejectionenable({0,50}),
 				new coordinatetarget({0,100},std::pair<inches,inches>{4,108}),
 				new intake({50,100},{1,2000})
 			}
@@ -693,14 +708,14 @@ std::vector<linearmotion> cmdset = {
 
 		//move to goal 6
 		{
-			position({69.5,131.4,M_PI/2}),{
+			position({69.5,131.7,M_PI/2}),{
 				new useDistanceSensor({80,100},{FRONT_WALL,FRONT_WALL}),
 			}
 		},
 
 		//score on goal 6, intake blue balls
 		{
-			position({69.5,131.4,M_PI/2}),{
+			position({69.5,131.7,M_PI/2}),{
 				new useDistanceSensor({0,100},{FRONT_WALL,FRONT_WALL}),
 				new score({0,100},{2,2000}),
 			//	new intake({0,100},{1,2000})
@@ -718,7 +733,7 @@ std::vector<linearmotion> cmdset = {
 
 		//intake top wall right ball, prepare for goal 7
 		{
-			position({108,116,0}),{
+			position({108,120,0}),{
 				//new ejectionenable({0,10}), //here to toggle ejectionenable of last operation off in case 100 is not hit, preventing the toggling of the eject bool to false
 				new rotation({95,100,M_PI/4}),
 				new intake({25,95},{1,3000})
@@ -735,18 +750,19 @@ std::vector<linearmotion> cmdset = {
 
 		//exist goal 7, prepare for goal 8, intake middle goal right ball
 		{
-			position({97.25,73.2,M_PI/4}),{
+			position({100,73.2,M_PI/4}),{
 				new coordinatetarget({0,20},std::pair<inches,inches>{144,144}),
-				new coordinatetarget({20,90},std::pair<inches,inches>{96,72.8}),
+				new coordinatetarget({20,90},std::pair<inches,inches>{98,72.8}),
 				new ejectionenable({25,65}),
-				new intake({55,100},{1,2000})
+				new intake({55,100},{1,2000}),
+				new rotation({95,100,0})
 			}
 		},
 
 //NEEDS ADJUSTMENT: GOAL 8
 		//move to goal 8, intake right wall middle  ball
 		{
-			position({131.5,73.2,0}),{
+			position({131.7,73.2,0}),{
 				new intake({0,100},{1,3000}),
 				new useDistanceSensor({80,100},{RIGHT_WALL,RIGHT_WALL}),
 			}
@@ -754,7 +770,7 @@ std::vector<linearmotion> cmdset = {
 
 		//score both balls, intake blue ball
 		{
-			position({131.5,73.2,0}),{
+			position({131.7,73.2,0}),{
 				new useDistanceSensor({0,100},{RIGHT_WALL,RIGHT_WALL}),
 				new score({0,100},{2,4000}),
 				new intake({0,100},{1,1000})
@@ -811,7 +827,7 @@ std::vector<linearmotion> cmdset = {
 		},
 };
 
-radians CNSTOFFFAC = 0;
+radians CNSTOFFFAC = 0; //distance sensor calculated IMU drift shift. Added to IMU calculated rotations during odom calcs
 //DoubleIMU Tes(3,15);
 void autonomous() {
 	delay(100);
@@ -863,13 +879,13 @@ void autonomous() {
   			autonbase.updatebase(currentcommand, locationC);//update base motor power outputs for current position
   		//	autonbase.base.move_vector_RAW(std::pair<inches,inches>{0,0},0,0); //uncomment to disable movement
 		//		ttt.update_state(currentcommand.allow_ejection); //initial ball situation detection and auto sorting behavior
-				ballindexcontroller2();
+				ballindexcontroller2(); //old quton lift code. Doesnt store balls in middle properly
 				currentcommand = inta.refresh(currentcommand); //overwrite lift sorting outputs for commands
   			currentcommand = scra.refresh(currentcommand); //set intake output
 				hack_poop(currentcommand); //WARNING: POOPING CANNOT BE DONE AT THE SAME TIME AS SHOOTING. THIS IS A CODE ISSUE
 		//		ttt.determinetargetstates(); //react to lift and intake output power decisions made in above lines
 		//		ttt.intakeballupdate(); //identify intake ball status after accounting for intake power decisions
-		//		lcd::print(0,"COF: %f",CNSTOFFFAC);
+		//		lcd::print(0,"COF: %f",CNSTOFFFAC); //print distance sensor calculated IMU drift
 		lcd::print(2,"DSENSOR MODE: %d", currentcommand.allow_ejection);
 				lcd::print(5,"X: %f",locationC.x);
   			lcd::print(6,"Y: %f",locationC.y);

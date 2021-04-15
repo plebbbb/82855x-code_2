@@ -420,7 +420,7 @@ namespace STL_lib{
             inches RD = RC.returndistance() + 10.96016;
             inches DBTW = sqrt(LD*LD+RD*RD); //calculate length of wall being measured
             radians AOF = atan2(LD,RD) - M_PI/4; //calculate effective angle offset from perpendicular
-            inches REALD = (LD*RD)/DBTW - 1.75*cos(AOF); //solve for real height, we can use this for angle too but not too trustworthy
+            inches REALD = (LD*RD)/DBTW - 1.5*cos(AOF); //solve for real height, we can use this for angle too but not too trustworthy
             pros::lcd::print(1,"Real Dist:%f",REALD);
             switch(std::get<1>(currentcommand.DSensor_status)){
               //I think the magnitudes are already scaled so that I can just add but not sure so we have the fabs in there to ensure we are within range
