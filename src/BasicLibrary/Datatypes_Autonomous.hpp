@@ -416,11 +416,12 @@ namespace STL_lib{
           if(std::get<1>(currentcommand.DSensor_status) == std::get<2>(currentcommand.DSensor_status)){
             //we are effectively calculating a triangle with the points being the intersection between the distance sensors, and their wall contact points
             //we can calculate the height of this triangle.
-            inches LD = LC.returndistance() + 10.96; //distance btwn sensors aprox 15.5in. Angle difference is 90 deg. Internal triangle has lengths of 10.96, which must be added to each distance reading
-            inches RD = RC.returndistance() + 10.96;
+            inches LD = LC.returndistance() + 10.96016; //distance btwn sensors aprox 15.5in. Angle difference is 90 deg. Internal triangle has lengths of 10.96, which must be added to each distance reading
+            inches RD = RC.returndistance() + 10.96016;
             inches DBTW = sqrt(LD*LD+RD*RD); //calculate length of wall being measured
             radians AOF = atan2(LD,RD) - M_PI/4; //calculate effective angle offset from perpendicular
             inches REALD = (LD*RD)/DBTW - 1.75*cos(AOF); //solve for real height, we can use this for angle too but not too trustworthy
+            pros::lcd::print(1,"Real Dist:%f",REALD);
             switch(std::get<1>(currentcommand.DSensor_status)){
               //I think the magnitudes are already scaled so that I can just add but not sure so we have the fabs in there to ensure we are within range
               case LEFT_WALL: {read->x = fabs(REALD); return (AOF+M_PI)-angle;}

@@ -23,10 +23,13 @@ std::uint32_t now = pros::millis();
 				}
 	}
 
+int counter = 0;
 	void hack_poop(command a){
 		if (a.allow_ejection == true) {
-			Shooter.move_velocity(-200);
-			Ejector.move_velocity(-200);
+			if (counter > 0) {Shooter.move_velocity(-200);
+				Ejector.move_velocity(-200);
+			}
+			else Ejector.move_velocity(100);
 		}
 	}
 
@@ -537,7 +540,8 @@ std::vector<linearmotion> cmdset = {
 
 		{
 				position({36, 20, M_PI/2}), {
-						new intake({0,100},{1,2000}),
+						new ejectionenable({5,30}),
+						new intake({15,100},{1,2000}),
 						new coordinatetarget({80,100},std::pair<inches,inches>{0,0})
 				}
 		},
@@ -548,10 +552,9 @@ std::vector<linearmotion> cmdset = {
 				new coordinatetarget({0,50},std::pair<inches,inches>{0,0}),
 				new rotation({51,100,M_PI*5/4}),
 				new useDistanceSensor({40,120},{BACK_WALL,LEFT_WALL}),
-				new score({95,100},{1,2000})
+				new score({90,100},{1,1000})
 			}
 		},
-
 		{
 			position({24,24,M_PI*5/4}),{
 				new intake({0,20},{-1,2000}),
@@ -565,7 +568,7 @@ std::vector<linearmotion> cmdset = {
 		}
 	},
 	{
-		position({70,13.5,M_PI}),{
+		position({70,13.7,M_PI}),{
 			new coordinatetarget({0,100},std::pair<inches,inches>{70,4}),
 			new score({95,100},{2,3000})
 		}
@@ -587,35 +590,40 @@ std::vector<linearmotion> cmdset = {
 		}
 	},
 	{
-		position({72,40,M_PI/2}),{
+		position({71,40,M_PI/2}),{
 			new rotation({0,50,M_PI/2-0.2}),
 			new intake({30,100},{1,1000}),
-			new ejectionenable({20,100}),
+			new ejectionenable({0,100}),
 		}
 	},
 
+	//intake middle goal left ball
+	{
+		position({48,48,M_PI/2-0.2}),{
+			new ejectionenable({0,90}),
+		}
+	},
 		//intake middle goal left ball
 		{
 			position({48,71,M_PI*3/4}),{
-				new ejectionenable({0,10}),
-				new coordinatetarget({0,90},std::pair<inches,inches>{48,72}),
-				new intake({60,100},{1,2000}),
-				new rotation({90,100,M_PI})
+				new coordinatetarget({0,80},std::pair<inches,inches>{48,72}),
+				new intake({40,100},{1,2000}),
+				new rotation({80,100,M_PI})
 			}
 		},
 
 		//intake left wall middle ball, reach goal 4
 		{
-			position({15.1,72.8,M_PI}),{
-				new useDistanceSensor({60,100},{LEFT_WALL,LEFT_WALL}),
+			position({16.3,71.05,M_PI}),{
+				new useDistanceSensor({80,100},{LEFT_WALL,LEFT_WALL}),
 				new intake({0,100},{1,2000}),
 			}
 		},
 
 		//score goal 4, intake its blue ball
 		{
-			position({15.5,72.8,M_PI}),{
-				new useDistanceSensor({60,100},{LEFT_WALL,LEFT_WALL}),
+			position({16.3,71.05,M_PI}),{
+				new useDistanceSensor({0,100},{LEFT_WALL,LEFT_WALL}),
 		//		new intake({0,100},{1,2000}),
 				new score({0,100},{2,3000})
 			}
@@ -660,16 +668,14 @@ std::vector<linearmotion> cmdset = {
 		{
 			position({20,114,M_PI/3*4}),{
 				new intake({0,20},{-1,2000}),
-				new coordinatetarget({0,20},std::pair<inches,inches>{144,144}),
-				new rotation({21,89,M_PI/2}),
-			//	new ejectionenable({45,100}),
-				new coordinatetarget({90,100},std::pair<inches,inches>{4,108}),
+				new coordinatetarget({0,50},std::pair<inches,inches>{144,144}),
+				new rotation({51,100,M_PI})
 			}
 		},
 
 		//intake left wall top ball
 		{
-			position({13.5,108,M_PI/3*4}),{
+			position({13.5,112,M_PI}),{
 			//	new ejectionenable({0,10}),
 				new coordinatetarget({0,100},std::pair<inches,inches>{4,108}),
 				new intake({50,100},{1,2000})
@@ -678,7 +684,7 @@ std::vector<linearmotion> cmdset = {
 
 		//prepare for goal 6, intake middle goal top ball
 		{
-			position({71,96,M_PI*3/4}),{
+			position({71,97.25,M_PI*3/4}),{
 				new coordinatetarget({20,90},std::pair<inches,inches>{72,96}),
 				new rotation({90,100,M_PI/2}),
 				new intake({60,100},{1,2000})
@@ -687,14 +693,14 @@ std::vector<linearmotion> cmdset = {
 
 		//move to goal 6
 		{
-			position({69.8,129.8,M_PI/2}),{
-				new useDistanceSensor({60,100},{FRONT_WALL,FRONT_WALL}),
+			position({69.5,131.4,M_PI/2}),{
+				new useDistanceSensor({80,100},{FRONT_WALL,FRONT_WALL}),
 			}
 		},
 
-		//score on goal 6, intake blue ball
+		//score on goal 6, intake blue balls
 		{
-			position({69.8,128.9,M_PI/2}),{
+			position({69.5,131.4,M_PI/2}),{
 				new useDistanceSensor({0,100},{FRONT_WALL,FRONT_WALL}),
 				new score({0,100},{2,2000}),
 			//	new intake({0,100},{1,2000})
@@ -703,7 +709,7 @@ std::vector<linearmotion> cmdset = {
 
 		//prepare for top wall right ball, eject blue ball
 		{
-			position({71.5,120,M_PI/2}),{
+			position({71.5,118,M_PI/2}),{
 				new coordinatetarget({0,20},std::pair<inches,inches>{69.8,144}),
 				new rotation({21,100,0}),
 			//	new ejectionenable({50,100})
@@ -712,7 +718,7 @@ std::vector<linearmotion> cmdset = {
 
 		//intake top wall right ball, prepare for goal 7
 		{
-			position({120,119.5,0}),{
+			position({108,116,0}),{
 				//new ejectionenable({0,10}), //here to toggle ejectionenable of last operation off in case 100 is not hit, preventing the toggling of the eject bool to false
 				new rotation({95,100,M_PI/4}),
 				new intake({25,95},{1,3000})
@@ -729,26 +735,26 @@ std::vector<linearmotion> cmdset = {
 
 		//exist goal 7, prepare for goal 8, intake middle goal right ball
 		{
-			position({96,72.8,M_PI/4}),{
+			position({97.25,73.2,M_PI/4}),{
 				new coordinatetarget({0,20},std::pair<inches,inches>{144,144}),
-				new coordinatetarget({20,92},std::pair<inches,inches>{96,72}),
-				new rotation({92,100,0}),
+				new coordinatetarget({20,90},std::pair<inches,inches>{96,72.8}),
 				new ejectionenable({25,65}),
 				new intake({55,100},{1,2000})
 			}
 		},
 
+//NEEDS ADJUSTMENT: GOAL 8
 		//move to goal 8, intake right wall middle  ball
 		{
-			position({129.5,73.2,0}),{
+			position({131.5,73.2,0}),{
 				new intake({0,100},{1,3000}),
-				new useDistanceSensor({60,100},{RIGHT_WALL,RIGHT_WALL}),
+				new useDistanceSensor({80,100},{RIGHT_WALL,RIGHT_WALL}),
 			}
 		},
 
 		//score both balls, intake blue ball
 		{
-			position({129.5,73.2,0}),{
+			position({131.5,73.2,0}),{
 				new useDistanceSensor({0,100},{RIGHT_WALL,RIGHT_WALL}),
 				new score({0,100},{2,4000}),
 				new intake({0,100},{1,1000})
@@ -774,7 +780,7 @@ std::vector<linearmotion> cmdset = {
 
 		//intake right wall botttom ball
 		{
-			position({131.5,38.6,M_PI/4}),{
+			position({132.5,38.6,M_PI/4}),{
 				new coordinatetarget({0,90},std::pair<inches,inches>{140,38.6}),
 				new intake({55,100},{1,2000})
 			}
@@ -812,11 +818,12 @@ void autonomous() {
 	//input.set_led_pwm(80);
 	while(LIM.is_calibrating()){pros::delay(10);}
 	delay(100);
-	Ejector.move_relative(210,200); //deploy hood
+//	Ejector.move_relative(210,200); //deploy hood
+	delay(200);
   locationC = std::tuple<inches,inches,SMART_radians>{36,0,M_PI/2}; //REMEMBER: LOCATIONC IS IN A STATIC ADDRESS
   	for(int i = 0; i < cmdset.size(); i++){
   		while(true){
-  		//	break;
+  			//break;
   			if (master.get_digital_new_press(DIGITAL_UP)) break;
   			locationC = Odom.cycleIMU(locationC,SMART_radians(degrees(double(LIM.get_rotation()*-1.01056196909)+90))+CNSTOFFFAC);
   			lcd::print(5,"X: %f",locationC.x);
@@ -851,7 +858,7 @@ void autonomous() {
   		 // realangle = SMART_radians(degrees(double(im.get_rotation()*-1.01006196909)+90.0));
   			currentcommand = cmdset[i].processcommand(currentcommand,&locationC,/*realangle*/double(locationC.angle));     //update command state machine to new movement
   		//	lcd::print(4,"Len %f", currentcommand.disttotgt);
-  		//	lcd::print(0,"CMPL %f", currentcommand.completion);
+  			lcd::print(0,"CMPL %f", currentcommand.completion);
 				CNSTOFFFAC = DSodom.updateposition(currentcommand,&locationC,CNSTOFFFAC,SMART_radians(degrees(double(LIM.get_rotation()*-1.01056196909)+90)));
   			autonbase.updatebase(currentcommand, locationC);//update base motor power outputs for current position
   		//	autonbase.base.move_vector_RAW(std::pair<inches,inches>{0,0},0,0); //uncomment to disable movement
@@ -862,12 +869,15 @@ void autonomous() {
 				hack_poop(currentcommand); //WARNING: POOPING CANNOT BE DONE AT THE SAME TIME AS SHOOTING. THIS IS A CODE ISSUE
 		//		ttt.determinetargetstates(); //react to lift and intake output power decisions made in above lines
 		//		ttt.intakeballupdate(); //identify intake ball status after accounting for intake power decisions
-  			lcd::print(5,"X: %f",locationC.x);
+		//		lcd::print(0,"COF: %f",CNSTOFFFAC);
+		lcd::print(2,"DSENSOR MODE: %d", currentcommand.allow_ejection);
+				lcd::print(5,"X: %f",locationC.x);
   			lcd::print(6,"Y: %f",locationC.y);
   			lcd::print(7,"R: %f",locationC.angle);
 				if (master.get_digital_new_press(DIGITAL_LEFT)) break;
   			delay(10);
   		}
+			counter++;
   	}
   	autonbase.base.move_vector_RAW(std::pair<inches,inches>{0,0},0,0);
   }
