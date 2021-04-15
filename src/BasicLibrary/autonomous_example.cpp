@@ -804,6 +804,8 @@ std::vector<linearmotion> cmdset = {
 			}
 		},
 };
+
+radians CNSTOFFFAC = 0;
 //DoubleIMU Tes(3,15);
 void autonomous() {
 	delay(100);
@@ -816,7 +818,7 @@ void autonomous() {
   		while(true){
   		//	break;
   			if (master.get_digital_new_press(DIGITAL_UP)) break;
-  			locationC = Odom.cycleIMU(locationC,SMART_radians(degrees(double(LIM.get_rotation()*-1.01056196909)+90)));
+  			locationC = Odom.cycleIMU(locationC,SMART_radians(degrees(double(LIM.get_rotation()*-1.01056196909)+90))+CNSTOFFFAC);
   			lcd::print(5,"X: %f",locationC.x);
   			lcd::print(6,"Y: %f",locationC.y);
   			lcd::print(7,"R: %f",locationC.angle);
@@ -834,9 +836,9 @@ void autonomous() {
   	//	delay(100);
   	//	SMART_radians realangle = SMART_radians(degrees(double(im.get_rotation()*-1.01006196909)+90));
 			currentcommand.DSensor_status = {false,LEFT_WALL,LEFT_WALL}; //THIS IS A HACK. IMPLEMENT END OF MOVEMENT SHUTDOWN CALL SYSTEM FOR LINEARMOTION
-			locationC = Odom.cycleIMU(locationC,SMART_radians(degrees(double(LIM.get_rotation()*-1.01056196909)+90)));
+			locationC = Odom.cycleIMU(locationC,SMART_radians(degrees(double(LIM.get_rotation()*-1.01056196909)+90))+CNSTOFFFAC);
 			currentcommand = cmdset[i].updatecommand(currentcommand,locationC);     //update command state machine to new movement
-			locationC = DSodom.updateposition(currentcommand,locationC); //ensures that all length calcs are in right sensor refrences
+			CNSTOFFFAC = DSodom.updateposition(currentcommand,&locationC,CNSTOFFFAC, SMART_radians(degrees(double(LIM.get_rotation()*-1.01056196909)+90))); //ensures that all length calcs are in right sensor refrences
 			currentcommand.lengthcompute(locationC);
   		currentcommand.percentcompute(locationC);
   		autonbase.profileupdate(currentcommand,locationC);
@@ -844,13 +846,13 @@ void autonomous() {
   		//checks if within distance tollerance threshold, as well as if the lift is currently idle during that duration
   		while(!(currentcommand.disttotgt <= 0.8 && fabs(currentcommand.target.angle.findDiff(currentcommand.target.angle, locationC.angle)) <= 0.0872665 && currentcommand.isidle())){
 			//	lcd::print(1,"%f",Tes.get_heading());
-				locationC = Odom.cycleIMU(locationC,SMART_radians(degrees(double(LIM.get_rotation()*-1.01056196909)+90)));
+				locationC = Odom.cycleIMU(locationC,SMART_radians(degrees(double(LIM.get_rotation()*-1.01056196909)+90))+CNSTOFFFAC);
   			currentcommand.percentcompute(locationC);
   		 // realangle = SMART_radians(degrees(double(im.get_rotation()*-1.01006196909)+90.0));
   			currentcommand = cmdset[i].processcommand(currentcommand,&locationC,/*realangle*/double(locationC.angle));     //update command state machine to new movement
   		//	lcd::print(4,"Len %f", currentcommand.disttotgt);
   		//	lcd::print(0,"CMPL %f", currentcommand.completion);
-				locationC = DSodom.updateposition(currentcommand,locationC);
+				CNSTOFFFAC = DSodom.updateposition(currentcommand,&locationC,CNSTOFFFAC,SMART_radians(degrees(double(LIM.get_rotation()*-1.01056196909)+90)));
   			autonbase.updatebase(currentcommand, locationC);//update base motor power outputs for current position
   		//	autonbase.base.move_vector_RAW(std::pair<inches,inches>{0,0},0,0); //uncomment to disable movement
 		//		ttt.update_state(currentcommand.allow_ejection); //initial ball situation detection and auto sorting behavior
