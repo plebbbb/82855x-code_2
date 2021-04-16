@@ -629,7 +629,7 @@ std::vector<linearmotion> cmdset = {
 
 		//intake left wall middle ball, reach goal 4
 		{
-			position({16.5,71.05,M_PI}),{
+			position({16.2,71.05,M_PI}),{
 				new useDistanceSensor({80,100},{LEFT_WALL,LEFT_WALL}),
 				new intake({0,100},{1,2000}),
 			}
@@ -637,7 +637,7 @@ std::vector<linearmotion> cmdset = {
 
 		//score goal 4, intake its blue ball
 		{
-			position({16.5,71.05,M_PI}),{
+			position({16.2,71.05,M_PI}),{
 				new useDistanceSensor({0,100},{LEFT_WALL,LEFT_WALL}),
 				new intake({0,100},{1,2000}),
 				new score({0,100},{2,3000})
@@ -686,7 +686,7 @@ std::vector<linearmotion> cmdset = {
 				new coordinatetarget({0,50},std::pair<inches,inches>{4,140}),
 				new rotation({51,91,M_PI/2+0.2}),
 				new ejectionenable({80,100}),
-				new rotation({92,100,M_PI}),
+				new rotation({88,100,M_PI}),
 			}
 		},
 
