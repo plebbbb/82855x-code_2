@@ -574,12 +574,12 @@ std::vector<linearmotion> cmdset = {
 		}
 	},
 	{
-		position({70,13.7,M_PI}),{
+		position({70,13.6,M_PI}),{
 			new coordinatetarget({0,100},std::pair<inches,inches>{70,4}),
 		}
 	},
 	{
-		position({70,13.7,M_PI*3/2}),{
+		position({70,13.6,M_PI*3/2}),{
 			new score({0,100},{2,3000}),
 			new intake({0,100},{1,2000})
 		}
@@ -588,13 +588,13 @@ std::vector<linearmotion> cmdset = {
 		position({72,24,M_PI*3/2}),{
 			new coordinatetarget({0,50},std::pair<inches,inches>{72,4}),
 			new rotation({51,100,M_PI/2-0.1}),
-			new ejectionenable({70,100})
+			new ejectionenable({80,100})
 		}
 	},
 	{
 		position({72,59.2,M_PI/2}),{
 			new intake({0,100},{2,6000}),
-			new ejectionenable({0,15})
+			new ejectionenable({0,30})
 		}
 	},
 	{
@@ -614,13 +614,14 @@ std::vector<linearmotion> cmdset = {
 	//intake middle goal left ball
 	{
 		position({48,48,M_PI/2-0.2}),{
-			new ejectionenable({0,90}),
+			new ejectionenable({0,100}),
 		}
 	},
 		//intake middle goal left ball
 		{
 			position({48,71,M_PI*3/4}),{
 				new coordinatetarget({0,80},std::pair<inches,inches>{48,72}),
+				new ejectionenable({0,50}),
 				new intake({40,100},{1,2000}),
 				new rotation({80,100,M_PI})
 			}
@@ -638,7 +639,7 @@ std::vector<linearmotion> cmdset = {
 		{
 			position({16.5,71.05,M_PI}),{
 				new useDistanceSensor({0,100},{LEFT_WALL,LEFT_WALL}),
-		//		new intake({0,100},{1,2000}),
+				new intake({0,100},{1,2000}),
 				new score({0,100},{2,3000})
 			}
 		},
@@ -649,7 +650,7 @@ std::vector<linearmotion> cmdset = {
 				new intake({0,20},{-1,1000}),
 				new coordinatetarget({0,20},std::pair<inches,inches>{8,71}),
 				new rotation({21,80,M_PI/2}),
-			//	new ejectionenable({60,100}),
+				new ejectionenable({60,100}),
 				new rotation({90,100,M_PI/2})
 			}
 		},
@@ -683,15 +684,16 @@ std::vector<linearmotion> cmdset = {
 			position({20,114,M_PI/3*4}),{
 				new intake({0,20},{-1,2000}),
 				new coordinatetarget({0,50},std::pair<inches,inches>{4,140}),
-				new rotation({51,100,M_PI}),
-				new ejectionenable({60,100})
+				new rotation({51,91,M_PI/2+0.2}),
+				new ejectionenable({80,100}),
+				new rotation({92,100,M_PI}),
 			}
 		},
 
 		//intake left wall top ball
 		{
 			position({13.5,112,M_PI}),{
-			new ejectionenable({0,50}),
+				new ejectionenable({0,50}),
 				new coordinatetarget({0,100},std::pair<inches,inches>{4,108}),
 				new intake({50,100},{1,2000})
 			}
@@ -717,24 +719,24 @@ std::vector<linearmotion> cmdset = {
 		{
 			position({69.5,131.7,M_PI/2}),{
 				new useDistanceSensor({0,100},{FRONT_WALL,FRONT_WALL}),
-				new score({0,100},{2,2000}),
-			//	new intake({0,100},{1,2000})
+				new score({0,100},{2,1300}),
 			}
 		},
 
 		//prepare for top wall right ball, eject blue ball
 		{
-			position({71.5,118,M_PI/2}),{
+			position({71.5,120,M_PI/2}),{
+				new intake({0,50},{1,2000}),
 				new coordinatetarget({0,20},std::pair<inches,inches>{69.8,144}),
 				new rotation({21,100,0}),
-			//	new ejectionenable({50,100})
+				new ejectionenable({50,100})
 			}
 		},
 
 		//intake top wall right ball, prepare for goal 7
 		{
-			position({108,120,0}),{
-				//new ejectionenable({0,10}), //here to toggle ejectionenable of last operation off in case 100 is not hit, preventing the toggling of the eject bool to false
+			position({108,124,0}),{
+				new ejectionenable({0,10}), //here to toggle ejectionenable of last operation off in case 100 is not hit, preventing the toggling of the eject bool to false
 				new rotation({95,100,M_PI/4}),
 				new intake({25,95},{1,3000})
 			}
@@ -744,7 +746,8 @@ std::vector<linearmotion> cmdset = {
 		{
 			position({144-12.1,144-12.1,M_PI/4}),{
 				new useDistanceSensor({40,120},{FRONT_WALL,RIGHT_WALL}),
-				new score({92,100},{1,2000})
+				new score({92,100},{1,2000}),
+				new intake({92,100},{1,1000})
 			}
 		},
 
@@ -839,7 +842,7 @@ void autonomous() {
   locationC = std::tuple<inches,inches,SMART_radians>{36,0,M_PI/2}; //REMEMBER: LOCATIONC IS IN A STATIC ADDRESS
   	for(int i = 0; i < cmdset.size(); i++){
   		while(true){
-  			//break;
+  			break;
   			if (master.get_digital_new_press(DIGITAL_UP)) break;
   			locationC = Odom.cycleIMU(locationC,SMART_radians(degrees(double(LIM.get_rotation()*-1.01056196909)+90))+CNSTOFFFAC);
   			lcd::print(5,"X: %f",locationC.x);
