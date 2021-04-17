@@ -552,13 +552,7 @@ std::vector<linearmotion> cmdset = {
 				new coordinatetarget({0,50},std::pair<inches,inches>{0,0}),
 				new rotation({51,100,M_PI*5/4}),
 				new useDistanceSensor({40,120},{BACK_WALL,LEFT_WALL}),
-		//		new score({92,100},{1,1000})
-			}
-		},
-		{
-			position({12.1,12.1,M_PI*5/4}),{
-				new useDistanceSensor({0,120},{BACK_WALL,LEFT_WALL}),
-				new score({0,100},{1,1000})
+				new score({92,100},{1,2000})
 			}
 		},
 		{
@@ -574,39 +568,44 @@ std::vector<linearmotion> cmdset = {
 		}
 	},
 	{
-		position({70,13.6,M_PI}),{
-			new coordinatetarget({0,100},std::pair<inches,inches>{70,4}),
+		position({69.5,22,M_PI*3/2}),{
 		}
 	},
 	{
-		position({70,13.6,M_PI*3/2}),{
+		position({69.5,13.35,M_PI*3/2}),{
+			new useDistanceSensor({40,100},{BACK_WALL,BACK_WALL})
+		}
+	},
+	{
+		position({69.5,13.35,M_PI*3/2}),{
+			new useDistanceSensor({40,100},{BACK_WALL,BACK_WALL}),
 			new score({0,100},{2,3000}),
 			new intake({0,100},{1,2000})
 		}
 	},
 	{
-		position({72,24,M_PI*3/2}),{
+		position({71.5,24,M_PI*3/2}),{
 			new coordinatetarget({0,50},std::pair<inches,inches>{72,4}),
 			new rotation({51,100,M_PI/2-0.1}),
-			new ejectionenable({80,100})
+			new ejectionenable({85,100})
 		}
 	},
 	{
-		position({72,59.2,M_PI/2}),{
+		position({71.5,59.2,M_PI/2}),{
 			new intake({0,100},{2,6000}),
 			new ejectionenable({0,30})
 		}
 	},
 	{
-		position({72,59.2,M_PI/2}),{
+		position({71.5,59.2,M_PI/2}),{
 			new score({0,100},{1,2000}),
-			new intake({0,100},{1,2000})
+		//	new intake({0,100},{1,2000})
 		}
 	},
 	{
 		position({71,40,M_PI/2}),{
-			new rotation({0,50,M_PI/2-0.2}),
-			new intake({30,100},{1,1000}),
+			new rotation({30,50,M_PI/2-0.2}),
+			new intake({30,100},{1,800}),
 			new ejectionenable({0,100}),
 		}
 	},
@@ -629,7 +628,7 @@ std::vector<linearmotion> cmdset = {
 
 		//intake left wall middle ball, reach goal 4
 		{
-			position({16.2,71.05,M_PI}),{
+			position({16.4,69.6,M_PI}),{
 				new useDistanceSensor({80,100},{LEFT_WALL,LEFT_WALL}),
 				new intake({0,100},{1,2000}),
 			}
@@ -637,7 +636,7 @@ std::vector<linearmotion> cmdset = {
 
 		//score goal 4, intake its blue ball
 		{
-			position({16.2,71.05,M_PI}),{
+			position({16.4,69.6,M_PI}),{
 				new useDistanceSensor({0,100},{LEFT_WALL,LEFT_WALL}),
 				new intake({0,100},{1,2000}),
 				new score({0,100},{2,3000})
@@ -646,34 +645,23 @@ std::vector<linearmotion> cmdset = {
 
 		//exit goal 4, eject blue ball, prepare to intake top wall left ball
 		{
-			position({35,90,M_PI}),{
-				new intake({0,20},{-1,1000}),
-				new coordinatetarget({0,20},std::pair<inches,inches>{8,71}),
-				new rotation({21,80,M_PI/2}),
-				new ejectionenable({60,100}),
-				new rotation({90,100,M_PI/2})
-			}
-		},
-
-		//intake top wall left ball
-		{
-			position({35,120,M_PI/2}),{
-				new ejectionenable({0,10}),
-				new intake({0,100},{1,4000}),
-				new rotation({90,100,M_PI*3/4}),
-			}
-		},
-
-		//prepare to score goal 5
-		{
-			position({34,110,M_PI*3/4}),{
+			position({35,120,M_PI}),{
+				new intake({0,15},{-1,1000}),
+				new coordinatetarget({0,15},std::pair<inches,inches>{8,71}),
+				new rotation({16,50,M_PI/2}),
+				new ejectionenable({30,80}),
+				new coordinatetarget({51,90},std::pair<inches,inches>{35,122}),
+				new rotation({91,100,M_PI*3/4}),
+				new intake({65,100},{1,2000}),
 			}
 		},
 
 		//score goal 5, intake one blue ball
 		{
 			position({12.1,144-12.1,M_PI*3/4}),{
+				new coordinatetarget({0,80},std::pair<inches,inches>{4,140}),
 				new useDistanceSensor({40,120},{LEFT_WALL,FRONT_WALL}),
+				new rotation({81,100,M_PI*3/4}),
 				new score({95,100},{1,2000}),
 				new intake({90,100},{1,3000})
 			}
@@ -681,19 +669,18 @@ std::vector<linearmotion> cmdset = {
 
 		//exit goal 5, prepare to intake left wall top ball, eject goal 5 blue balls
 		{
-			position({20,114,M_PI/3*4}),{
+			position({20,114,M_PI*3/4}),{
 				new intake({0,20},{-1,2000}),
-				new coordinatetarget({0,50},std::pair<inches,inches>{4,140}),
-				new rotation({51,91,M_PI/2+0.2}),
-				new ejectionenable({80,100}),
-				new rotation({88,100,M_PI}),
+				new rotation({15,84,M_PI/2+0.2}),
+				new ejectionenable({35,100}),
+				new rotation({85,100,M_PI}),
 			}
 		},
 
 		//intake left wall top ball
 		{
 			position({13.5,112,M_PI}),{
-				new ejectionenable({0,50}),
+				new ejectionenable({0,30}),
 				new coordinatetarget({0,100},std::pair<inches,inches>{4,108}),
 				new intake({50,100},{1,2000})
 			}
@@ -719,7 +706,7 @@ std::vector<linearmotion> cmdset = {
 		{
 			position({69.5,131.7,M_PI/2}),{
 				new useDistanceSensor({0,100},{FRONT_WALL,FRONT_WALL}),
-				new score({0,100},{2,1300}),
+				new score({0,100},{2,2500}),
 			}
 		},
 
@@ -738,7 +725,7 @@ std::vector<linearmotion> cmdset = {
 			position({108,124,0}),{
 				new ejectionenable({0,10}), //here to toggle ejectionenable of last operation off in case 100 is not hit, preventing the toggling of the eject bool to false
 				new rotation({95,100,M_PI/4}),
-				new intake({25,95},{1,3000})
+				new intake({5,95},{1,3000})
 			}
 		},
 
@@ -787,29 +774,32 @@ std::vector<linearmotion> cmdset = {
 			}
 		},
 
+/*
+		//intake right wall botttom ball
+		{
+			position({132.5,38.6,M_PI/4}),{
+				new ejectionenable({0,40}),
+				new coordinatetarget({0,100},std::pair<inches,inches>{140,38.6}),
+				new intake({75,100},{1,2000})
+			}
+		},
+*/
 		//intake bottom wall right ball, eject goal 8 blue ball, prepare for intaking right wall bottom ball
 		{
 			position({112,24,M_PI/4}),{
-				new ejectionenable({0,40}),
 				new coordinatetarget({0,90},std::pair<inches,inches>{112,24}),
-				new rotation({90,100,M_PI*1/4}),
+				new ejectionenable({20,60}),
+				new rotation({90,100,M_PI*7/4}),
 				new intake({55,100},{1,2000})
 			}
 		},
 
-		//intake right wall botttom ball
-		{
-			position({132.5,38.6,M_PI/4}),{
-				new coordinatetarget({0,90},std::pair<inches,inches>{140,38.6}),
-				new intake({55,100},{1,2000})
-			}
-		},
 
 		//move to goal 9, score both balls and intake one blue ball
 		{
 			position({144-12.3,12.3,M_PI*7/4}),{
 				new useDistanceSensor({40,120},{RIGHT_WALL,BACK_WALL}),
-				new score({92,100},{2,2000}),
+				new score({92,100},{1,2000}),
 				new intake({92,100},{1,1000})
 			}
 		},
