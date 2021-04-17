@@ -101,7 +101,7 @@ namespace STL_lib{
     bool completion = false;
     bool lst = false;
     bool statechange = false;
-    int tmptimer = 550;
+    int tmptimer = 400;
     linetracker toop;
     scorecontroller (pros::Motor SI, pros::Motor SSI, linetracker tope):S(SI),SS(SSI),toop(tope){}
     command refresh(command input){
@@ -113,7 +113,7 @@ namespace STL_lib{
         if (!balltransferstate && tmptimer >= 0 && std::get<0>(input.score_status) == 1){  //edge case: coast a bit after ball release
           tmptimer-=10;
         }
-        if ((tmptimer <= 0 || balltransferstate) && statechange){
+        if ((tmptimer <= 0 | balltransferstate) && statechange){
           std::get<0>(input.score_status)--;
           statechange = false;
         }
@@ -130,7 +130,7 @@ namespace STL_lib{
         completion = true;
         std::get<1>(input.score_status) = 0;
         std::get<0>(input.score_status) = 0;
-        tmptimer = 550;
+        tmptimer = 400;
         if (!balltransferstate) {
           SS.move_velocity(0);
           S.move_velocity(0);
