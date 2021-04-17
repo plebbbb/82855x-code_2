@@ -110,12 +110,17 @@ namespace STL_lib{
         lst = !lst;
       }
       if(lst == false) {
-        if (!balltransferstate && tmptimer >= 0 && std::get<0>(input.score_status) == 1){  //edge case: coast a bit after ball release
-          tmptimer-=10;
-        }
-        if ((tmptimer <= 0 | balltransferstate) && statechange){
-          std::get<0>(input.score_status)--;
-          statechange = false;
+        if (statechange){
+          if(std::get<0>(input.score_status) == 1){
+            if (tmptimer <= 0) {
+              std::get<0>(input.score_status)--;
+              statechange = false;
+            }
+            else tmptimer -= 10;
+          } else {
+            std::get<0>(input.score_status)--;
+            statechange = false;
+          }
         }
       }
       if (std::get<1>(input.score_status) > 0 && std::get<0>(input.score_status) > 0){
