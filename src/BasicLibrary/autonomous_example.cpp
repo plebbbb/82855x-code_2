@@ -572,38 +572,38 @@ std::vector<linearmotion> cmdset = {
 		}
 	},
 	{
-		position({69.5,13.35,M_PI*3/2}),{
+		position({69.1,14,M_PI*3/2}),{
 			new useDistanceSensor({40,100},{BACK_WALL,BACK_WALL})
 		}
 	},
 	{
-		position({69.5,13.35,M_PI*3/2}),{
+		position({69.1,14,M_PI*3/2}),{
 			new useDistanceSensor({40,100},{BACK_WALL,BACK_WALL}),
 			new score({0,100},{2,3000}),
 			new intake({0,100},{1,2000})
 		}
 	},
 	{
-		position({71.5,24,M_PI*3/2}),{
+		position({71.3,24,M_PI*3/2}),{
 			new coordinatetarget({0,50},std::pair<inches,inches>{72,4}),
 			new rotation({51,100,M_PI/2-0.1}),
 			new ejectionenable({82,100})
 		}
 	},
 	{
-		position({71.5,59.35,M_PI/2}),{
+		position({71.05,59.9,M_PI/2}),{
 			new intake({0,100},{2,6000}),
 			new ejectionenable({0,30})
 		}
 	},
 	{
-		position({71.5,59.35,M_PI/2}),{
+		position({71.05,59.9,M_PI/2}),{
 			new score({0,100},{1,2000}),
 			new intake({0,100},{1,2000})
 		}
 	},
 	{
-		position({71,40,M_PI/2}),{
+		position({71.05,40,M_PI/2}),{
 			new rotation({30,50,M_PI/2-0.2}),
 			new intake({40,100},{1,800}),
 			new ejectionenable({0,100}),
@@ -628,7 +628,7 @@ std::vector<linearmotion> cmdset = {
 
 		//intake left wall middle ball, reach goal 4
 		{
-			position({16,69.6,M_PI}),{
+			position({14.5,71,M_PI}),{
 				new useDistanceSensor({80,100},{LEFT_WALL,LEFT_WALL}),
 				new intake({0,100},{1,2000}),
 			}
@@ -636,10 +636,16 @@ std::vector<linearmotion> cmdset = {
 
 		//score goal 4, intake its blue ball
 		{
-			position({16,69.6,M_PI}),{
+			position({14.5,71,M_PI}),{
 				new useDistanceSensor({0,100},{LEFT_WALL,LEFT_WALL}),
-				new intake({0,100},{1,2000}),
 				new score({0,100},{2,3000})
+			}
+		},
+
+		{
+			position({14.5,71,M_PI}),{
+				new useDistanceSensor({0,100},{LEFT_WALL,LEFT_WALL}),
+				new intake({0,100},{1,1000})
 			}
 		},
 
@@ -672,7 +678,7 @@ std::vector<linearmotion> cmdset = {
 			position({20,114,M_PI*3/4}),{
 				new intake({0,20},{-1,2000}),
 				new rotation({15,84,M_PI/2+0.2}),
-				new ejectionenable({35,100}),
+				new ejectionenable({30,100}),
 				new rotation({85,100,M_PI}),
 			}
 		},
@@ -762,7 +768,7 @@ std::vector<linearmotion> cmdset = {
 		{
 			position({131.85,73.2,0}),{
 				new useDistanceSensor({0,100},{RIGHT_WALL,RIGHT_WALL}),
-				new score({0,100},{2,4000}),
+				new score({0,100},{2,2500}),
 				new intake({0,100},{1,1000})
 			}
 		},

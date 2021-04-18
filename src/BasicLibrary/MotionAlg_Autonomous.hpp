@@ -125,8 +125,9 @@ namespace STL_lib{
       }
       if (std::get<1>(input.score_status) > 0 && std::get<0>(input.score_status) > 0){
         SS.move_velocity(200);
-        if(std::get<0>(input.score_status) > 1) S.move_velocity(200);
-        else if (!balltransferstate) S.move_velocity(0);
+      //  S.move_velocity(200);
+      //  if(std::get<0>(input.score_status) > 1) S.move_velocity(200);
+      //  else if (!balltransferstate) S.move_velocity(0);
         std::get<1>(input.score_status) -= 10;
       }
       else {
