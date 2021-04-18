@@ -48,8 +48,8 @@ OdometryWheels Owheels{
 //THE CORRECT VALUES ARE: X: 7.75, Y: 6.25
 //THIS ONLY AFFECTS CORNER GOAL DISTANCE CALCULATIONS
 DSensorComputer DSodom(
-	DSensor(4, M_PI*5/4, std::pair<inches,inches>{-8,6}), //left corner distance sensor
-	DSensor(17, M_PI*7/4, std::pair<inches,inches>{8,6})   //right corner distance sensor
+	DSensor(4, M_PI*5/4, std::pair<inches,inches>{-7.75,6.25}), //left corner distance sensor
+	DSensor(17, M_PI*7/4, std::pair<inches,inches>{7.75,6.25})   //right corner distance sensor
 );
 //BTW, I HAVE NO IDEA HOW THE ANGLE MEASUREMENTS ARE CALCULATED. FIGURE OUT BY EXPERIMENTATION
 
