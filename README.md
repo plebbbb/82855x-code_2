@@ -1,4 +1,4 @@
-# 82855-Basic_Library
-A collection of basic software features for Vex Bots
+# 82855x-code_2
+Team 82855x's code for the vex change up season.
 
-This is our second writing for the Vex change up season.
+Final auton performance of 118 at provs, yet we somehow still didnt make it to worlds 😞 
